@@ -1,0 +1,67 @@
+{
+  "tp_id": "TP-PRMS-053",
+  "status": "VALIDATED",
+  "packet_family": "flight_deck",
+  "lane": "editing",
+  "summary": {
+    "result": "Patch e8a641db successfully applied to src/f.py.",
+    "key_findings": [
+      "Patch scope was strictly enforced (single file).",
+      "Provenance trace confirms alignment with APPLY_FIX tactic."
+    ],
+    "key_caveats": [
+      "Risk assessment: LOW."
+    ]
+  },
+  "acceptance_checks": {
+    "passed": [
+      "patch planning quality",
+      "scope discipline",
+      "patch application behavior",
+      "verification linkage",
+      "provenance trace"
+    ],
+    "failed": [],
+    "not_applicable": []
+  },
+  "validation": {
+    "scenario_count": 1,
+    "scenario_summary": [
+      "Verification plan 9eeafbc7: PASS"
+    ],
+    "coverage_notes": [
+      "Verification focused on patch application state."
+    ]
+  },
+  "decision": {
+    "value": "VALIDATED",
+    "confidence": "HIGH",
+    "rationale": [
+      "Patch application trace confirms outcome 'APPLIED' with no blockage."
+    ]
+  },
+  "artifacts": {
+    "primary": [],
+    "supporting": [
+      "PATCH_PLAN_REPORT.json",
+      "PATCH_SCOPE_REPORT.json",
+      "PATCH_APPLICATION_TRACE.json",
+      "PATCH_VERIFICATION_REPORT.json",
+      "PATCH_PROVENANCE_LOG.json"
+    ],
+    "archive": {
+      "present": true,
+      "filename": "TP-PRMS-053_PROOF_ARCHIVE.zip",
+      "sha256": null
+    }
+  },
+  "dopetask": {
+    "canonical_review_surface": true,
+    "supporting_artifacts_retained": true,
+    "source_manifest": "PATCH_MANIFEST.json"
+  },
+  "manifest": {
+    "generated_at": "2026-03-15T00:03:00Z",
+    "bundle_schema_version": "1.0"
+  }
+}
