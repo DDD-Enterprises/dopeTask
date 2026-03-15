@@ -1,0 +1,75 @@
+adapter:
+  name: dopetask
+  enabled: true
+  mode: local_path
+
+paths:
+  dopetask_repo_root: /Users/hue/code/dopetask
+  proof_bundle_glob: proof/bundles/*_PROOF_BUNDLE.json
+  proof_archive_glob: proof/archives/*_PROOF_ARCHIVE.zip
+
+launch:
+  enabled: true
+  working_directory: /Users/hue/code/dopetask
+  command_template:
+    - python
+    - -m
+    - dopetask.cli
+    - run
+    - "{tp_id}"
+    - "--repo"
+    - "{repo}"
+  timeout_seconds: 1800
+  poll_interval_seconds: 3
+
+bundle_loading:
+  strict_schema: true
+  require_bundle: true
+  allow_missing_archive: true
+  fail_on_invalid_bundle: true
+  prefer_bundle_over_archive: true
+
+mapping:
+  status_map:
+    VALIDATED: VALIDATED
+    OPERATIONAL: OPERATIONAL
+    BLOCKED: BLOCKED
+    DEFERRED: DEFERRED
+    FAILED: FAILED
+    UNKNOWN: UNKNOWN
+
+  posture_map:
+    ADVISORY_ONLY: ADVISORY_ONLY
+    GO_SUPERVISED_ONLY: GO_SUPERVISED_ONLY
+    LIVE_SAFE: LIVE_SAFE
+    DEFER_ONLY: DEFER_ONLY
+    UNKNOWN: UNKNOWN
+
+  headline_state_map:
+    READY: READY
+    BLOCKED: BLOCKED
+    DEFERRED: DEFERRED
+    SUPERVISED: SUPERVISED
+    INCIDENT: INCIDENT
+    UNKNOWN: UNKNOWN
+
+operator_flow:
+  bundle_first: true
+  archive_second: true
+  show_next_action: true
+  show_signoff_state: true
+  show_allowed_actions: true
+  show_blocked_actions: true
+
+guardrails:
+  preserve_governance_semantics: true
+  refuse_if_signoff_state_missing: false
+  refuse_if_bundle_missing: true
+  refuse_if_status_unknown: false
+  refuse_if_posture_unknown: false
+
+logging:
+  level: info
+  emit_adapter_trace: true
+  emit_bundle_load_report: true
+  emit_launch_trace: true
