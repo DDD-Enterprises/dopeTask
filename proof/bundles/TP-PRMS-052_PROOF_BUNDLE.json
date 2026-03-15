@@ -1,0 +1,65 @@
+{
+  "tp_id": "TP-PRMS-052",
+  "status": "VALIDATED",
+  "packet_family": "flight_deck",
+  "lane": "closed_loop",
+  "summary": {
+    "result": "Closed-loop execution for PR-002 completed successfully.",
+    "key_findings": [
+      "Tactical selection logic for APPLY_FIX was verified.",
+      "Implicit actions correctly handled state transitions across the loop."
+    ],
+    "key_caveats": [
+      "Evidence is based on a single cycle (a0aa7479)."
+    ]
+  },
+  "acceptance_checks": {
+    "passed": [
+      "closed-loop behavior",
+      "implicit action behavior",
+      "state recompute correctness",
+      "next-action selection behavior"
+    ],
+    "failed": [],
+    "not_applicable": []
+  },
+  "validation": {
+    "scenario_count": 1,
+    "scenario_summary": [
+      "Cycle a0aa7479 converged: PASS"
+    ],
+    "coverage_notes": [
+      "Covers primary tactical loop."
+    ]
+  },
+  "decision": {
+    "value": "VALIDATED",
+    "confidence": "HIGH",
+    "rationale": [
+      "Trace logs show perfect alignment between state, tactic, and outcome."
+    ]
+  },
+  "artifacts": {
+    "primary": [],
+    "supporting": [
+      "CLOSED_LOOP_TRACE.json",
+      "IMPLICIT_ACTION_LOG.json",
+      "NEXT_ACTION_SELECTION_REPORT.json",
+      "STATE_RECOMPUTE_REPORT.json"
+    ],
+    "archive": {
+      "present": true,
+      "filename": "TP-PRMS-052_PROOF_ARCHIVE.zip",
+      "sha256": null
+    }
+  },
+  "dopetask": {
+    "canonical_review_surface": true,
+    "supporting_artifacts_retained": true,
+    "source_manifest": "CLOSED_LOOP_MANIFEST.json"
+  },
+  "manifest": {
+    "generated_at": "2026-03-15T00:01:00Z",
+    "bundle_schema_version": "1.0"
+  }
+}
