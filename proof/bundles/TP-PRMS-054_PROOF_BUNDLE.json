@@ -1,0 +1,67 @@
+{
+  "tp_id": "TP-PRMS-054",
+  "status": "VALIDATED",
+  "packet_family": "flight_deck",
+  "lane": "fusion",
+  "summary": {
+    "result": "Fusion loop for PR-001 successfully reached signoff stage.",
+    "key_findings": [
+      "Verification passed for patch a7920197.",
+      "Signoff requirement (HIGH risk) was correctly triggered and generated."
+    ],
+    "key_caveats": [
+      "Final state is SIGNOFF_PENDING."
+    ]
+  },
+  "acceptance_checks": {
+    "passed": [
+      "fused edit -> verify -> gate -> signoff/defer loop",
+      "trigger correctness",
+      "post-edit recompute",
+      "signoff/defer generation quality",
+      "fail-closed behavior"
+    ],
+    "failed": [],
+    "not_applicable": []
+  },
+  "validation": {
+    "scenario_count": 1,
+    "scenario_summary": [
+      "Trace d78add4d reached SIGNOFF_PENDING: PASS"
+    ],
+    "coverage_notes": [
+      "Covers fused verification and gating logic."
+    ]
+  },
+  "decision": {
+    "value": "SIGNOFF_PENDING",
+    "confidence": "HIGH",
+    "rationale": [
+      "All gate criteria met; risk classification requires operator signoff."
+    ]
+  },
+  "artifacts": {
+    "primary": [],
+    "supporting": [
+      "LOOP_FUSION_TRACE.json",
+      "VERIFICATION_GATE_REPORT.json",
+      "SIGNOFF_TRIGGER_REPORT.json",
+      "DEFER_TRIGGER_REPORT.json",
+      "POST_EDIT_STATE_RECOMPUTE.json"
+    ],
+    "archive": {
+      "present": true,
+      "filename": "TP-PRMS-054_PROOF_ARCHIVE.zip",
+      "sha256": null
+    }
+  },
+  "dopetask": {
+    "canonical_review_surface": true,
+    "supporting_artifacts_retained": true,
+    "source_manifest": "FUSION_MANIFEST.json"
+  },
+  "manifest": {
+    "generated_at": "2026-03-15T00:05:00Z",
+    "bundle_schema_version": "1.0"
+  }
+}
