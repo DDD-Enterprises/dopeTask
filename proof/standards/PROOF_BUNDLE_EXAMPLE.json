@@ -1,0 +1,60 @@
+{
+  "tp_id": "TP-EXAMPLE-001",
+  "status": "VALIDATED",
+  "packet_family": "flight_deck",
+  "lane": "closed_loop",
+  "summary": {
+    "result": "Task completed successfully with all invariants holding.",
+    "key_findings": [
+      "Closed-loop execution converged in 3 iterations.",
+      "Implicit actions correctly identified state drift."
+    ],
+    "key_caveats": [
+      "Thin sample size for multi-capture source convergence."
+    ]
+  },
+  "acceptance_checks": {
+    "passed": [
+      "One canonical bundle per TP",
+      "Sufficient for top-level review"
+    ],
+    "failed": [],
+    "not_applicable": []
+  },
+  "validation": {
+    "scenario_count": 5,
+    "scenario_summary": [
+      "Iteration convergence: PASS",
+      "Drift detection: PASS"
+    ],
+    "coverage_notes": [
+      "Covers core loop logic only."
+    ]
+  },
+  "decision": {
+    "value": "GO_DRAFT_FIRST",
+    "confidence": "HIGH",
+    "rationale": [
+      "High reliability in controlled environment.",
+      "Field testing required for broader rollout."
+    ]
+  },
+  "artifacts": {
+    "primary": ["docs/proof/PROOF_BUNDLE_CONTRACT.md"],
+    "supporting": ["CLOSED_LOOP_TRACE.json", "IMPLICIT_ACTION_LOG.json"],
+    "archive": {
+      "present": true,
+      "filename": "TP-EXAMPLE-001_PROOF_ARCHIVE.zip",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "dopetask": {
+    "canonical_review_surface": true,
+    "supporting_artifacts_retained": true,
+    "source_manifest": "MANIFEST.json"
+  },
+  "manifest": {
+    "generated_at": "2026-03-14T23:55:00Z",
+    "bundle_schema_version": "1.0"
+  }
+}
