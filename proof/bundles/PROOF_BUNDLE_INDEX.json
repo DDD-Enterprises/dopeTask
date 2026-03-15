@@ -1,0 +1,31 @@
+{
+  "project": "Dopetask",
+  "index_type": "PROOF_BUNDLE_INDEX",
+  "generated_at": "2026-03-15T00:07:00Z",
+  "bundles": [
+    {
+      "tp_id": "TP-PRMS-052",
+      "status": "VALIDATED",
+      "family": "flight_deck",
+      "lane": "closed_loop",
+      "path": "proof/bundles/TP-PRMS-052_PROOF_BUNDLE.json",
+      "archive": "proof/archives/TP-PRMS-052_PROOF_ARCHIVE.zip"
+    },
+    {
+      "tp_id": "TP-PRMS-053",
+      "status": "VALIDATED",
+      "family": "flight_deck",
+      "lane": "editing",
+      "path": "proof/bundles/TP-PRMS-053_PROOF_BUNDLE.json",
+      "archive": "proof/archives/TP-PRMS-053_PROOF_ARCHIVE.zip"
+    },
+    {
+      "tp_id": "TP-PRMS-054",
+      "status": "VALIDATED",
+      "family": "flight_deck",
+      "lane": "fusion",
+      "path": "proof/bundles/TP-PRMS-054_PROOF_BUNDLE.json",
+      "archive": "proof/archives/TP-PRMS-054_PROOF_ARCHIVE.zip"
+    }
+  ]
+}
