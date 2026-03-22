@@ -1,5 +1,19 @@
+from .prompts import GEMINI_PROMPTS
+import json
+
 class StepRunner:
+    def compile_step_prompt(self, step):
+        """Compiles the TURN 3+ prompt for Gemini."""
+        return GEMINI_PROMPTS["TURN_3_STEP"].format(
+            step_id=step.get("id", "UNKNOWN"),
+            task=step.get("task", "No task provided"),
+            requirements="\n".join([f"- {req}" for req in step.get("requirements", [])]),
+            validation="\n".join([f"- {val}" for val in step.get("validation", [])])
+        )
+
     def run_step(self, step):
+        prompt = self.compile_step_prompt(step)
+        
         result = {
             "step_id": step["id"],
             "files_created": [],
@@ -9,7 +23,8 @@ class StepRunner:
         }
 
         try:
-            # execute commands
+            # TODO: Integrate actual LLM CLI execution here using `prompt`
+            # For now, simulate execution and commands tracking
             for cmd in step.get("commands", []):
                 result["commands_run"].append(cmd)
                 # subprocess execution here
