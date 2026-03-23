@@ -11,7 +11,10 @@ from dopetask.core.compilers.codex import CodexCompiler
 from dopetask.core.compilers.vibe import VibeCompiler
 
 class TPParser:
-    """Parses raw Task Packet data into the generic schema."""
+    """Parses raw Task Packet data into the generic schema.
+    
+    Complexity: O(N) where N is the number of steps in the Task Packet.
+    """
     
     @staticmethod
     def parse_dict(data: Dict[str, Any]) -> TaskPacket:

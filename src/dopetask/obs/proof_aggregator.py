@@ -11,7 +11,11 @@ from typing import List, Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 class ProofAggregator:
-    """Aggregates execution proofs into the canonical Dopetask Proof Bundle format."""
+    """Aggregates execution proofs into the canonical Dopetask Proof Bundle format.
+    
+    Flow: execution output -> status determination -> archive creation -> final bundle generation.
+    Complexity: O(S + F) where S is the number of steps and F is the total size of files to archive.
+    """
 
     def __init__(self, tp_id: str, output_dir: Optional[Path] = None):
         self.tp_id = tp_id
