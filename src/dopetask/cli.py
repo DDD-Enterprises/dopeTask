@@ -156,6 +156,10 @@ try:
     from dopetask.ops.tp_run.cli import register as register_tp_run
 except ImportError:
     register_tp_run = None  # type: ignore
+try:
+    from dopetask.ops.tp_exec.cli import register as register_tp_exec
+except ImportError:
+    register_tp_exec = None  # type: ignore
 
 
 class BannerTyperGroup(TyperGroup):
@@ -192,6 +196,8 @@ if tp_git_app:
     tp_app.add_typer(tp_git_app, name="git")
 if register_tp_run is not None:
     register_tp_run(tp_app)
+if register_tp_exec is not None:
+    register_tp_exec(tp_app)
 
 
 def _use_compat_options(*_values: object) -> None:
