@@ -9,6 +9,7 @@ import typer
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
 from dopetask_adapters.gemini.executor import GeminiExecutor
+from dopetask.obs.proof_aggregator import ProofAggregator
 
 def register(tp_app: typer.Typer) -> None:
     """Attach tp exec command to the tp group."""
@@ -54,9 +55,25 @@ def register(tp_app: typer.Typer) -> None:
                 raise typer.Exit(1)
                 
             typer.echo(f"Executing TP: {tp.id} (agent={agent})...")
-            proof_file = executor.run_tp(compiled_tp)
+            raw_proof_path = Path(executor.run_tp(compiled_tp))
             
-            typer.echo(f"Success! Proof written to: {proof_file}")
+            # 4. Aggregate Proofs
+            typer.echo(f"Aggregating proofs for {tp.id}...")
+            aggregator = ProofAggregator(tp.id)
+            
+            with open(raw_proof_path, "r") as f:
+                execution_result = json.load(f)
+            
+            # Identify artifacts to include in archive
+            artifact_files = [raw_proof_path, tp_file]
+            for step in execution_result.get("steps", []):
+                for f in step.get("files_created", []):
+                    artifact_files.append(Path(f))
+            
+            bundle_path = aggregator.aggregate(execution_result, artifact_files)
+            
+            typer.echo(f"Success! Canonical Proof Bundle written to: {bundle_path}")
+            typer.echo(f"Audit archive created in same directory.")
             
         except typer.Exit:
             raise
