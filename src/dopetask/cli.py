@@ -160,6 +160,10 @@ try:
     from dopetask.ops.tp_exec.cli import register as register_tp_exec
 except ImportError:
     register_tp_exec = None  # type: ignore
+try:
+    from dopetask.ops.tp_tmux.cli import register as register_tmux
+except ImportError:
+    register_tmux = None  # type: ignore
 
 
 class BannerTyperGroup(TyperGroup):
@@ -198,6 +202,8 @@ if register_tp_run is not None:
     register_tp_run(tp_app)
 if register_tp_exec is not None:
     register_tp_exec(tp_app)
+if register_tmux is not None:
+    register_tmux(cli)
 
 
 def _use_compat_options(*_values: object) -> None:

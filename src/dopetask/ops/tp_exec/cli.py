@@ -10,6 +10,7 @@ import typer
 from dopetask.core.tp_parser import TPNormalizer, TPParser
 from dopetask_adapters.gemini.executor import GeminiExecutor
 from dopetask.obs.proof_aggregator import ProofAggregator
+from dopetask.ops.tp_tmux.tmux_manager import TmuxManager
 
 def register(tp_app: typer.Typer) -> None:
     """Attach tp exec command to the tp group."""
@@ -33,12 +34,30 @@ def register(tp_app: typer.Typer) -> None:
             "--dry-run",
             help="Compile and show prompts without executing.",
         ),
+        use_tmux: bool = typer.Option(
+            False,
+            "--tmux",
+            help="Run execution inside an isolated tmux session.",
+        ),
     ) -> None:
         """Execute a Task Packet using a specific agent profile."""
         try:
             # 1. Parse generic TP
             tp = TPParser.parse_file(tp_file)
             
+            if use_tmux:
+                manager = TmuxManager()
+                session_name = f"tp-{tp.id.lower()}"
+                # Construct command to run itself without --tmux
+                cmd = f"PYTHONPATH=src python -m dopetask tp exec {tp_file} --agent {agent}"
+                if manager.start_session(session_name, Path.cwd(), cmd):
+                    typer.echo(f"Spawned execution in tmux session: {session_name}")
+                    typer.echo(f"Run 'dopetask tmux attach {tp.id}' to monitor.")
+                    raise typer.Exit(0)
+                else:
+                    typer.echo(f"Failed to start tmux session '{session_name}'. It might already exist.", err=True)
+                    raise typer.Exit(1)
+
             # 2. Compile to agent profile
             compiled_tp = TPNormalizer.compile(tp, agent)
             
