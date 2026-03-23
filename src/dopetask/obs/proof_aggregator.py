@@ -54,13 +54,15 @@ class ProofAggregator:
         
         # Add manifest to zip itself as per standard
         manifest_path = self.output_dir / "PROOF_ARCHIVE_MANIFEST.json"
-        with open(manifest_path, "w") as f:
-            json.dump(manifest_data, f, indent=2)
-        
-        with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(manifest_path, "PROOF_ARCHIVE_MANIFEST.json")
+        try:
+            with open(manifest_path, "w") as f:
+                json.dump(manifest_data, f, indent=2)
             
-        manifest_path.unlink() # Cleanup temporary manifest file
+            with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipf:
+                zipf.write(manifest_path, "PROOF_ARCHIVE_MANIFEST.json")
+        finally:
+            if manifest_path.exists():
+                manifest_path.unlink()
 
         return {
             "present": True,

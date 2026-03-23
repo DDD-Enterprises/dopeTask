@@ -27,28 +27,31 @@ class TaskPacket:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "TaskPacket":
         """Deserialize a TaskPacket from a generic dictionary."""
-        steps_data = data.get("steps", [])
-        steps = []
-        for step_data in steps_data:
-            steps.append(
-                TPStep(
-                    id=step_data.get("id", "UNKNOWN"),
-                    task=step_data.get("task", ""),
-                    requirements=step_data.get("requirements", []),
-                    commands=step_data.get("commands", []),
-                    expected_files=step_data.get("expected_files", []),
-                    validation=step_data.get("validation", []),
-                    context_files=step_data.get("context_files", [])
+        try:
+            steps_data = data.get("steps", [])
+            steps = []
+            for step_data in steps_data:
+                steps.append(
+                    TPStep(
+                        id=step_data["id"],
+                        task=step_data.get("task", ""),
+                        requirements=step_data.get("requirements", []),
+                        commands=step_data.get("commands", []),
+                        expected_files=step_data.get("expected_files", []),
+                        validation=step_data.get("validation", []),
+                        context_files=step_data.get("context_files", [])
+                    )
                 )
-            )
 
-        return cls(
-            id=data.get("id", "UNKNOWN"),
-            target=data.get("target", "Target"),
-            project=data.get("project", "dopetask"),
-            steps=steps,
-            invariants=data.get("invariants", [])
-        )
+            return cls(
+                id=data["id"],
+                target=data.get("target", "Target"),
+                project=data.get("project", "dopetask"),
+                steps=steps,
+                invariants=data.get("invariants", [])
+            )
+        except KeyError as e:
+            raise ValueError(f"TaskPacket is missing required field: {e}")
 
     def to_dict(self) -> Dict[str, Any]:
         """Serialize a TaskPacket into a generic dictionary."""

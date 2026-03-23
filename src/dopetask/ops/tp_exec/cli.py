@@ -49,7 +49,7 @@ def register(tp_app: typer.Typer) -> None:
                 manager = TmuxManager()
                 session_name = f"tp-{tp.id.lower()}"
                 # Construct command to run itself without --tmux
-                cmd = f"PYTHONPATH=src python -m dopetask tp exec {tp_file} --agent {agent}"
+                cmd = f"dopetask tp exec {tp_file} --agent {agent}"
                 if manager.start_session(session_name, Path.cwd(), cmd):
                     typer.echo(f"Spawned execution in tmux session: {session_name}")
                     typer.echo(f"Run 'dopetask tmux attach {tp.id}' to monitor.")
