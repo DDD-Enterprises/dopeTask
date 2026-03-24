@@ -1,213 +1,42 @@
 # AGENTS.md — Evergreen Agent Entry Point (Dopemux-Compatible)
 
-Evergreen: DO NOT edit per task. Task packets change; this file stays stable.
+Evergreen: DO NOT edit per task. This file defines the core delegation architecture.
 
-<!-- TASKX_TP_GIT_WORKFLOW_START -->
-## Mandatory Git Workflow for All Task Packets (dopeTask)
+## 0) PRIME DIRECTIVE: AGENTS ARE SUPERVISORS
+Implementation of code is handled by the `dopeTask` execution kernel.
+AI Agents (CLI or Web) are **SUPERVISORS**.
 
-- Never work directly on `main`. `main` must remain clean.
-- Stashes are forbidden. If `git stash list` is non-empty, STOP and clean it.
-- Every TP must use a dedicated worktree + branch created by dopeTask:
-  - `dopetask tp git doctor`
-  - `dopetask tp git start <TP_ID> <slug>`
-- Work must be performed inside `.worktrees/<TP_ID>`.
-- Commits must follow the TP’s commit plan.
-- Integration must happen via PR:
-  - `dopetask tp git pr <TP_ID> --title "TP-XXXX: ..." --body-file ...`
-  - `dopetask tp git merge <TP_ID>` (auto-merge when available; fail-closed otherwise)
-- After merge (confirmed), sync and cleanup:
-  - `dopetask tp git sync-main`
-  - `dopetask tp git cleanup <TP_ID>`
+**Rules:**
+- **NO DIRECT CODING:** Do not write file contents or replace strings directly.
+- **NO DIRECT GIT:** Do not branch, commit, or merge manually.
+- **TASK PACKETS ARE LAW:** All work must be defined in a `TaskPacket` JSON/YAML.
 
-### One-command mode (preferred)
-Use:
-- `dopetask tp run <TP_ID> <slug> [--test-cmd "..."] [--wait-merge]`
+---
 
-This command must emit a proof pack under `runs/tp/...` and must not claim merge/cleanup success unless verified.
-<!-- TASKX_TP_GIT_WORKFLOW_END -->
+## 1) MANDATORY WORKFLOW: THE SUPERVISOR LOOP
 
-## 0) Prime rule
-TASK PACKETS ARE LAW.
-- Implement exactly what the active task packet requests.
-- If a coding request arrives without a task packet: STOP and ask for it.
+1.  **GATHER CONTEXT:** Use read tools to understand the request and the codebase state.
+2.  **AUTHOR PLAN:** Create a `TaskPacket` JSON adhering to `docs/schemas/task_packet.schema.json`.
+3.  **DELEGATE EXECUTION:** 
+    - **CLI Agents:** Run `dopetask tp exec path/to/packet.json --agent gemini`.
+    - **Web Agents:** Instruct the user to run the above command and return the result.
+4.  **AUDIT PROOF:** Read `proof/<TP_ID>_PROOF_BUNDLE.json`.
+    - If `status == "VALIDATED"`, the task is complete.
+    - If `status == "FAILED"`, analyze errors and generate a **NEW** Task Packet.
 
-## 1) Dopemux operating mode
-Use:
-- PLAN mode for architecture/design/planning.
-- ACT mode for implementation/refactors/tests/fixes.
-Adapt verbosity to attention state: scattered / focused / hyperfocus. (See CLAUDE.md.)
+---
 
-## 2) Dopemux MCP workflow matrix (binding behavior)
-Use the right tool for the phase:
-- RESEARCH: pal apilookup FIRST for authoritative library/API docs (Context7 is retired).
-- DESIGN: pal planner / pal consensus as needed; log decisions to ConPort.
-- PLANNING: task-orchestrator FIRST for breakdown.
-- IMPLEMENTATION: serena-v2 + dope-context FIRST for codebase context; apilookup for API certainty.
-- REVIEW: pal codereviewer before commit; pal secaudit for security-sensitive changes.
-- COMMIT: pre-commit run --all-files before committing; update ConPort progress.
+## 2) DOPE-TASK KERNEL COMMANDS
+- `dopetask tp exec <file>`: Primary implementation engine.
+- `dopetask tmux ls|attach|kill`: Manage isolated agent sessions.
+- `dopetask neon set <theme>`: Cosmetic terminal overrides.
 
-(These defaults match the Dopemux workflow matrix and implicit rules.) 
+---
 
-## 3) ConPort logging is mandatory
-- Any meaningful decision → ConPort log_decision (what/why/tradeoffs).
-- Any progress update → ConPort log_progress / update_progress (status + next).
+## 3) OPERATING MODES
+- **PLAN:** Architecture, decomposition, and Task Packet authoring.
+- **ACT:** Delegating execution to the kernel and auditing proof bundles.
 
-## 4) Coding conventions (repo-generic defaults)
-Follow existing repo style first. If ambiguous:
-- Python: type hints for new/changed public functions.
-- Prefer small, testable functions; minimize side-effects.
-- Errors: never swallow exceptions; fail with actionable messages.
-- Logging: do not leak sensitive content.
-- I/O: prefer atomic writes (temp → rename).
-- Security: never commit secrets; redact before external calls.
-
-## 5) Standard response format (mandatory, every response)
-A) MODE: PLAN or ACT + attention state guess (scattered/focused/hyperfocus)
-B) PLAN: 3–7 bullets
-C) CHANGES: files touched (or “no changes”)
-D) COMMANDS RUN + RESULTS (or “not run” + why)
-E) CONPORT: what was logged / what must be logged
-F) NEXT: one clear next action OR “CHECKPOINT STOP”
-
-## 6) Hard stop conditions
-Stop and ask if:
-- Task packet is missing, ambiguous, or lacks an allowlist for edits.
-- You’d need to invent requirements, data, or “best guesses.”
-- Verification gates can’t be run or would be bypassed.
-- Instructions conflict (task packet vs repo constraints): STOP and surface the conflict.
-
-<!-- DOPETASK:AUTOGEN:START -->
-## dopeTask Command Surface (Autogenerated)
-
-### Command Tree
-- dopetask bundle
-  - dopetask bundle export
-  - dopetask bundle ingest
-- dopetask case
-  - dopetask case audit
-- dopetask ci-gate
-- dopetask collect-evidence
-- dopetask commit-run
-- dopetask commit-sequence
-- dopetask compile-tasks
-- dopetask docs
-  - dopetask docs refresh-llm
-- dopetask doctor
-- dopetask dopemux
-  - dopetask dopemux collect
-  - dopetask dopemux compile
-  - dopetask dopemux feedback
-  - dopetask dopemux gate
-  - dopetask dopemux loop
-  - dopetask dopemux promote
-  - dopetask dopemux run
-- dopetask finish
-- dopetask gate-allowlist
-- dopetask loop
-- dopetask manifest
-  - dopetask manifest check
-  - dopetask manifest finalize
-  - dopetask manifest init
-- dopetask orchestrate
-- dopetask pr
-  - dopetask pr open
-- dopetask project
-  - dopetask project disable
-  - dopetask project doctor
-  - dopetask project enable
-  - dopetask project init
-  - dopetask project mode
-    - dopetask project mode set
-  - dopetask project shell
-    - dopetask project shell init
-    - dopetask project shell status
-  - dopetask project status
-  - dopetask project upgrade
-- dopetask promote-run
-- dopetask route
-  - dopetask route explain
-  - dopetask route handoff
-  - dopetask route init
-  - dopetask route plan
-- dopetask run-task
-- dopetask spec-feedback
-- dopetask wt
-  - dopetask wt start
-
-### Assisted Routing (dopetask route)
-- Config: `.dopetask/runtime/availability.yaml`
-- Artifacts:
-  - `out/dopetask_route/ROUTE_PLAN.json`
-  - `out/dopetask_route/ROUTE_PLAN.md`
-  - `out/dopetask_route/HANDOFF.md`
-- Execution: assisted-only (prints handoffs; does not invoke external runners)
-
-### Availability Summary (deterministic)
-- Available runners: claude_code, codex_desktop, copilot_cli
-- Available models: gpt-5.1-mini, gpt-5.2, gpt-5.3-codex, haiku-4.5, sonnet-4.55
-- Policy:
-  - max_cost_tier: high
-  - min_total_score: 50
-  - stop_on_ambiguity: True
-  - escalation_ladder: [gpt-5.1-mini, haiku-4.5, sonnet-4.55, gpt-5.3-codex]
-
-### Minimal schema (snippet, stable)
-```yaml
-models:
-  gpt-5.1-mini:
-    strengths: [cheap]
-    cost_tier: cheap
-    context: medium
-runners:
-  claude_code:
-    available: true
-    strengths: [code_edit]
-policy:
-  max_cost_tier: high
-  min_total_score: 50
-  stop_on_ambiguity: True
-  escalation_ladder: [gpt-5.1-mini, haiku-4.5, sonnet-4.55, gpt-5.3-codex]
-```
-
-Generated by: dopetask docs refresh-llm
-<!-- DOPETASK:AUTOGEN:END -->
-
-<!-- TASKX:BEGIN -->
-<!-- directive-pack:dopetask@v1 -->
-## dopeTask Directives (Base)
-
-1. Task packets are law.
-2. Perform only actions explicitly authorized by the active task packet.
-3. Scope is strict: no drive-by refactors, no opportunistic cleanup, no hidden extra work.
-4. Treat allowlists, file scopes, and verification gates as hard requirements.
-5. Use evidence-first reasoning for every claim.
-6. Never fabricate command runs, outputs, file states, tests, or approvals.
-7. If evidence is missing, mark the claim `UNKNOWN` and define a deterministic check.
-8. Verification is mandatory for completion.
-9. Record verification with the exact commands run and raw outputs.
-10. Do not summarize away failing output; include failure details and exit codes.
-11. Deterministic operation is required:
-12. Do not claim a command was run unless its output is present in logs.
-13. Do not claim a file changed unless the diff reflects it.
-14. Use minimal diffs and localized edits.
-15. Keep behavior stable unless the packet explicitly authorizes a behavior change.
-16. Keep assumptions explicit and testable.
-17. Do not invent requirements, contracts, schemas, or policy text.
-18. Respect stop conditions exactly as written in the packet.
-19. Escalate immediately when blocked by missing artifacts, permissions, or contradictory instructions.
-20. Escalation must include:
-21. What is blocked.
-22. Why it is blocked.
-23. The smallest packet change needed to proceed.
-24. Completion requires an Implementer Report with:
-25. Summary of changes.
-26. Files changed and added.
-27. Verification commands and raw outputs.
-28. Deviations from packet instructions (if any).
-29. Explicit stop-condition confirmation.
-30. If any required gate was not run, report incomplete and stop.
-<!-- TASKX:END -->
-
-<!-- CHATX:BEGIN -->
-(disabled)
-<!-- CHATX:END -->
+**References:**
+- Supervisor Prompt: `docs/llm/SUPERVISOR_SYSTEM_PROMPT.md`
+- TP Schema: `docs/schemas/task_packet.schema.json`

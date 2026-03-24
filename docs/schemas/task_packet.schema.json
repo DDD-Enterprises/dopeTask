@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "dopeTask TaskPacket",
+  "description": "A declarative plan for the dopeTask execution kernel. It defines a sequence of atomic steps to accomplish a development task without agent drift.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "A unique identifier for this task packet (e.g., 'TP-CRM-001-setup').",
+      "type": "string"
+    },
+    "project": {
+      "description": "The name of the project this task belongs to.",
+      "type": "string",
+      "default": "dopetask"
+    },
+    "target": {
+      "description": "A high-level description of the ultimate goal of this Task Packet.",
+      "type": "string"
+    },
+    "invariants": {
+      "description": "A list of conditions that must remain true after every step (e.g., 'No existing tests fail').",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "steps": {
+      "description": "The ordered sequence of implementation steps.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "A unique ID for this step within the packet (e.g., 'step_1').",
+            "type": "string"
+          },
+          "task": {
+            "description": "A detailed description of the implementation work for this specific step.",
+            "type": "string"
+          },
+          "requirements": {
+            "description": "Specific constraints or rules for this step's implementation.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "commands": {
+            "description": "A list of shell commands to execute during this step.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "expected_files": {
+            "description": "A list of files that are expected to be created or modified by this step.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "validation": {
+            "description": "CRITICAL: A list of shell commands used to verify the success of this step. MUST NOT BE EMPTY for Gemini agents.",
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "context_files": {
+            "description": "A list of existing file paths that the implementer needs as context for this step.",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["id", "task", "validation"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["id", "target", "steps"],
+  "additionalProperties": false
+}
