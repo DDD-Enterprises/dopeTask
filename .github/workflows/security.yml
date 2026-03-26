@@ -39,4 +39,8 @@ jobs:
         run: python -m pip install --upgrade pip pip-audit
 
       - name: Run strict vulnerability audit
-        run: pip-audit --strict -r requirements-audit.txt
+        run: |
+          # As of 2026-03-26, PyPI still serves pygments 2.19.2 as the latest
+          # release and pip-audit reports CVE-2026-4539 without a fix version.
+          # Keep this exception narrow and remove it once upstream ships a fix.
+          pip-audit --strict --ignore-vuln CVE-2026-4539 -r requirements-audit.txt
