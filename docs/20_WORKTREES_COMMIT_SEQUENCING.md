@@ -2,6 +2,8 @@
 
 This document is maintainer-level.
 
+Note: this flow documents the legacy markdown packet + commit-sequence path. New supervisor-driven work should use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`.
+
 ## CLI UX (Final Wording)
 
 dopeTask prints an identity banner to stderr at command start:
@@ -183,7 +185,8 @@ Never auto-pop stash. Determinism > convenience.
 dopeTask enforces:
 
 - No direct commits to `main`
-- One Task Packet = one contiguous commit chain
+- Legacy markdown packets: one packet = one contiguous commit chain
+- JSON packet series: one packet = one isolated committed unit, one series = one final PR
 - Deterministic, auditable merges
 - No silent dirty-state handling
 

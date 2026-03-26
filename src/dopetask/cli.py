@@ -161,6 +161,10 @@ try:
 except ImportError:
     register_tp_exec = None  # type: ignore
 try:
+    from dopetask.ops.tp_series.cli import app as tp_series_app
+except ImportError:
+    tp_series_app = None  # type: ignore
+try:
     from dopetask.ops.tp_tmux.cli import register as register_tmux
 except ImportError:
     register_tmux = None  # type: ignore
@@ -198,6 +202,8 @@ tp_app = typer.Typer(name="tp", help="Task Packet workflow commands", no_args_is
 cli.add_typer(tp_app, name="tp")
 if tp_git_app:
     tp_app.add_typer(tp_git_app, name="git")
+if tp_series_app:
+    tp_app.add_typer(tp_series_app, name="series")
 if register_tp_run is not None:
     register_tp_run(tp_app)
 if register_tp_exec is not None:

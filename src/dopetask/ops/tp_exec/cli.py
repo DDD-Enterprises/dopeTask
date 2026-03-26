@@ -8,9 +8,8 @@ from pathlib import Path
 import typer
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
-from dopetask.obs.proof_aggregator import ProofAggregator
+from dopetask.ops.tp_exec.engine import execute_task_packet
 from dopetask.ops.tp_tmux.tmux_manager import TmuxManager
-from dopetask_adapters.gemini.executor import GeminiExecutor
 
 
 def register(tp_app: typer.Typer) -> None:
@@ -43,14 +42,14 @@ def register(tp_app: typer.Typer) -> None:
     ) -> None:
         """Execute a Task Packet using a specific agent profile."""
         try:
-            # 1. Parse generic TP
-            tp = TPParser.parse_file(tp_file)
+            resolved_tp_file = tp_file.resolve()
+            tp = TPParser.parse_file(resolved_tp_file)
 
             if use_tmux:
                 manager = TmuxManager()
                 session_name = f"tp-{tp.id.lower()}"
                 # Construct command to run itself without --tmux
-                cmd = f"dopetask tp exec {tp_file} --agent {agent}"
+                cmd = f"dopetask tp exec {resolved_tp_file} --agent {agent}"
                 if manager.start_session(session_name, Path.cwd(), cmd):
                     typer.echo(f"Spawned execution in tmux session: {session_name}")
                     typer.echo(f"Run 'dopetask tmux attach {tp.id}' to monitor.")
@@ -59,39 +58,12 @@ def register(tp_app: typer.Typer) -> None:
                     typer.echo(f"Failed to start tmux session '{session_name}'. It might already exist.", err=True)
                     raise typer.Exit(1)
 
-            # 2. Compile to agent profile
-            compiled_tp = TPNormalizer.compile(tp, agent)
-
             if dry_run:
                 typer.echo(f"--- Compiled Profile: {agent} ---")
-                typer.echo(json.dumps(compiled_tp, indent=2))
+                typer.echo(json.dumps(TPNormalizer.compile(tp, agent), indent=2))
                 raise typer.Exit(0)
 
-            # 3. Instantiate and run Executor
-            if agent == "gemini":
-                executor = GeminiExecutor()
-            else:
-                typer.echo(f"Agent profile '{agent}' not yet fully implemented in executor.", err=True)
-                raise typer.Exit(1)
-
-            typer.echo(f"Executing TP: {tp.id} (agent={agent})...")
-            raw_proof_path = Path(executor.run_tp(compiled_tp))
-
-            # 4. Aggregate Proofs
-            typer.echo(f"Aggregating proofs for {tp.id}...")
-            aggregator = ProofAggregator(tp.id)
-
-            with open(raw_proof_path) as f:
-                execution_result = json.load(f)
-
-            # Identify artifacts to include in archive
-            artifact_files = [raw_proof_path, tp_file]
-            for step in execution_result.get("steps", []):
-                for f in step.get("files_created", []):
-                    artifact_files.append(Path(f))
-
-            bundle_path = aggregator.aggregate(execution_result, artifact_files)
-
+            bundle_path = execute_task_packet(resolved_tp_file, agent=agent)
             typer.echo(f"Success! Canonical Proof Bundle written to: {bundle_path}")
             typer.echo("Audit archive created in same directory.")
 

@@ -1,6 +1,8 @@
-# TP Git Workflow
+# TP Git Workflow (Legacy Manual Path)
 
-dopeTask now provides a fail-closed Task Packet git surface under `dopetask tp git`.
+This document describes the legacy/manual `dopetask tp git` path.
+
+For new supervisor-driven work, use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`. Keep `tp git` for low-level manual intervention or older maintainer workflows only.
 
 ## Required flow
 

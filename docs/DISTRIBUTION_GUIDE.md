@@ -20,25 +20,28 @@ This guide outlines the steps to distribute DopeTask (package name: `dopetask`) 
 
 To publish a new version of dopeTask to PyPI:
 
-1.  **Update Version**:
-    *   Update the `version` field in `pyproject.toml` (e.g., `0.1.0` -> `0.1.1`).
-    *   Update `src/dopetask/__init__.py` version string if it exists and is manually managed (dopeTask uses `importlib.metadata` or similar usually, but check consistency).
-    *   Commit these changes: `git commit -am "chore: bump version to 0.1.1"`
+1.  **Prepare the release PR**:
+    *   Update the `version` field in `pyproject.toml`.
+    *   Update `src/dopetask/__init__.py`.
+    *   Move the `CHANGELOG.md` notes from `Unreleased` into a versioned entry.
+    *   Open a PR against `main` and merge it.
 
 2.  **Tag the Release**:
+    *   Check out the merged `main` branch.
     *   Create a git tag matching the version (must start with `v`):
         ```bash
-        git tag v0.1.1
+        git tag vX.Y.Z
         ```
     *   Push the tag to GitHub:
         ```bash
-        git push origin v0.1.1
+        git push origin vX.Y.Z
         ```
 
 3.  **Monitor the Workflow**:
     *   Go to the "Actions" tab in your GitHub repository.
     *   Select the "Release" workflow.
     *   Watch the job for the tag you just pushed. It will:
+        *   Extract the matching release notes from `CHANGELOG.md`.
         *   Verify version consistency.
         *   Run tests and linting.
         *   Build the package (`sdist` and `wheel`).

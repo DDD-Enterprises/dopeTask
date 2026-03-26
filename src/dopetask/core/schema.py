@@ -1,7 +1,7 @@
 """Task Packet (TP) schema definitions."""
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -17,6 +17,25 @@ class TPStep:
 
 
 @dataclass
+class TPSeries:
+    """Series metadata for DAG-aware TP execution."""
+
+    id: str
+    base_branch: str
+    parent_tp_id: Optional[str]
+    final_packet: bool = False
+
+
+@dataclass
+class TPCommit:
+    """Commit metadata for series execution."""
+
+    message: str
+    allowlist: list[str] = field(default_factory=list)
+    verify: list[str] = field(default_factory=list)
+
+
+@dataclass
 class TaskPacket:
     """The generic Task Packet representation."""
     id: str
@@ -24,6 +43,9 @@ class TaskPacket:
     project: str = "dopetask"
     steps: list[TPStep] = field(default_factory=list)
     invariants: list[str] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
+    series: Optional[TPSeries] = None
+    commit: Optional[TPCommit] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "TaskPacket":
@@ -44,23 +66,46 @@ class TaskPacket:
                     )
                 )
 
+            raw_series = data.get("series")
+            series = None
+            if raw_series is not None:
+                series = TPSeries(
+                    id=raw_series["id"],
+                    base_branch=raw_series["base_branch"],
+                    parent_tp_id=raw_series.get("parent_tp_id"),
+                    final_packet=bool(raw_series.get("final_packet", False)),
+                )
+
+            raw_commit = data.get("commit")
+            commit = None
+            if raw_commit is not None:
+                commit = TPCommit(
+                    message=raw_commit["message"],
+                    allowlist=raw_commit.get("allowlist", []),
+                    verify=raw_commit.get("verify", []),
+                )
+
             return cls(
                 id=data["id"],
                 target=data.get("target", "Target"),
                 project=data.get("project", "dopetask"),
                 steps=steps,
-                invariants=data.get("invariants", [])
+                invariants=data.get("invariants", []),
+                depends_on=data.get("depends_on", []),
+                series=series,
+                commit=commit,
             )
         except KeyError as e:
             raise ValueError(f"TaskPacket is missing required field: {e}") from e
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize a TaskPacket into a generic dictionary."""
-        return {
+        payload: dict[str, Any] = {
             "id": self.id,
             "target": self.target,
             "project": self.project,
             "invariants": self.invariants,
+            "depends_on": self.depends_on,
             "steps": [
                 {
                     "id": step.id,
@@ -74,3 +119,17 @@ class TaskPacket:
                 for step in self.steps
             ]
         }
+        if self.series is not None:
+            payload["series"] = {
+                "id": self.series.id,
+                "base_branch": self.series.base_branch,
+                "parent_tp_id": self.series.parent_tp_id,
+                "final_packet": self.series.final_packet,
+            }
+        if self.commit is not None:
+            payload["commit"] = {
+                "message": self.commit.message,
+                "allowlist": self.commit.allowlist,
+                "verify": self.commit.verify,
+            }
+        return payload

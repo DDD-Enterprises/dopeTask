@@ -18,6 +18,23 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
+## [0.5.0] - 2026-03-26
+
+### Added
+
+- Added DAG-aware JSON TP series execution with `depends_on`, `series`, and `commit` metadata plus `dopetask tp series exec`, `status`, and `finalize`.
+- Added an authoritative per-series ledger and dependency context artifacts for multi-packet supervisor workflows.
+
+### Changed
+
+- Made JSON TaskPackets the default documented format for new supervisor-driven work and demoted legacy markdown / `tp git` flows to manual-maintainer paths.
+- Updated supervisor/operator prompts, beginner docs, release docs, and release automation to match the TP-series workflow and changelog-driven release notes.
+- Bumped dopeTask to version `0.5.0`.
+
+### Fixed
+
+- Corrected release helper script references to the current local build and clean-venv verification scripts.
+
 ## [0.2.0] - 2026-03-03
 
 ### Added

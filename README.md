@@ -99,12 +99,14 @@ graph LR
 dopeTask uses isolated git worktrees and commit plans to ensure:
 
 - linear `main` history
-- one packet = one commit stack
+- one JSON TP = one isolated committed unit
+- one TP series = one cumulative PR branch
 - deterministic rebases and fast-forward merges
 - zero accidental commits on `main`
 
-See `docs/WORKTREES_COMMIT_SEQUENCING.md` for details.
-If a packet includes a `COMMIT PLAN`, execute it with `dopetask commit-sequence`; manual commits can break determinism guarantees. See `docs/TASK_PACKET_FORMAT.md`.
+For new supervisor-driven work, use `dopetask tp series exec <packet.json>` for each ready packet in the series and `dopetask tp series finalize <series-id>` once the final packet is complete.
+
+See [docs/13_TASK_PACKET_FORMAT.md](/Users/hue/code/dopeTask/docs/13_TASK_PACKET_FORMAT.md) for the JSON packet contract and [docs/20_WORKTREES_COMMIT_SEQUENCING.md](/Users/hue/code/dopeTask/docs/20_WORKTREES_COMMIT_SEQUENCING.md) for the legacy markdown packet + commit-sequence path.
 
 ---
 
@@ -179,7 +181,7 @@ Expected outputs:
 - Router: `docs/12_ROUTER.md`
 - Task packet format: `docs/13_TASK_PACKET_FORMAT.md`
 - Project doctor: `docs/14_PROJECT_DOCTOR.md`
-- Worktrees and commit sequencing (maintainers): `docs/20_WORKTREES_COMMIT_SEQUENCING.md`
+- Worktrees and commit sequencing (legacy maintainers): `docs/20_WORKTREES_COMMIT_SEQUENCING.md`
 - Case bundles (maintainers): `docs/21_CASE_BUNDLES.md`
 - Release (maintainers): `docs/90_RELEASE.md`
 

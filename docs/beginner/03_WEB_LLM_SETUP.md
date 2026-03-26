@@ -35,6 +35,7 @@ By pasting that prompt, you have given the AI strict boundaries:
 *   **"Do not write code directly."**
 *   **"Only output a blueprint (Task Packet) formatted as JSON."**
 *   **"Every step in your blueprint must include automated validation."**
+*   **"New work must use `depends_on`, `series`, and `commit` metadata so dopeTask can run each TP in its own worktree and finish the series as one PR."**
 
 ## 4. Cursor and CLI Agents
 

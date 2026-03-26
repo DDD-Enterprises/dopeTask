@@ -66,7 +66,7 @@ echo ""
 
 # Step 4: Build distribution
 log_step "4/5 Building distribution packages..."
-if ! bash scripts/dopetask_build.sh; then
+if ! bash scripts/taskx_build.sh; then
     log_error "Build failed. Check build output above."
     exit 1
 fi
@@ -75,7 +75,7 @@ echo ""
 
 # Step 5: Verify clean venv installation
 log_step "5/5 Verifying wheel installation in clean environment..."
-if ! bash scripts/dopetask_verify_clean_venv.sh; then
+if ! bash scripts/taskx_verify_clean_venv.sh; then
     log_error "Clean venv verification failed. Build may be broken."
     exit 1
 fi
@@ -91,16 +91,18 @@ echo ""
 # Print next steps
 echo -e "${BLUE}NEXT STEPS (operator-controlled):${NC}"
 echo ""
-echo "1. Tag the release:"
+echo "1. Open or merge the release PR on main."
+echo ""
+echo "2. Tag the merged main branch:"
 echo -e "   ${YELLOW}git tag v${CURRENT_VERSION}${NC}"
 echo ""
-echo "2. Push the tag to trigger GitHub release workflow:"
+echo "3. Push the tag to trigger GitHub release workflow:"
 echo -e "   ${YELLOW}git push origin v${CURRENT_VERSION}${NC}"
 echo ""
-echo "3. Monitor the release workflow:"
+echo "4. Monitor the release workflow:"
 echo "   https://github.com/OWNER/REPO/actions"
 echo ""
-echo "4. Once published, verify the release:"
+echo "5. Once published, verify the release:"
 echo "   https://github.com/OWNER/REPO/releases/tag/v${CURRENT_VERSION}"
 echo ""
 echo -e "${YELLOW}NOTE:${NC} Replace OWNER/REPO with your actual repository path."

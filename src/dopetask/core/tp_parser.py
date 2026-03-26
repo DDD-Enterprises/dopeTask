@@ -8,6 +8,7 @@ from dopetask.core.compilers.codex import CodexCompiler
 from dopetask.core.compilers.gemini import GeminiCompiler
 from dopetask.core.compilers.vibe import VibeCompiler
 from dopetask.core.schema import TaskPacket
+from dopetask.schemas.validator import validate_data
 
 
 class TPParser:
@@ -29,8 +30,7 @@ class TPParser:
         Raises:
             ValueError: If the required fields are missing.
         """
-        if "id" not in data:
-            raise ValueError("TaskPacket must have an 'id'.")
+        validate_data(data, "task_packet")
 
         return TaskPacket.from_dict(data)
 

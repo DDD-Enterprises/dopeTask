@@ -6,7 +6,7 @@ Building with dopeTask is a repeating 4-step loop. Once you get the hang of it, 
 
 ---
 
-## The Loop: Plan ➡️ Execute ➡️ Verify ➡️ Merge
+## The Loop: Plan ➡️ Execute ➡️ Verify ➡️ Finalize
 
 ### 1. Plan (The Blueprint)
 
@@ -23,15 +23,21 @@ Now you hand the blueprint over to dopeTask.
 
 Open your terminal and type:
 ```bash
-dopetask tp exec dark_mode.json --agent gemini
+dopetask tp series exec dark_mode.json --agent gemini
 ```
 
 **What happens next?**
-1.  dopeTask creates a "Safe Room" (a worktree).
+1.  dopeTask creates a fresh "Safe Room" (a worktree) for this one Task Packet.
 2.  It spins up a specialized AI agent (the `gemini` agent) to act as the "Implementer."
 3.  The Implementer reads the first step of your blueprint and writes the code.
 4.  dopeTask runs the tests you specified in the blueprint.
-5.  If it passes, it moves to the next step. If it fails, the Implementer tries to fix it. If it can't fix it, dopeTask stops completely to keep your app safe.
+5.  If it passes, dopeTask commits that packet's allowlisted changes onto the packet branch and records the result in the series ledger. If it fails, dopeTask stops completely to keep your app safe.
+
+If your feature needs multiple packets, your Supervisor will give each packet the same `series.id` and explicit `depends_on` rules. Run each ready packet with `dopetask tp series exec ...`. You can inspect the ledger any time with:
+
+```bash
+dopetask tp series status <series-id>
+```
 
 ### 3. Verify (The Receipt)
 
@@ -48,21 +54,19 @@ Don't panic! This means dopeTask protected your app from bad code.
 2. Paste it back to your Supervisor AI.
 3. The AI will realize its blueprint was flawed, write a *new, corrected* `dark_mode.json`, and you run step 2 again.
 
-### 4. Merge (Making it Official)
+### 4. Finalize (Making it Official)
 
 If the Proof Bundle says "VALIDATED," you know the code is safe.
 
-Now you just need to tell Git to add the Safe Room's code to your official `main branch`.
+When the final packet in the series has completed, open the single PR for the whole series:
 
 In your terminal, run:
 ```bash
-dopetask tp git pr <TP_ID>
-dopetask tp git merge <TP_ID>
-dopetask tp git cleanup <TP_ID>
+dopetask tp series finalize <SERIES_ID> --title "feat: add dark mode toggle"
 ```
-*(Replace `<TP_ID>` with the ID found in your JSON file).*
+*(Replace `<SERIES_ID>` with the `series.id` found in your JSON file).*
 
-This creates a Pull Request (proposal), merges it into your main app, and cleans up the temporary Safe Room.
+This pushes the final packet branch and opens one Pull Request against your base branch. Earlier packet commits are already part of that final branch through the declared packet ancestry.
 
 ---
 
