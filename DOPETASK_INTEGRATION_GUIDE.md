@@ -1,59 +1,112 @@
-# dopeTask 0.3.0 Integration Guide
+# dopeTask 0.5.0 Integration Guide
 
-The 0.3.0 release introduces a completely revamped deterministic execution architecture, featuring explicit LLM compiler pipelines and strict fail-closed state validation. This guide provides the necessary steps to integrate this new execution kernel into `Dopemux` or other downstream consumer projects.
+The `0.5.0` release makes the JSON Task Packet series workflow the default integration path for new work. Downstream systems should treat `dopetask tp series` as the authoritative execution surface and use proof bundles plus the series ledger for audit and release gating.
 
 ## 1. Dependency Update
 
-Ensure your project is pulling the latest `0.3.0` version of `dopetask`.
+Ensure your project is pulling the current `0.5.0` version of `dopetask`.
 
-### For standard `pip` environments:
+### For standard `pip` environments
+
 ```bash
-pip install dopetask==0.3.0
+pip install dopetask==0.5.0
 ```
 
-### For `uv` environments:
+### For `uv` environments
+
 ```bash
-uv add dopetask==0.3.0
+uv add dopetask==0.5.0
 ```
 
-### For local/editable builds (Dopemux):
-If Dopemux mounts `dopeTask` locally, ensure the submodule or linked directory is checked out to the `v0.3.0` tag.
+### For local or editable builds
+
+If a downstream project mounts `dopeTask` locally, ensure that checkout is on the `v0.5.0` tag before installing:
+
 ```bash
 cd path/to/dopeTask
 git fetch --tags
-git checkout v0.3.0
+git checkout v0.5.0
 pip install -e .
 ```
 
-## 2. Using the New Execution CLI
+## 2. Using the Series Execution CLI
 
-Downstream pipelines should no longer rely on manually parsing Task Packets and calling LLMs independently. You must now delegate task execution to the deterministic runner:
+Downstream pipelines should no longer treat `dopetask tp exec` as the default new-work path. Supervisors should author JSON Task Packets with explicit `depends_on`, `series`, and `commit` metadata, then execute each ready packet with:
 
 ```bash
-dopetask tp exec path/to/packet.json --agent gemini
+dopetask tp series exec path/to/packet.json --agent gemini
 ```
 
-### Key Flags:
-- `--agent [gemini|codex|vibe]`: Targets the specific compiler profile. Note that `gemini` is currently the only fully supported strict executor.
-- `--tmux`: Runs the agent loop inside a detached `tmux` session, freeing up the pipeline orchestrator and allowing human operators to attach safely if needed.
-- `--dry-run`: Use this in CI or planning gates to emit the compiled prompt structure without executing any state mutations.
+The runner will:
 
-## 3. Handling Output (Observability)
+1. Validate the packet schema before any git mutation.
+2. Resolve the packet's branch ancestry from `series.base_branch` or `series.parent_tp_id`.
+3. Create an isolated worktree for that packet.
+4. Run the low-level implementation engine inside that worktree.
+5. Execute `commit.verify`, stage only `commit.allowlist`, and create one commit for that packet.
+6. Record the packet outcome in the series ledger.
 
-The `dopetask tp exec` command now automatically aggregates proofs via the `ProofAggregator` layer. 
+### Runtime rules to preserve
 
-Downstream systems (like Dopemux routers) must now look for the unified bundle rather than scraping raw traces:
-1. **The Bundle:** `proof/<TP-ID>_PROOF_BUNDLE.json`. This is the canonical review surface. Parse this for the `status` (VALIDATED or FAILED).
-2. **The Archive:** `proof/<TP-ID>_PROOF_ARCHIVE.zip`. Contains the full forensic footprint and manifest.
+- `depends_on` controls readiness.
+- `series.parent_tp_id` selects the single git parent branch.
+- Root packets use `series.parent_tp_id = null`.
+- Parallel execution is allowed only when all dependencies are already completed.
+- Multi-branch fan-in must happen in an explicit integration packet.
 
-If `status == "FAILED"`, the pipeline should halt and request operator intervention.
+## 3. Handling Output and Audit Surfaces
 
-## 4. Operator Intervention (Tmux UX)
+Each executed packet still emits a proof bundle:
 
-If you are using the `--tmux` execution flag in your orchestrator, operators can now interact with hanging or failed sessions natively using the new `dopetask tmux` group:
+1. **Bundle:** `proof/<TP-ID>_PROOF_BUNDLE.json`
+2. **Archive:** `proof/<TP-ID>_PROOF_ARCHIVE.zip`
 
-- **List active agents:** `dopetask tmux ls`
-- **Intervene:** `dopetask tmux attach <TP-ID>`
-- **Terminate:** `dopetask tmux kill <TP-ID>`
+For series-aware integrations, downstream systems should also inspect the authoritative ledger:
 
-*Note: Ensure `tmux` (>= 3.0) is installed on the host running the execution agents.*
+```bash
+dopetask tp series status <series-id>
+```
+
+This reads `out/tp_series/<series-id>/SERIES_STATE.json`, which is the canonical runtime state for packet completion, dependency closure, packet branches, and finalization status.
+
+If a packet proof bundle reports `FAILED`, or the series ledger shows unmet dependencies or an incomplete final packet, the pipeline should halt and request operator intervention.
+
+## 4. Finalizing the Series
+
+Once the declared final packet has completed and every non-final packet is in its transitive dependency closure, open the single PR for the series with:
+
+```bash
+dopetask tp series finalize <series-id> --title "feat: example change"
+```
+
+This pushes the final packet branch and opens one PR against `series.base_branch`. Earlier packet commits are already part of that branch through the declared packet ancestry.
+
+## 5. Optional Manual Session Handling
+
+`dopetask tmux` remains available for manual or legacy flows that invoke `dopetask tp exec --tmux`, but it is not part of the default JSON series workflow.
+
+- List active agents: `dopetask tmux ls`
+- Attach to a session: `dopetask tmux attach <TP-ID>`
+- Terminate a session: `dopetask tmux kill <TP-ID>`
+
+## 6. LLM Supervisor Onboarding
+
+Integrating the execution kernel still requires re-onboarding LLM agents to act as supervisors rather than direct implementers.
+
+### Mandatory agent instructions
+
+1. Stop direct coding in new-work flows.
+2. Author JSON Task Packets that conform to `docs/schemas/task_packet.schema.json`.
+3. Delegate each ready packet with `dopetask tp series exec <packet.json> --agent <agent>`.
+4. Audit proof bundles and the series ledger with `dopetask tp series status <series-id>`.
+5. Finalize the completed series with `dopetask tp series finalize <series-id> --title "<pr title>"`.
+
+### Instruction sources
+
+- For web UI agents: provide `docs/llm/SUPERVISOR_SYSTEM_PROMPT.md`.
+- For CLI or IDE agents: ensure the workspace includes the current `AGENTS.md` and agent-specific instruction files.
+
+### Contract reference
+
+Supervisors must adhere to the formal JSON schema located at:
+`docs/schemas/task_packet.schema.json`
