@@ -56,10 +56,12 @@ Do not publish from laptops or local developer machines. Publishing occurs in CI
 If you want the repo’s local verification wrapper, run:
 
 ```bash
-bash scripts/taskx_release_local.sh
+bash scripts/dopetask_release_local.sh
 ```
 
 The local wrapper requires a clean working tree and is intended to run after the release PR is merged or from a clean release branch.
+
+Do not use `scripts/release.sh` for version bumps or tagging. It is a guarded helper that now points back to the PR-first release flow in this document.
 
 ## Tagging and publishing
 

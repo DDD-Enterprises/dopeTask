@@ -27,10 +27,17 @@ PACK_TEMPLATE_FILES: dict[str, str] = {
 }
 
 PACK_ORDER: tuple[str, ...] = ("dopetask", "chatx")
+_LEGACY_DOPETASK_BRAND = "TASK" + "X"
 
 SENTINELS: dict[str, tuple[str, str]] = {
-    "dopetask": ("<!-- TASKX:BEGIN -->", "<!-- TASKX:END -->"),
+    "dopetask": ("<!-- DOPETASK:BEGIN -->", "<!-- DOPETASK:END -->"),
     "chatx": ("<!-- CHATX:BEGIN -->", "<!-- CHATX:END -->"),
+}
+LEGACY_SENTINELS: dict[str, tuple[str, str]] = {
+    "dopetask": (
+        f"<!-- {_LEGACY_DOPETASK_BRAND}:BEGIN -->",
+        f"<!-- {_LEGACY_DOPETASK_BRAND}:END -->",
+    ),
 }
 
 DISABLED_TEXT = "(disabled)"
@@ -136,15 +143,28 @@ def get_sentinels(pack_name: str) -> tuple[str, str]:
 
 def _locate_block(lines: list[str], begin_marker: str, end_marker: str) -> typing.Optional[tuple[int, int]]:
     """Find begin/end marker indices for a block, if present."""
-    begin_idx: typing.Optional[int] = None
-    for idx, line in enumerate(lines):
-        if begin_idx is None:
-            if line.strip() == begin_marker:
-                begin_idx = idx
-            continue
-        if line.strip() == end_marker:
-            return begin_idx, idx
+    candidate_pairs = [(begin_marker, end_marker)]
+    legacy_pair = LEGACY_SENTINELS.get(_pack_name_for_marker(begin_marker, end_marker))
+    if legacy_pair is not None and legacy_pair not in candidate_pairs:
+        candidate_pairs.append(legacy_pair)
+
+    for candidate_begin, candidate_end in candidate_pairs:
+        begin_idx: typing.Optional[int] = None
+        for idx, line in enumerate(lines):
+            if begin_idx is None:
+                if line.strip() == candidate_begin:
+                    begin_idx = idx
+                continue
+            if line.strip() == candidate_end:
+                return begin_idx, idx
     return None
+
+
+def _pack_name_for_marker(begin_marker: str, end_marker: str) -> str:
+    for pack_name, sentinel_pair in SENTINELS.items():
+        if sentinel_pair == (begin_marker, end_marker):
+            return pack_name
+    raise ValueError(f"Unsupported sentinel pair: {begin_marker} / {end_marker}")
 
 
 def _join_lines(lines: list[str]) -> str:

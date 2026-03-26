@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://taskx.dev/schemas/task_packet_manifest.schema.json",
+  "$id": "https://dopetask.dev/schemas/task_packet_manifest.schema.json",
   "title": "Task Packet Manifest",
   "type": "object",
   "additionalProperties": false,

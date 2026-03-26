@@ -25,8 +25,8 @@ def test_init_creates_files_when_missing(tmp_path: Path) -> None:
 
     for filename in ("PROJECT_INSTRUCTIONS.md", "CLAUDE.md", "CODEX.md", "AGENTS.md"):
         text = (out_dir / filename).read_text(encoding="utf-8")
-        assert "<!-- TASKX:BEGIN -->" in text
-        assert "<!-- TASKX:END -->" in text
+        assert "<!-- DOPETASK:BEGIN -->" in text
+        assert "<!-- DOPETASK:END -->" in text
         assert "<!-- CHATX:BEGIN -->" in text
         assert "<!-- CHATX:END -->" in text
         assert extract_block_content(text, "dopetask") == read_pack_text("dopetask")
@@ -41,7 +41,7 @@ def test_init_updates_existing_blocks_only(tmp_path: Path) -> None:
     original = (
         "# CLAUDE\n\n"
         "User section before blocks.\n\n"
-        "<!-- TASKX:BEGIN -->\nold dopetask payload\n<!-- TASKX:END -->\n\n"
+        "<!-- DOPETASK:BEGIN -->\nold dopetask payload\n<!-- DOPETASK:END -->\n\n"
         "<!-- CHATX:BEGIN -->\nold chatx payload\n<!-- CHATX:END -->\n\n"
         "User section after blocks.\n"
     )
@@ -70,7 +70,7 @@ def test_init_appends_missing_blocks_without_clobbering_content(tmp_path: Path) 
     updated = target.read_text(encoding="utf-8")
 
     assert updated.startswith(original)
-    assert "<!-- TASKX:BEGIN -->" in updated
+    assert "<!-- DOPETASK:BEGIN -->" in updated
     assert "<!-- CHATX:BEGIN -->" in updated
     assert extract_block_content(updated, "dopetask") == "(disabled)"
     assert extract_block_content(updated, "chatx") == "(disabled)"

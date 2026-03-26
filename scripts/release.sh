@@ -1,61 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# dopeTask Automated Release Script
-# Usage: ./scripts/release.sh <version>
-# Example: ./scripts/release.sh 0.1.3
+# dopeTask Release Guard
+# This script intentionally does not mutate versions, create commits, or push tags.
+# Use the PR-first release flow documented in docs/90_RELEASE.md.
 
-if [ $# -ne 1 ]; then
-    echo "❌ Usage: $0 <version>"
-    echo "Example: $0 0.1.3"
+if [ $# -gt 1 ]; then
+    echo "❌ Usage: $0 [version]"
     exit 1
 fi
 
-VERSION="$1"
-TAG="v$VERSION"
+VERSION="${1:-}"
+CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -n 1 | sed 's/version = "\(.*\)"/\1/')
 
-# Validate version format
-if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
-    echo "❌ Invalid version format: $VERSION"
-    echo "Version must be semver (X.Y.Z[-modifier][+build])"
+if [[ -n "$VERSION" ]] && [[ "$VERSION" != "$CURRENT_VERSION" ]]; then
+    echo "❌ Version mismatch: requested $VERSION, repo is $CURRENT_VERSION"
+    echo "Update version files in a PR before using the guarded release helpers."
     exit 1
 fi
 
-# Check if tag already exists
-if git rev-parse "$TAG" >/dev/null 2>&1; then
-    echo "❌ Tag $TAG already exists"
-    exit 1
-fi
-
-# Update version in pyproject.toml
-echo "📝 Updating pyproject.toml version to $VERSION..."
-sed -i "" "s/^version = \".*\"$/version = \"$VERSION\"/" pyproject.toml
-
-# Update version in src/dopetask/__init__.py
-echo "📝 Updating src/dopetask/__init__.py version to $VERSION..."
-sed -i "" "s/^__version__ = \".*\"$/__version__ = \"$VERSION\"/" src/dopetask/__init__.py
-
-# Commit version updates
-echo "💾 Committing version updates..."
-git add pyproject.toml src/dopetask/__init__.py
-git commit -m "chore(release): bump version to $VERSION"
-
-# Create annotated tag
-echo "🏷️  Creating tag $TAG..."
-git tag -a "$TAG" -m "Release v$VERSION"
-
-# Push changes and tag
-echo "🔄 Pushing to origin..."
-git push origin main
-git push origin "$TAG"
-
-echo "🎉 Release process complete!"
+echo "dopeTask release is PR-first and tag-gated."
 echo ""
-echo "📦 Automated workflow will now:"
-echo "   1. Run CI tests"
-echo "   2. Build distribution packages"
-echo "   3. Publish to PyPI"
-echo "   4. Create GitHub Release"
+echo "Current version: $CURRENT_VERSION"
 echo ""
-echo "🔗 Monitor progress at:"
-echo "   https://github.com/DDD-Enterprises/dopeTask/actions"
+echo "1. Land the release changes in a PR against main."
+echo "2. Merge the PR."
+echo "3. Verify from a clean checkout:"
+echo "   bash scripts/dopetask_release_local.sh"
+echo "4. Tag merged main:"
+echo "   git tag v$CURRENT_VERSION"
+echo "5. Push the tag:"
+echo "   git push origin v$CURRENT_VERSION"
+echo ""
+echo "See docs/90_RELEASE.md for the authoritative flow."

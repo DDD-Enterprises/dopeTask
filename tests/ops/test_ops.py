@@ -39,11 +39,11 @@ def test_non_destructive_edit(tmp_path):
 
     updated_text = target.read_text()
     assert original in updated_text
-    assert "<!-- TASKX:BEGIN operator_system" in updated_text
+    assert "<!-- DOPETASK:BEGIN operator_system" in updated_text
 
 def test_replace_only_block(tmp_path):
     target = tmp_path / "CLAUDE.md"
-    target.write_text("# Header\n<!-- TASKX:BEGIN operator_system v=1 platform=chatgpt model=gpt-4 hash=old -->\nOld content\n<!-- TASKX:END operator_system -->\nFooter")
+    target.write_text("# Header\n<!-- DOPETASK:BEGIN operator_system v=1 platform=chatgpt model=gpt-4 hash=old -->\nOld content\n<!-- DOPETASK:END operator_system -->\nFooter")
 
     new_content = "New content"
     new_hash = calculate_hash(new_content)
@@ -54,7 +54,7 @@ def test_replace_only_block(tmp_path):
     assert "Footer" in updated_text
     assert "New content" in updated_text
     assert "Old content" not in updated_text
-    assert updated_text.count("<!-- TASKX:BEGIN") == 1
+    assert updated_text.count("<!-- DOPETASK:BEGIN") == 1
 
 def test_discovery_order(tmp_path):
     # .claude/CLAUDE.md should win
@@ -116,7 +116,7 @@ def test_ops_doctor_exports_even_on_fail(tmp_path, monkeypatch):
 
     # Create a FAIL condition for doctor (e.g., STALE block)
     claude_file = tmp_path / "CLAUDE.md"
-    claude_file.write_text("# Header\n<!-- TASKX:BEGIN operator_system hash=stale -->\nOld\n<!-- TASKX:END operator_system -->")
+    claude_file.write_text("# Header\n<!-- DOPETASK:BEGIN operator_system hash=stale -->\nOld\n<!-- DOPETASK:END operator_system -->")
 
     result = runner.invoke(app, ["doctor"])
     # Doctor should exit with non-zero on failure

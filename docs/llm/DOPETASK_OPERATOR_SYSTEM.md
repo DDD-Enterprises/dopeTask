@@ -1,4 +1,4 @@
-<!-- TASKX:BEGIN operator_system v=1 platform=chatgpt model=gpt-5.2-thinking hash=cb46cbb836aaa9fc0d59f42c66348528dec271dabc019c1d65988913bbcb3c54 -->
+<!-- DOPETASK:BEGIN operator_system v=1 platform=chatgpt model=gpt-5.2-thinking hash=cb46cbb836aaa9fc0d59f42c66348528dec271dabc019c1d65988913bbcb3c54 -->
 # OPERATOR SYSTEM PROMPT
 
 # dopeTask Version: 0.5.0
@@ -122,4 +122,4 @@ Specifics for chatgpt
 - Follow all instructions provided in this prompt.
 - Use dopeTask CLI for all task management.
 - Ensure all outputs conform to the project spec.
-<!-- TASKX:END operator_system -->
+<!-- DOPETASK:END operator_system -->

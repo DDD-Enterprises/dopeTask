@@ -1,8 +1,8 @@
 # CODEX Instructions
 
-<!-- TASKX:BEGIN -->
+<!-- DOPETASK:BEGIN -->
 (disabled)
-<!-- TASKX:END -->
+<!-- DOPETASK:END -->
 <!-- CHATX:BEGIN -->
 (disabled)
 <!-- CHATX:END -->

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from dopetask.ops.blocks import OPERATOR_BEGIN_MARKERS, OPERATOR_END_MARKERS
 from dopetask.ops.conflicts import check_conflicts
 from dopetask.ops.export import calculate_hash, load_profile
 from dopetask.ops.export import export_prompt as compile_prompt
@@ -14,7 +15,7 @@ def extract_operator_blocks(text: str) -> list[str]:
     2. Iterate i=0..len(lines)-1
     3. When BEGIN line found:
         - set start = i+1
-        - search forward for END line where lines[j].strip() == "<!-- TASKX:END operator_system -->"
+        - search forward for END line matching the current operator block sentinel
         - if END not found: treat as zero blocks
         - else capture inner = "\n".join(lines[start:j])
         - append inner to blocks list
@@ -26,11 +27,16 @@ def extract_operator_blocks(text: str) -> list[str]:
     i = 0
     while i < len(lines):
         line = lines[i]
-        if "<!-- TASKX:BEGIN operator_system" in line:
+        matched_end_marker = None
+        for begin_marker, end_marker in zip(OPERATOR_BEGIN_MARKERS, OPERATOR_END_MARKERS):
+            if begin_marker in line:
+                matched_end_marker = end_marker
+                break
+        if matched_end_marker is not None:
             start = i + 1
             found_end = False
             for j in range(start, len(lines)):
-                if lines[j].strip() == "<!-- TASKX:END operator_system -->":
+                if lines[j].strip() == matched_end_marker:
                     inner = "\n".join(lines[start:j])
                     blocks.append(inner)
                     i = j
