@@ -1,8 +1,10 @@
 """Loop orchestrator - runs lifecycle stages A5→A6→A7→A8→A9."""
+# ruff: noqa: I001
 
 import hashlib
 import typing
 from datetime import datetime, timezone
+from importlib import import_module
 from pathlib import Path
 from typing import Any
 
@@ -10,15 +12,15 @@ from dopetask import __version__
 from dopetask.pipeline.evidence.collector import collect_evidence
 from dopetask.pipeline.loop.types import LoopInputs, StageResult
 from dopetask.pipeline.spec_feedback.feedback import generate_feedback
-
-try:
-    from dopetask.spec_mining.miner import mine_spec  # type: ignore[import-untyped]
-except ImportError:
-    mine_spec = None  # type: ignore[assignment]
 from dopetask.pipeline.task_compiler.compiler import compile_task_queue
 from dopetask.pipeline.task_runner.parser import parse_task_packet
 from dopetask.pipeline.task_runner.runner import create_run_workspace
 from dopetask.utils.json_output import write_json_strict
+
+try:
+    mine_spec = import_module("dopetask.spec_mining.miner").mine_spec
+except ImportError:
+    mine_spec = None  # type: ignore[assignment]
 
 DOPETASK_VERSION = "0.1.0"
 STAGE_ORDER = ["mine_spec", "compile_tasks", "run_task", "collect_evidence", "spec_feedback"]

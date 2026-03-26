@@ -1,15 +1,17 @@
+from typing import Any
+
 from .step_runner import StepRunner
 from .proof_writer import ProofWriter
 from .validator import Validator
 from .prompts import GEMINI_PROMPTS
 
 class GeminiExecutor:
-    def __init__(self):
+    def __init__(self) -> None:
         self.runner = StepRunner()
         self.validator = Validator()
         self.writer = ProofWriter()
 
-    def compile_system_prompts(self, tp):
+    def compile_system_prompts(self, tp: dict[str, Any]) -> tuple[str, str]:
         """Compiles TURN 1 and TURN 2 prompts for Gemini."""
         turn_1 = GEMINI_PROMPTS["TURN_1_SYSTEM_FRAME"]
         
@@ -25,7 +27,7 @@ class GeminiExecutor:
         )
         return turn_1, turn_2
 
-    def run_tp(self, tp):
+    def run_tp(self, tp: dict[str, Any]) -> str:
         turn_1, turn_2 = self.compile_system_prompts(tp)
         
         # TODO: Send turn_1 and turn_2 to the LLM context to initialize the session.

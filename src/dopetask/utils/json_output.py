@@ -8,11 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-try:
-    from dopetask.schemas.message import CanonicalMessage  # type: ignore[import-untyped]
-except ImportError:
-    CanonicalMessage = None  # type: ignore[assignment, misc]
 from dopetask.schemas.validator import validate_data
+
+CanonicalMessage = Any
 
 
 def write_messages_with_validation(messages: list[CanonicalMessage], output_path: Path) -> tuple[int, int]:
