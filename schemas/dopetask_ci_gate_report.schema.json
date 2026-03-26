@@ -1,19 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "TaskX Doctor Report",
-  "description": "Installation integrity check report for TaskX",
+  "title": "dopeTask CI Gate Report",
+  "description": "CI gate report combining doctor checks and promotion validation",
   "type": "object",
   "required": [
     "schema_version",
     "generated_at",
     "timestamp_mode",
     "status",
-    "environment",
-    "taskx",
-    "schemas",
-    "load_test",
-    "repo",
-    "git",
+    "doctor",
+    "promotion",
     "checks"
   ],
   "additionalProperties": false,
@@ -36,114 +32,66 @@
     "status": {
       "type": "string",
       "enum": ["passed", "failed"],
-      "description": "Overall status of installation checks"
+      "description": "Overall CI gate status"
     },
-    "environment": {
+    "doctor": {
       "type": "object",
-      "required": ["python_version", "platform", "cwd"],
+      "required": ["status", "report_path", "missing_schemas"],
       "additionalProperties": false,
       "properties": {
-        "python_version": {
+        "status": {
           "type": "string",
-          "description": "Python version string (e.g., '3.11.5')"
+          "enum": ["passed", "failed"],
+          "description": "Doctor check overall status"
         },
-        "platform": {
-          "type": "string",
-          "description": "Operating system platform"
-        },
-        "cwd": {
-          "type": "string",
-          "description": "Current working directory at time of check"
-        }
-      }
-    },
-    "taskx": {
-      "type": "object",
-      "required": ["import_ok", "version"],
-      "additionalProperties": false,
-      "properties": {
-        "import_ok": {
-          "type": "boolean",
-          "description": "Whether TaskX module imports successfully"
-        },
-        "version": {
+        "report_path": {
           "type": ["string", "null"],
-          "description": "TaskX version if available, null otherwise"
-        }
-      }
-    },
-    "schemas": {
-      "type": "object",
-      "required": ["available", "required", "missing"],
-      "additionalProperties": false,
-      "properties": {
-        "available": {
-          "type": "array",
-          "items": {"type": "string"},
-          "description": "List of schemas found in package data"
+          "description": "Path to underlying doctor report if written, null otherwise"
         },
-        "required": {
-          "type": "array",
-          "items": {"type": "string"},
-          "description": "List of schemas required by TaskX"
-        },
-        "missing": {
+        "missing_schemas": {
           "type": "array",
           "items": {"type": "string"},
           "description": "List of required schemas that are missing"
         }
       }
     },
-    "load_test": {
+    "promotion": {
       "type": "object",
-      "required": ["name", "ok"],
+      "required": [
+        "required",
+        "validated",
+        "run_dir",
+        "promotion_path",
+        "promotion_status",
+        "errors"
+      ],
       "additionalProperties": false,
       "properties": {
-        "name": {
-          "type": "string",
-          "description": "Name of schema used for load test"
-        },
-        "ok": {
+        "required": {
           "type": "boolean",
-          "description": "Whether schema loaded and parsed successfully"
-        }
-      }
-    },
-    "repo": {
-      "type": "object",
-      "required": ["repo_root", "project_root", "marker"],
-      "additionalProperties": false,
-      "properties": {
-        "repo_root": {
+          "description": "Whether promotion validation was required"
+        },
+        "validated": {
+          "type": "boolean",
+          "description": "Whether promotion was successfully validated"
+        },
+        "run_dir": {
           "type": ["string", "null"],
-          "description": "Detected repository root path, null if not found"
+          "description": "Run directory path, null if not validated"
         },
-        "project_root": {
+        "promotion_path": {
           "type": ["string", "null"],
-          "description": "Project root path if provided, null otherwise"
+          "description": "Path to promotion file, null if not found"
         },
-        "marker": {
+        "promotion_status": {
           "type": ["string", "null"],
-          "description": "Marker file/directory used for detection, null if not found"
-        }
-      }
-    },
-    "git": {
-      "type": "object",
-      "required": ["git_exe_found", "git_repo_found", "ok"],
-      "additionalProperties": false,
-      "properties": {
-        "git_exe_found": {
-          "type": "boolean",
-          "description": "Whether git executable was found in PATH"
+          "enum": ["passed", "failed", null],
+          "description": "Status from promotion token, null if not validated"
         },
-        "git_repo_found": {
-          "type": "boolean",
-          "description": "Whether .git directory exists in repo_root"
-        },
-        "ok": {
-          "type": "boolean",
-          "description": "Whether git is fully available (exe + repo)"
+        "errors": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of promotion validation errors"
         }
       }
     },

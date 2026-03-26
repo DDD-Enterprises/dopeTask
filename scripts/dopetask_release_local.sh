@@ -28,6 +28,23 @@ log_step() {
     echo -e "${BLUE}[STEP]${NC} $*"
 }
 
+derive_repo_slug() {
+    local remote_url
+    remote_url="$(git remote get-url origin 2>/dev/null || true)"
+    if [[ -z "$remote_url" ]]; then
+        return 1
+    fi
+
+    remote_url="${remote_url#git@github.com:}"
+    remote_url="${remote_url#https://github.com/}"
+    remote_url="${remote_url%.git}"
+    if [[ "$remote_url" == */* ]]; then
+        printf '%s' "$remote_url"
+        return 0
+    fi
+    return 1
+}
+
 # Detect script directory and repo root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -37,6 +54,7 @@ log_info "Repo root: $REPO_ROOT"
 echo ""
 
 cd "$REPO_ROOT"
+TEST_PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Step 1: Verify git clean
 log_step "1/5 Verifying git repository is clean..."
@@ -53,11 +71,13 @@ echo ""
 log_step "2/5 Reading current version..."
 CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -n 1 | sed 's/version = "\(.*\)"/\1/')
 log_info "Current version: $CURRENT_VERSION"
+REPO_SLUG="$(derive_repo_slug || true)"
 echo ""
 
 # Step 3: Run tests
 log_step "3/5 Running unit tests..."
-if ! python -m pytest -q; then
+rm -f .coverage .coverage.*
+if ! PYTHONPATH="$TEST_PYTHONPATH" python -m pytest -q --no-cov; then
     log_error "Tests failed. Fix issues before releasing."
     exit 1
 fi
@@ -66,7 +86,7 @@ echo ""
 
 # Step 4: Build distribution
 log_step "4/5 Building distribution packages..."
-if ! bash scripts/taskx_build.sh; then
+if ! bash scripts/dopetask_build.sh; then
     log_error "Build failed. Check build output above."
     exit 1
 fi
@@ -75,7 +95,7 @@ echo ""
 
 # Step 5: Verify clean venv installation
 log_step "5/5 Verifying wheel installation in clean environment..."
-if ! bash scripts/taskx_verify_clean_venv.sh; then
+if ! bash scripts/dopetask_verify_clean_venv.sh; then
     log_error "Clean venv verification failed. Build may be broken."
     exit 1
 fi
@@ -100,12 +120,18 @@ echo "3. Push the tag to trigger GitHub release workflow:"
 echo -e "   ${YELLOW}git push origin v${CURRENT_VERSION}${NC}"
 echo ""
 echo "4. Monitor the release workflow:"
-echo "   https://github.com/OWNER/REPO/actions"
+if [[ -n "$REPO_SLUG" ]]; then
+    echo "   https://github.com/${REPO_SLUG}/actions"
+else
+    echo "   Run: git remote get-url origin"
+fi
 echo ""
 echo "5. Once published, verify the release:"
-echo "   https://github.com/OWNER/REPO/releases/tag/v${CURRENT_VERSION}"
-echo ""
-echo -e "${YELLOW}NOTE:${NC} Replace OWNER/REPO with your actual repository path."
+if [[ -n "$REPO_SLUG" ]]; then
+    echo "   https://github.com/${REPO_SLUG}/releases/tag/v${CURRENT_VERSION}"
+else
+    echo "   Run: git remote get-url origin"
+fi
 echo ""
 
 # Show built artifacts

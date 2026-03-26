@@ -39,12 +39,12 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ### Added
 
-- Added a migration guide for Dopemux users moving from TaskX naming to dopeTask naming.
+- Added a migration guide for Dopemux users moving from the legacy product naming to dopeTask naming.
 - Added Python 3.9 compatibility coverage for TOML parsing and adapter entry-point discovery.
 
 ### Changed
 
-- Completed the repo-wide TaskX to dopeTask rebrand across install docs, project instructions, release guidance, and packaged assets.
+- Completed the repo-wide legacy-name to dopeTask rebrand across install docs, project instructions, release guidance, and packaged assets.
 - Lowered the supported Python floor from 3.11 to 3.9.
 - Updated packaging metadata, lint/type targets, and lock resolution to support Python 3.9+ environments.
 

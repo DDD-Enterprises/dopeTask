@@ -143,7 +143,7 @@ def test_project_upgrade_runs_packs_doctor(tmp_path: Path) -> None:
         assert (instructions_root / name).exists()
 
     agents_text = (instructions_root / "AGENTS.md").read_text(encoding="utf-8")
-    assert "<!-- TASKX:BEGIN -->" in agents_text
+    assert "<!-- DOPETASK:BEGIN -->" in agents_text
     assert "<!-- CHATX:BEGIN -->" in agents_text
 
     report = _report_json(repo_root)

@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://chatx.dev/schemas/taskx_migration_plan.schema.json",
-  "title": "TaskX Migration Plan",
-  "description": "Schema for TaskX migration plan describing files and schemas to copy from ChatX",
+  "$id": "https://dopetask.dev/schemas/dopetask_migration_plan.schema.json",
+  "title": "dopeTask Migration Plan",
+  "description": "Schema for dopeTask migration plan describing files and schemas to copy from ChatX",
   "type": "object",
   "additionalProperties": false,
   "required": [

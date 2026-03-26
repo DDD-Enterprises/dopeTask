@@ -12,7 +12,7 @@ def calculate_hash(content: str) -> str:
 
 def test_extract_operator_blocks_indented_end(tmp_path):
     # Match substring without colon
-    content = "Line 1\r\n\r\n<!-- TASKX:BEGIN operator_system v=1 -->\r\n\r\nInner Content\r\n\r\n   <!-- TASKX:END operator_system -->\r\nLine 2"
+    content = "Line 1\r\n\r\n<!-- DOPETASK:BEGIN operator_system v=1 -->\r\n\r\nInner Content\r\n\r\n   <!-- DOPETASK:END operator_system -->\r\nLine 2"
     blocks = extract_operator_blocks(content)
     assert len(blocks) == 1
     expected_inner = "\nInner Content\n"
@@ -21,7 +21,7 @@ def test_extract_operator_blocks_indented_end(tmp_path):
 def test_doctor_detects_duplicate_blocks_mixed_newlines(tmp_path):
     repo_root = tmp_path
     claude_md = repo_root / "CLAUDE.md"
-    content = "<!-- TASKX:BEGIN operator_system -->\nBlock 1\n<!-- TASKX:END operator_system -->\r\n\r\n<!-- TASKX:BEGIN operator_system -->\r\nBlock 2\r\n   <!-- TASKX:END operator_system -->"
+    content = "<!-- DOPETASK:BEGIN operator_system -->\nBlock 1\n<!-- DOPETASK:END operator_system -->\r\n\r\n<!-- DOPETASK:BEGIN operator_system -->\r\nBlock 2\r\n   <!-- DOPETASK:END operator_system -->"
     claude_md.write_text(content)
 
     report = run_doctor(repo_root)

@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://taskx.dev/schemas/commit_run_report.schema.json",
-  "title": "TaskX Commit Run Report",
-  "description": "Report generated after attempting to create a git commit for a TaskX run",
+  "$id": "https://dopetask.dev/schemas/commit_run_report.schema.json",
+  "title": "dopeTask Commit Run Report",
+  "description": "Report generated after attempting to create a git commit for a dopeTask run",
   "type": "object",
   "required": [
     "schema_version",

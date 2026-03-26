@@ -1,6 +1,6 @@
-"""TaskX schema files package.
+"""dopeTask schema files package.
 
-This package contains JSON Schema files for TaskX validation.
+This package contains JSON Schema files for dopeTask validation.
 Schemas are accessed via importlib.resources, not filesystem paths.
 """
 

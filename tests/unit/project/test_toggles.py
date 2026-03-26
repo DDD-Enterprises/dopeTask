@@ -15,7 +15,7 @@ def test_apply_pack_creates_missing_file_from_template(tmp_path: Path) -> None:
 
     assert result["status"] == "created"
     text = target.read_text(encoding="utf-8")
-    assert "<!-- TASKX:BEGIN -->" in text
+    assert "<!-- DOPETASK:BEGIN -->" in text
     assert "<!-- CHATX:BEGIN -->" in text
     assert extract_block_content(text, "dopetask") == read_pack_text("dopetask")
 
@@ -67,8 +67,8 @@ def test_project_status_reports_enabled_and_disabled(tmp_path: Path) -> None:
 
 def _mask_block(text: str, pack_name: str) -> str:
     if pack_name == "dopetask":
-        begin = "<!-- TASKX:BEGIN -->"
-        end = "<!-- TASKX:END -->"
+        begin = "<!-- DOPETASK:BEGIN -->"
+        end = "<!-- DOPETASK:END -->"
     else:
         begin = "<!-- CHATX:BEGIN -->"
         end = "<!-- CHATX:END -->"
