@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -13,7 +14,7 @@ console = Console()
 
 def register(cli: typer.Typer) -> None:
     """Attach tmux group to the main CLI."""
-    
+
     tmux_app = typer.Typer(help="Manage Task Packet execution in tmux sessions.")
     cli.add_typer(tmux_app, name="tmux")
 
@@ -23,22 +24,22 @@ def register(cli: typer.Typer) -> None:
         try:
             manager = TmuxManager()
             sessions = manager.list_sessions()
-            
+
             if not sessions or (len(sessions) == 1 and sessions[0] == ""):
                 console.print("[yellow]No active tmux sessions found.[/yellow]")
                 return
-                
+
             table = Table(title="Active TP Tmux Sessions")
             table.add_column("Session Name", style="cyan")
-            
+
             for s in sessions:
                 if s:
                     table.add_row(s)
-            
+
             console.print(table)
         except Exception as exc:
             console.print(f"[red]Error:[/red] {exc}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     @tmux_app.command("start")
     def tmux_start(
@@ -49,7 +50,7 @@ def register(cli: typer.Typer) -> None:
         try:
             manager = TmuxManager()
             session_name = f"tp-{tp_id.lower()}"
-            
+
             if manager.start_session(session_name, Path.cwd(), command):
                 console.print(f"[green]Started tmux session:[/green] {session_name}")
                 console.print(f"Run 'dopetask tmux attach {tp_id}' to join.")
@@ -57,7 +58,7 @@ def register(cli: typer.Typer) -> None:
                 console.print(f"[yellow]Session '{session_name}' already exists.[/yellow]")
         except Exception as exc:
             console.print(f"[red]Error:[/red] {exc}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     @tmux_app.command("attach")
     def tmux_attach(
@@ -70,7 +71,7 @@ def register(cli: typer.Typer) -> None:
             manager.attach_session(session_name)
         except Exception as exc:
             console.print(f"[red]Error:[/red] {exc}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     @tmux_app.command("kill")
     def tmux_kill(
@@ -84,4 +85,4 @@ def register(cli: typer.Typer) -> None:
             console.print(f"[red]Killed tmux session:[/red] {session_name}")
         except Exception as exc:
             console.print(f"[red]Error:[/red] {exc}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc

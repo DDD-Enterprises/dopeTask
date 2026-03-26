@@ -1,18 +1,18 @@
 """Aggregator for Task Packet execution proofs."""
 
-import json
 import hashlib
-import zipfile
+import json
 import logging
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
 class ProofAggregator:
     """Aggregates execution proofs into the canonical Dopetask Proof Bundle format.
-    
+
     Flow: execution output -> status determination -> archive creation -> final bundle generation.
     Complexity: O(S + F) where S is the number of steps and F is the total size of files to archive.
     """
@@ -30,12 +30,12 @@ class ProofAggregator:
                 sha256_hash.update(byte_block)
         return sha256_hash.hexdigest()
 
-    def create_archive(self, files_to_include: List[Path]) -> Dict[str, Any]:
+    def create_archive(self, files_to_include: list[Path]) -> dict[str, Any]:
         """Creates a zip archive of the provided files and returns metadata."""
         archive_name = f"{self.tp_id}_PROOF_ARCHIVE.zip"
         archive_path = self.output_dir / archive_name
-        
-        manifest_data = {
+
+        manifest_data: dict[str, Any] = {
             "tp_id": self.tp_id,
             "archive_filename": archive_name,
             "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -51,13 +51,13 @@ class ProofAggregator:
                         "sha256": self._calculate_sha256(file_path),
                         "description": f"Artifact generated during {self.tp_id} execution."
                     })
-        
+
         # Add manifest to zip itself as per standard
         manifest_path = self.output_dir / "PROOF_ARCHIVE_MANIFEST.json"
         try:
             with open(manifest_path, "w") as f:
                 json.dump(manifest_data, f, indent=2)
-            
+
             with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipf:
                 zipf.write(manifest_path, "PROOF_ARCHIVE_MANIFEST.json")
         finally:
@@ -70,19 +70,19 @@ class ProofAggregator:
             "sha256": self._calculate_sha256(archive_path)
         }
 
-    def aggregate(self, execution_result: Dict[str, Any], artifact_files: List[Path]) -> Path:
+    def aggregate(self, execution_result: dict[str, Any], artifact_files: list[Path]) -> Path:
         """Translates execution results into a standardized Proof Bundle JSON."""
         steps = execution_result.get("steps", [])
-        
+
         passed_checks = [s["step_id"] for s in steps if s["validation_passed"]]
         failed_checks = [s["step_id"] for s in steps if not s["validation_passed"]]
-        
+
         status = "VALIDATED" if not failed_checks else "FAILED"
         if execution_result.get("status") == "PARTIAL":
              status = "PARTIAL"
 
         summary_result = f"Execution of {self.tp_id} " + ("completed successfully." if status == "VALIDATED" else "encountered failures.")
-        
+
         key_findings = []
         for step in steps:
             if step["validation_passed"]:
