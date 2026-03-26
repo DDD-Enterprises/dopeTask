@@ -1,69 +1,74 @@
 # Task Packet Format
 
-This document defines what "Task Packet" means for dopeTask and what the parser enforces.
+This document defines the JSON `TaskPacket` contract for new dopeTask work.
 
-## Header
+Legacy markdown packet docs remain available for manual maintainer workflows, but the default supervisor path is JSON-only and runs through `dopetask tp series`.
 
-The first line must be an H1 of the form:
+## Required top-level fields
 
-```text
-# TASK_PACKET TP_#### — Title
-```
+Every Task Packet must be valid JSON and include:
 
-Where:
+- `id`
+- `target`
+- `steps`
 
-- `TP_####` is exactly four digits.
-- The separator is an em dash in the spec text; the parser matches a literal " — " sequence.
+The parser rejects packets that fail schema validation before any worktree or git mutation occurs.
 
-## Required sections
+## Core execution fields
 
-Task Packets are parsed as `##` headings. The following sections are required:
+- `project`: optional project name, defaults to `dopetask`
+- `invariants`: optional strings that must remain true across the packet
+- `steps`: ordered implementation steps
 
-- `GOAL`
-- `SCOPE (ALLOWLIST)`
-- `NON-NEGOTIABLES`
-- `REQUIRED CHANGES`
-- `VERIFICATION COMMANDS`
-- `DEFINITION OF DONE`
-- `SOURCES`
+Each step must include:
 
-If any section is missing, parsing fails.
+- `id`
+- `task`
+- `validation`
 
-## Allowlist rules
+Optional step fields:
 
-The allowlist is extracted from `SCOPE (ALLOWLIST)` as a markdown bullet list.
+- `requirements`
+- `commands`
+- `expected_files`
+- `context_files`
 
-- Only bullet items are considered.
-- Backticks around paths are allowed.
-- The allowlist must be non-empty.
+`validation` must be non-empty. If you cannot verify a step with a shell command, the step is underspecified.
 
-## Verification commands rules
+## Series fields
 
-`VERIFICATION COMMANDS` must contain at least one command, extracted from:
+New supervisor-driven work should include:
 
-1. A fenced code block (preferred), or
-2. A bullet list
+- `depends_on: string[]`
+- `series.id`
+- `series.base_branch`
+- `series.parent_tp_id`
+- `series.final_packet`
+- `commit.message`
+- `commit.allowlist`
+- `commit.verify` (optional)
 
-If no commands are found, parsing fails.
+These fields define both packet readiness and git ancestry:
 
-## Project identity (optional)
+- `depends_on` controls when a packet is allowed to execute
+- `series.parent_tp_id` selects the single parent branch used for git ancestry
+- root packets use `series.parent_tp_id = null`
+- if `series.parent_tp_id` is set, it must also appear in `depends_on`
+- multi-branch fan-in happens in an explicit integration packet, not through implicit merging
 
-If a packet includes a `PROJECT IDENTITY` section, it is parsed for key/value items.
-Some repositories may require this header (see project identity rails).
+## Runtime flow
+
+The default execution flow for JSON packets is:
+
+1. Author one or more JSON packets with shared `series.id`
+2. Run ready packets with `dopetask tp series exec <packet.json> --agent <agent>`
+3. Inspect proof bundles and the authoritative ledger with `dopetask tp series status <series-id>`
+4. Open one PR for the completed series with `dopetask tp series finalize <series-id> --title "..."`
+
+Each JSON TP runs in its own worktree, creates one commit, and records its outcome in `out/tp_series/<series-id>/SERIES_STATE.json`.
 
 ## Compatibility and versioning policy
 
-- Additive changes to the packet format should be backward-compatible.
-- Contract-breaking changes require a major version bump of dopeTask.
-
-## Git Workflow
-
-Task Packet execution must use the dedicated TP git workflow commands:
-
-1. `dopetask tp git doctor`
-2. `dopetask tp git start <TP_ID> <slug>`
-3. Implement in `.worktrees/<TP_ID>`
-4. `dopetask tp git pr <TP_ID> --title "..."`
-5. `dopetask tp git merge <TP_ID>`
-6. `dopetask tp git sync-main`
-7. `dopetask tp git cleanup <TP_ID>`
+- Additive changes to the packet format should remain backward-compatible where possible.
+- Contract-breaking schema changes require a major version bump of dopeTask.
+- `dopetask_schemas` package versioning is separate from the dopeTask app version.

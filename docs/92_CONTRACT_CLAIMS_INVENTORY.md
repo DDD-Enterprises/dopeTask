@@ -25,9 +25,9 @@ Requested scope:
 | C-0003 | `README.md` (`## Guarantees`) | "Refusal-first: invalid or unsafe inputs produce a structured refusal with a stable exit code." |
 | C-0004 | `README.md` (`## Guarantees`) | "Deterministic: identical packet + declared inputs + dopeTask version yields identical outputs." |
 | C-0005 | `README.md` (`## Guarantees`) | "Single-path: no hidden retries, no fallback runners, no background execution." |
-| C-0006 | `README.md` (`## Deterministic Task Execution`) | "one packet = one commit stack" |
+| C-0006 | `README.md` (`## Deterministic Task Execution`) | "one JSON TP = one isolated committed unit" |
 | C-0007 | `README.md` (`## Deterministic Task Execution`) | "zero accidental commits on `main`" |
-| C-0008 | `README.md` (`## Deterministic Task Execution`) | "manual commits can break determinism guarantees" |
+| C-0008 | `README.md` (`## Deterministic Task Execution`) | "one TP series = one cumulative PR branch" |
 | C-0009 | `README.md` (`## Kernel vs ecosystem`) | "dopeTask (kernel) validates packets, plans deterministically, executes one path (or emits a manual handoff), and writes canonical artifacts." |
 | C-0010 | `docs/00_OVERVIEW.md` (`artifact-first and refusal-first`) | "If it cannot proceed under declared policy, it refuses with evidence." |
 | C-0011 | `docs/00_OVERVIEW.md` (`artifact-first and refusal-first`) | "If it did not write an artifact, it did not happen." |
@@ -55,4 +55,3 @@ Requested scope:
 | C-0033 | `docs/14_PROJECT_DOCTOR.md` (`## What doctor never does`) | "It never mutates packet execution behavior." |
 | C-0034 | `docs/14_PROJECT_DOCTOR.md` (`## What doctor never does`) | "It never modifies repository files unless explicitly running a fix mode." |
 | C-0035 | `docs/14_PROJECT_DOCTOR.md` (`## Operator prompt export policy (Policy A)`) | "This export does not affect packet routing or execution behavior." |
-

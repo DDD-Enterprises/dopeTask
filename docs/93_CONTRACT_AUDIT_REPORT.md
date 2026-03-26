@@ -118,14 +118,15 @@ Exact documents and artifacts in scope for this audit run:
 - next_action: Document permitted fallback classes and prohibit runner fallback explicitly in tests.
 
 ### C-0006
-- claim_text: "one packet = one commit stack"
-- status: PARTIAL
+- claim_text: "one JSON TP = one isolated committed unit"
+- status: PROVEN
 - evidence:
-  - `src/dopetask/git/worktree_ops.py:451` commit-sequence enforces COMMIT PLAN staging.
-  - `src/dopetask/git/worktree_ops.py:530` creates one commit per plan step.
-- notes: True for `commit-sequence`; not a universal guard across all commit paths.
-- risk: MEDIUM
-- next_action: Add a policy check to reject `commit-run` when COMMIT PLAN exists unless explicitly overridden.
+  - `src/dopetask/ops/tp_series/logic.py:271` creates a fresh worktree per series packet branch.
+  - `src/dopetask/ops/tp_series/logic.py:281` stages only the packet's allowlisted changes.
+  - `src/dopetask/ops/tp_series/logic.py:299` creates exactly one commit for the packet.
+- notes: This claim is scoped to the JSON TP series flow documented in the current README.
+- risk: LOW
+- next_action: None.
 
 ### C-0007
 - claim_text: "zero accidental commits on `main`"
@@ -139,13 +140,15 @@ Exact documents and artifacts in scope for this audit run:
 - next_action: Add branch guard to `commit_run` (with explicit override flag).
 
 ### C-0008
-- claim_text: "manual commits can break determinism guarantees"
-- status: UNKNOWN
+- claim_text: "one TP series = one cumulative PR branch"
+- status: PROVEN
 - evidence:
-  - Claim is advisory language; no direct invariant test asserts this exact condition.
-- notes: Not directly mappable to enforceable predicate in current test suite.
+  - `src/dopetask/ops/tp_series/logic.py:340` records all packets in one authoritative series ledger under a shared `series_id`.
+  - `src/dopetask/ops/tp_series/logic.py:533` requires exactly one completed final packet before finalize may proceed.
+  - `src/dopetask/ops/tp_series/logic.py:560` pushes the final packet branch and `src/dopetask/ops/tp_series/logic.py:562` opens a single PR from that branch.
+- notes: Earlier packet commits accumulate through the declared parent chain and are surfaced through the one final packet branch.
 - risk: LOW
-- next_action: Convert advisory text into an explicit testable policy if intended as contract.
+- next_action: None.
 
 ### C-0009
 - claim_text: "dopeTask (kernel) validates packets, plans deterministically, executes one path (or emits a manual handoff), and writes canonical artifacts."

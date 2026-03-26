@@ -1,8 +1,10 @@
-from .prompts import GEMINI_PROMPTS
 import json
+from typing import Any
+
+from .prompts import GEMINI_PROMPTS
 
 class StepRunner:
-    def compile_step_prompt(self, step):
+    def compile_step_prompt(self, step: dict[str, Any]) -> str:
         """Compiles the TURN 3+ prompt for Gemini."""
         return GEMINI_PROMPTS["TURN_3_STEP"].format(
             step_id=step.get("id", "UNKNOWN"),
@@ -11,10 +13,10 @@ class StepRunner:
             validation="\n".join([f"- {val}" for val in step.get("validation", [])])
         )
 
-    def run_step(self, step):
+    def run_step(self, step: dict[str, Any]) -> dict[str, Any]:
         prompt = self.compile_step_prompt(step)
         
-        result = {
+        result: dict[str, Any] = {
             "step_id": step["id"],
             "files_created": [],
             "commands_run": [],

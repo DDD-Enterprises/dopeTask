@@ -6,6 +6,6 @@ project:
   repo_root: .
   timezone: America/Vancouver
 dopetask:
-  cli_min_version: 0.1.2
+  cli_min_version: 0.5.0
   pin_type: git_commit
-  pin_value: 50548e9c079fb86245d8580f25cf7d11485be528
+  pin_value: 8570642a5199134ecd5ed991b0953699b0e1bc5e

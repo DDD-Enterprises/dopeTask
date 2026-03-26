@@ -7,19 +7,19 @@ CLI entrypoint after install: `dopetask`
 
 ## Release Process
 
-1. Bump version in `pyproject.toml` and `src/dopetask/__init__.py`
-2. Commit
-3. Tag: `git tag vX.Y.Z`
-4. Push tag
-5. CI builds + publishes
+1. Land the release changes in a PR against `main`
+2. Merge the PR
+3. Tag `main` with `git tag vX.Y.Z`
+4. Push the tag
+5. CI builds, publishes, and creates the GitHub release from the changelog entry
 
 ## Release checklist
 
 1. Update version in both version sources of truth
 2. Move release notes from `Unreleased` into a dated version entry in `CHANGELOG.md`
-3. Verify locally
-4. Tag
-5. Publish from CI
+3. Open and merge the release PR
+4. Verify locally from merged `main`
+5. Tag and publish from CI
 
 ## Preparing the release
 
@@ -30,7 +30,7 @@ Update the version string in two locations:
 1. `src/dopetask/__init__.py`
 2. `pyproject.toml`
 
-Commit these changes:
+Commit these changes on a release branch / PR:
 
 ```bash
 git add src/dopetask/__init__.py pyproject.toml
@@ -59,9 +59,11 @@ If you want the repo’s local verification wrapper, run:
 bash scripts/taskx_release_local.sh
 ```
 
+The local wrapper requires a clean working tree and is intended to run after the release PR is merged or from a clean release branch.
+
 ## Tagging and publishing
 
-Create a tag matching your version (must start with `v`):
+After the release PR is merged into `main`, create a tag matching your version (must start with `v`):
 
 ```bash
 git tag vX.Y.Z
@@ -75,12 +77,13 @@ Pushing a tag should trigger the release workflow in CI.
 After pushing the tag, your GitHub Actions release workflow should:
 
 1. Verify tag matches `pyproject.toml` version
-2. Install dependencies with a frozen lockfile
-3. Run lint (`ruff`) and typecheck (`mypy`)
-4. Run tests in a clean environment
-5. Build sdist and wheel
-6. Smoke test install and `dopetask --help`
-7. Publish artifacts from CI only
+2. Extract the matching version entry from `CHANGELOG.md` for the GitHub Release body
+3. Install dependencies with a frozen lockfile
+4. Run lint (`ruff`) and typecheck (`mypy`)
+5. Run tests in a clean environment
+6. Build sdist and wheel
+7. Smoke test install and `dopetask --help`
+8. Publish artifacts from CI only
 
 ## Security & Provenance Gates
 

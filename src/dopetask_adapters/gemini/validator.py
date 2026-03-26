@@ -1,5 +1,8 @@
+from typing import Any
+
+
 class Validator:
-    def validate(self, step_result):
+    def validate(self, step_result: dict[str, Any]) -> None:
         if not step_result["validation_passed"]:
             raise Exception(f"Step failed: {step_result['step_id']}")
 

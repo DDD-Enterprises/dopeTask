@@ -90,6 +90,39 @@ jobs:
       - name: Generate release hashes
         run: sha256sum dist/* > dist/SHA256SUMS.txt
 
+      - name: Extract release notes from changelog
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          version = os.environ["TAG_VERSION"]
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+          start_re = re.compile(rf"^## \[{re.escape(version)}\] - ")
+          next_re = re.compile(r"^## \[[^]]+\] - ")
+
+          start = None
+          for index, line in enumerate(changelog):
+              if start_re.match(line):
+                  start = index
+                  break
+
+          if start is None:
+              print(f"Could not find CHANGELOG entry for {version}", file=sys.stderr)
+              sys.exit(1)
+
+          end = len(changelog)
+          for index in range(start + 1, len(changelog)):
+              if next_re.match(changelog[index]):
+                  end = index
+                  break
+
+          notes = "\n".join(changelog[start:end]).strip() + "\n"
+          Path("dist/RELEASE_NOTES.md").write_text(notes, encoding="utf-8")
+          PY
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -115,23 +148,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: dopeTask v${{ env.TAG_VERSION }}
-          body: |
-            ## dopeTask Kernel v${{ env.TAG_VERSION }}
-            
-            **Automated Release** - ${{ github.ref_name }}
-            
-            ### Installation
-            ```bash
-            pip install dopetask==${{ env.TAG_VERSION }}
-            ```
-            
-            ### Changes
-            - [View commit history](${{ github.server_url }}/${{ github.repository }}/compare/v${{ env.PREV_TAG }}...${{ github.ref_name }})
-            
-            ### Assets
-            - Wheel: `dopetask-${{ env.TAG_VERSION }}-py3-none-any.whl`
-            - Source: `dopetask-${{ env.TAG_VERSION }}.tar.gz`
-            - Checksums: `SHA256SUMS.txt`
+          body_path: dist/RELEASE_NOTES.md
           files: |
             dist/dopetask-${{ env.TAG_VERSION }}-py3-none-any.whl
             dist/dopetask-${{ env.TAG_VERSION }}.tar.gz

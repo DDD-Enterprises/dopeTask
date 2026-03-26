@@ -78,7 +78,7 @@ def _render_banner(*, worktree_path: Path, branch: str) -> str:
         f"- worktree: {worktree_path}\n"
         f"- branch: {branch}\n"
         "Do work in this worktree. Commit per TP commit plan.\n"
-        "Then rerun `dopetask tp run ... --continue` or use `dopetask tp git pr/merge`.\n"
+        "Then rerun `dopetask tp run ... --continue` or follow the documented legacy `dopetask tp git` finish flow.\n"
     )
 
 
