@@ -18,7 +18,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
-## [0.5.1] - 2026-03-26
+## [0.5.2] - 2026-03-26
 
 ### Added
 
