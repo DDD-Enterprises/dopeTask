@@ -82,6 +82,19 @@ def _default_state(*, series_id: str, base_branch: str) -> dict[str, Any]:
 
 
 @contextmanager
+def _worktree_context(*, repo_root: Path, branch: str, worktree_path: Path, base_ref: str) -> Iterator[None]:
+    """Deterministic lifecycle for TP worktrees."""
+    _start_worktree(repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref)
+    try:
+        yield
+    finally:
+        try:
+            _remove_worktree(repo_root=repo_root, worktree_path=worktree_path)
+        except Exception:
+            pass
+
+
+@contextmanager
 def _locked_state(series_dir: Path) -> Iterator[tuple[dict[str, Any], Path]]:
     """Load and persist state under an exclusive file lock."""
     series_dir.mkdir(parents=True, exist_ok=True)
@@ -113,16 +126,31 @@ def _relative_to_repo(repo_root: Path, path: Path) -> str:
 
 
 def _parse_status_paths(status_output: str) -> list[str]:
+    """Parse NUL-terminated porcelain v1 output.
+    
+    Format: XY PATH\0 [PATH2\0]
+    PATH2 is only present for Renames (R) and Copies (C).
+    """
     changed: list[str] = []
-    for raw_line in status_output.splitlines():
-        if not raw_line:
+    items = iter(status_output.split('\0'))
+    for raw_item in items:
+        if not raw_item:
             continue
-        path_fragment = raw_line[3:]
-        if " -> " in path_fragment:
-            path_fragment = path_fragment.split(" -> ", 1)[1]
-        if path_fragment.startswith('"') and path_fragment.endswith('"'):
-            path_fragment = path_fragment[1:-1]
-        changed.append(path_fragment)
+        
+        status_code = raw_item[:2]
+        path_fragment = raw_item[3:]
+        
+        # If it's a rename (R) or copy (C), the next item is the destination path
+        if 'R' in status_code or 'C' in status_code:
+            try:
+                dest_path = next(items)
+                changed.append(dest_path)
+            except StopIteration:
+                # Should not happen with valid git output
+                changed.append(path_fragment)
+        else:
+            changed.append(path_fragment)
+            
     return changed
 
 
@@ -132,7 +160,7 @@ def _run_series_doctor(*, repo_root: Path) -> None:
     if branch != "main":
         raise RuntimeError(f"doctor failed: expected branch main, found {branch}")
 
-    status_output = run_git(["status", "--porcelain"], repo_root=repo_root).stdout
+    status_output = run_git(["status", "--porcelain", "-z"], repo_root=repo_root).stdout
     ignored_prefixes = ("out/", ".worktrees/")
     dirty_paths = [
         path
@@ -281,7 +309,7 @@ def _start_worktree(*, repo_root: Path, branch: str, worktree_path: Path, base_r
 def _stage_commit_changes(*, repo_root: Path, worktree_path: Path, tp: TaskPacket) -> tuple[str, list[str]]:
     assert tp.commit is not None
     status_output = run_git(
-        ["-C", str(worktree_path), "status", "--porcelain", "--untracked-files=all"],
+        ["-C", str(worktree_path), "status", "--porcelain", "-z", "--untracked-files=all"],
         repo_root=repo_root,
     ).stdout
     changed_files = sorted(set(_parse_status_paths(status_output)))
@@ -388,60 +416,59 @@ def exec_series_packet(
     dependency_records = _dependency_records(_read_json(_state_path(series_dir)), tp.depends_on)
 
     try:
-        _start_worktree(repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref)
-        context_payload = _write_series_context(
-            repo_root=repo_root,
-            worktree_path=worktree_path,
-            run_dir=run_dir,
-            tp=tp,
-            dependency_records=dependency_records,
-        )
-        bundle_path = execute_task_packet(packet_path, agent=agent, working_dir=worktree_path)
-        proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
-        _cleanup_generated_files(worktree_path)
-        verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
-        head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
-        _write_json(
-            run_dir / "EXEC.json",
-            {
-                "schema_version": "1.0",
-                "series_id": tp.series.id,
-                "tp_id": tp.id,
-                "branch": branch,
-                "base_ref": base_ref,
-                "packet_path": str(packet_path),
-                "bundle_path": str(bundle_path),
-                "copied_proof_bundle": str(proof_bundle) if proof_bundle is not None else None,
-                "verify": verify_results,
-                "committed_files": committed_files,
-                "context": context_payload,
-                "head_sha": head_sha,
-            },
-        )
-        _remove_worktree(repo_root=repo_root, worktree_path=worktree_path)
-        _mark_packet_state(
-            series_dir=series_dir,
-            packet_id=tp.id,
-            update={
-                "status": "completed",
-                "updated_at": _timestamp(),
-                "completed_at": _timestamp(),
-                "head_sha": head_sha,
-                "proof_bundle": str(proof_bundle) if proof_bundle is not None else None,
-                "committed_files": committed_files,
-                "error": None,
-            },
-        )
-        return SeriesExecResult(
-            repo_root=repo_root,
-            series_id=tp.series.id,
-            tp_id=tp.id,
-            branch=branch,
-            worktree_path=worktree_path,
-            run_dir=run_dir,
-            proof_bundle=proof_bundle,
-            message=f"series packet completed: {tp.id}",
-        )
+        with _worktree_context(repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref):
+            context_payload = _write_series_context(
+                repo_root=repo_root,
+                worktree_path=worktree_path,
+                run_dir=run_dir,
+                tp=tp,
+                dependency_records=dependency_records,
+            )
+            bundle_path = execute_task_packet(packet_path, agent=agent, working_dir=worktree_path)
+            proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
+            _cleanup_generated_files(worktree_path)
+            verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
+            head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
+            _write_json(
+                run_dir / "EXEC.json",
+                {
+                    "schema_version": "1.0",
+                    "series_id": tp.series.id,
+                    "tp_id": tp.id,
+                    "branch": branch,
+                    "base_ref": base_ref,
+                    "packet_path": str(packet_path),
+                    "bundle_path": str(bundle_path),
+                    "copied_proof_bundle": str(proof_bundle) if proof_bundle is not None else None,
+                    "verify": verify_results,
+                    "committed_files": committed_files,
+                    "context": context_payload,
+                    "head_sha": head_sha,
+                },
+            )
+            _mark_packet_state(
+                series_dir=series_dir,
+                packet_id=tp.id,
+                update={
+                    "status": "completed",
+                    "updated_at": _timestamp(),
+                    "completed_at": _timestamp(),
+                    "head_sha": head_sha,
+                    "proof_bundle": str(proof_bundle) if proof_bundle is not None else None,
+                    "committed_files": committed_files,
+                    "error": None,
+                },
+            )
+            return SeriesExecResult(
+                repo_root=repo_root,
+                series_id=tp.series.id,
+                tp_id=tp.id,
+                branch=branch,
+                worktree_path=worktree_path,
+                run_dir=run_dir,
+                proof_bundle=proof_bundle,
+                message=f"series packet completed: {tp.id}",
+            )
     except Exception as exc:
         _write_json(
             run_dir / "EXEC_ERROR.json",

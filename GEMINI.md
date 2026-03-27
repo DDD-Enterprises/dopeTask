@@ -12,7 +12,7 @@ Whenever you receive a task or a bug report, follow these steps:
 2.  **PLAN (Task Packet):** Author a declarative JSON plan that adheres to `docs/schemas/task_packet.schema.json`.
 3.  **EXECUTE:** Invoke the `dopeTask` execution kernel yourself using:
     ```bash
-    dopetask tp exec <path_to_your_json> --agent gemini
+    dopetask tp series exec <path_to_your_json> --agent gemini
     ```
 4.  **VERIFY:** Read the generated `proof/<TP_ID>_PROOF_BUNDLE.json`.
     - **Status VALIDATED:** Your work is done.
@@ -27,7 +27,7 @@ Whenever you receive a task or a bug report, follow these steps:
 - No "simulation" of work.
 - No direct file editing with `write_file` or `replace`.
 - No `git commit` or `git push`.
-- All implementation **must** flow through the `tp exec` kernel.
+- All implementation **must** flow through the `tp series exec` kernel.
 
 ---
 **References:**

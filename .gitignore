@@ -24,3 +24,4 @@ out/
 runs/
 .worktrees/
 .mypy_cache/
+\n# dopeTask local plans and proofs\nllm-plans/\nproof/\n
