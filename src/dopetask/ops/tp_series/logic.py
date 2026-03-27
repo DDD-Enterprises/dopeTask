@@ -330,7 +330,7 @@ def _stage_commit_changes(*, repo_root: Path, worktree_path: Path, tp: TaskPacke
 
 
 def _remove_worktree(*, repo_root: Path, worktree_path: Path) -> None:
-    run_git(["worktree", "remove", str(worktree_path)], repo_root=repo_root)
+    run_git(["worktree", "remove", "--force", str(worktree_path)], repo_root=repo_root)
     run_git(["worktree", "prune"], repo_root=repo_root)
 
 
