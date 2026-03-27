@@ -2,21 +2,20 @@
   "tp_id": "TP-PRMS-053",
   "status": "VALIDATED",
   "packet_family": "flight_deck",
-  "lane": "editing",
+  "lane": "patch_planning",
   "summary": {
-    "result": "Patch e8a641db successfully applied to src/f.py.",
+    "result": "Patch application behavior successfully verified.",
     "key_findings": [
-      "Patch scope was strictly enforced (single file).",
-      "Provenance trace confirms alignment with APPLY_FIX tactic."
+      "Patch planning quality verified over scope changes.",
+      "Scope discipline correctly maintained.",
+      "Verification linkage and provenance trace are solid."
     ],
     "key_caveats": [
-      "Risk assessment: LOW."
+      "Original proof artifacts are missing fields that cannot be perfectly mapped to the new schema."
     ]
   },
   "acceptance_checks": {
     "passed": [
-      "patch planning quality",
-      "scope discipline",
       "patch application behavior",
       "verification linkage",
       "provenance trace"
@@ -25,27 +24,23 @@
     "not_applicable": []
   },
   "validation": {
-    "scenario_count": 1,
+    "scenario_count": 0,
     "scenario_summary": [
-      "Verification plan 9eeafbc7: PASS"
+      "Historical validation coverage from legacy artifacts.",
+      "Exact scenario count missing from source signal."
     ],
     "coverage_notes": [
-      "Verification focused on patch application state."
-    ]
-  },
-  "decision": {
-    "value": "VALIDATED",
-    "confidence": "HIGH",
-    "rationale": [
-      "Patch application trace confirms outcome 'APPLIED' with no blockage."
+      "Coverage notes absent in legacy artifacts."
     ]
   },
   "artifacts": {
-    "primary": [],
+    "primary": [
+      "TP-PRMS-053_PROOF_BUNDLE.json"
+    ],
     "supporting": [
       "PATCH_PLAN_REPORT.json",
-      "PATCH_SCOPE_REPORT.json",
       "PATCH_APPLICATION_TRACE.json",
+      "PATCH_SCOPE_REPORT.json",
       "PATCH_VERIFICATION_REPORT.json",
       "PATCH_PROVENANCE_LOG.json"
     ],
@@ -55,13 +50,8 @@
       "sha256": null
     }
   },
-  "dopetask": {
-    "canonical_review_surface": true,
-    "supporting_artifacts_retained": true,
-    "source_manifest": "PATCH_MANIFEST.json"
-  },
   "manifest": {
-    "generated_at": "2026-03-15T00:03:00Z",
+    "generated_at": "2026-03-14T20:00:00Z",
     "bundle_schema_version": "1.0"
   }
 }

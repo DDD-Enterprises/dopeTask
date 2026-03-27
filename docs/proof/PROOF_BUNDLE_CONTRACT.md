@@ -1,29 +1,44 @@
-# PROOF BUNDLE CONTRACT
+# Canonical Proof Bundle Contract
 
-Every Task Packet (TP) in Dopetask must emit one authoritative JSON proof bundle. This bundle is the primary surface for human and automated review.
+The JSON proof bundle (`*_PROOF_BUNDLE.json`) is the canonical, primary proof surface for all Dopetask processes. It provides a standardized, machine-readable summary of a task packet's execution, validation, and final status.
 
-## Core Principles
+## Core Rule
 
-1. **One TP, One Bundle**: Multi-file sprawl is replaced by a single `*_PROOF_BUNDLE.json`.
-2. **Review First**: Humans, supervisors, and agents must read the bundle before any supporting evidence.
-3. **Machine Readable**: The bundle follows a strict schema for automated validation and indexing.
-4. **Sufficient for Signoff**: The bundle must contain enough information to justify a "Go/No-Go" decision without requiring a drill-down into archives.
+1. **One TP = one canonical bundle.**
+2. The JSON bundle is the canonical proof surface.
+3. The bundle is what humans review, supervisors cite, agents read first, and governance decisions reference.
 
-## Naming Convention
+## Bundle-First Principle
 
-The bundle must be named:
-`TP-<ID>_PROOF_BUNDLE.json`
+Every review flow must use this order:
+1. Open `*_PROOF_BUNDLE.json`.
+2. Read summary, acceptance checks, validation, and caveats.
+3. Only then open supporting artifacts (if any).
+4. Only then open `*_PROOF_ARCHIVE.zip` if drill-down is needed.
 
-Example:
-`TP-PRMS-052_PROOF_BUNDLE.json`
+The zip must never become the primary review object.
 
-## Required Content
+## Required Top-Level Bundle Sections
 
-Each bundle must include:
-- `tp_id`: Task identifier.
-- `status`: Execution state (VALIDATED, DEFERRED, etc.).
-- `summary`: Results, findings, and caveats.
-- `acceptance_checks`: List of passed/failed criteria.
-- `validation`: Summary of test/verification scenarios.
-- `artifacts`: References to primary, supporting, and archive files.
+Each bundle must contain at least:
+- `tp_id`: The ID of the Task Packet (e.g., `TP-PRMS-052`).
+- `status`: The final status (e.g., `VALIDATED`).
+- `packet_family`: The family of operations (e.g., `flight_deck`).
+- `lane`: The processing lane (e.g., `closed_loop`).
+- `summary`: A concise summary including `result`, `key_findings`, and `key_caveats`.
+- `acceptance_checks`: Lists of `passed`, `failed`, and `not_applicable` checks.
+- `validation`: Summary of validation metrics and coverage notes.
+- `artifacts`: References to primary and supporting artifacts, including the optional zip archive.
 - `manifest`: Metadata about the bundle generation.
+
+## Conditionally Required Sections
+
+Required when applicable depending on the TP:
+- `caveats`: Operational or contextual caveats inside the summary.
+- Other extension blocks defined by specific execution adapters.
+
+## References
+
+- [Archive Policy](./PROOF_ARCHIVE_POLICY.md)
+- [Review Guide](./BUNDLE_REVIEW_GUIDE.md)
+- [Bundle Schema Detail](./DOPETASK_BUNDLE_SCHEMA.md)

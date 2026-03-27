@@ -1,23 +1,33 @@
-# BUNDLE REVIEW GUIDE
+# Bundle Review Guide
 
-## For Supervisors and Reviewers
+This guide describes how supervisors, agents, and reviewers should interact with Dopetask proof bundles.
 
-To review a completed Task Packet, follow this deterministic sequence:
+## Standard Review Protocol
 
-### 1. The Bundle Review (Mandatory)
-Open `TP-<ID>_PROOF_BUNDLE.json`.
-- **Check Status**: Ensure it is `VALIDATED`.
-- **Review Summary**: Read the results and findings.
-- **Audit Acceptance**: Verify all critical acceptance checks are listed in `passed`.
-- **Verify Decision**: Evaluate the confidence and rationale for the final decision.
+To ensure efficiency and standardization, follow these steps exactly when reviewing a completed Task Packet.
 
-### 2. The Artifact Audit (Optional)
-If the summary mentions specific findings in primary artifacts, check those files directly if they are outside the zip.
+### Step 1: Open the Bundle
+Always begin by opening the canonical proof bundle: `*_PROOF_BUNDLE.json`.
+Do not open full traces, logs, or archives first.
 
-### 3. The Forensic Drill-down (As Needed)
-If you require deep evidence (logs, traces, raw data), locate the `*_PROOF_ARCHIVE.zip`.
-- Check the `PROOF_ARCHIVE_MANIFEST.json` inside the zip.
-- Locate the relevant trace or log file.
+### Step 2: Read the Top-Level
+Review the `summary`, `status`, and `acceptance_checks` to grasp the high-level outcome. 
+- Did the packet succeed?
+- Are there any `failed` acceptance checks?
+- What are the `key_caveats`?
 
-## Why Bundle-First?
-Bundle-first review reduces cognitive load by abstracting raw execution traces into strategic summaries. It ensures that the "Why" and "What Happened" are clear before looking at the "How".
+### Step 3: Check Validation Metrics
+Review the `validation` section. 
+- Were sufficient scenarios evaluated?
+- What do the `coverage_notes` reveal about gaps?
+
+### Step 4: Check Decisions
+If the packet involves operational or governance judgments, review the `decision` object for `value`, `confidence`, and `rationale`.
+
+### Step 5: Drill Down (Only If Necessary)
+If (and only if) you need forensic detail, locate the relevant filename in `artifacts.supporting`.
+- For a small number of supporting artifacts, you will find them next to the bundle.
+- For a large number, locate the `*_PROOF_ARCHIVE.zip` (referenced in `artifacts.archive`) and extract the specific file needed.
+
+### Step 6: Avoid Archive Reliance
+The zip must never be used as the canonical proof surface. If the bundle lacks the summary detail necessary to make a basic judgment without opening the archive, then the bundle itself is deficient and needs improvement.
