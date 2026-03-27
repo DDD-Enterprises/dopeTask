@@ -126,17 +126,31 @@ def _relative_to_repo(repo_root: Path, path: Path) -> str:
 
 
 def _parse_status_paths(status_output: str) -> list[str]:
-    """Parse NUL-terminated porcelain v1 output."""
+    """Parse NUL-terminated porcelain v1 output.
+    
+    Format: XY PATH\0 [PATH2\0]
+    PATH2 is only present for Renames (R) and Copies (C).
+    """
     changed: list[str] = []
-    # git status --porcelain -z uses \0 as terminator
-    for raw_item in status_output.split('\0'):
-        if not raw_item or len(raw_item) < 4:
+    items = iter(status_output.split('\0'))
+    for raw_item in items:
+        if not raw_item:
             continue
-        # Format: XY path or R  old -> new
+        
+        status_code = raw_item[:2]
         path_fragment = raw_item[3:]
-        if " -> " in path_fragment:
-            path_fragment = path_fragment.split(" -> ", 1)[1]
-        changed.append(path_fragment)
+        
+        # If it's a rename (R) or copy (C), the next item is the destination path
+        if 'R' in status_code or 'C' in status_code:
+            try:
+                dest_path = next(items)
+                changed.append(dest_path)
+            except StopIteration:
+                # Should not happen with valid git output
+                changed.append(path_fragment)
+        else:
+            changed.append(path_fragment)
+            
     return changed
 
 
@@ -146,7 +160,7 @@ def _run_series_doctor(*, repo_root: Path) -> None:
     if branch != "main":
         raise RuntimeError(f"doctor failed: expected branch main, found {branch}")
 
-    status_output = run_git(["status", "--porcelain"], repo_root=repo_root).stdout
+    status_output = run_git(["status", "--porcelain", "-z"], repo_root=repo_root).stdout
     ignored_prefixes = ("out/", ".worktrees/")
     dirty_paths = [
         path
