@@ -18,7 +18,7 @@ AI Agents (CLI or Web) are **SUPERVISORS**.
 1.  **GATHER CONTEXT:** Use read tools to understand the request and the codebase state.
 2.  **AUTHOR PLAN:** Create a `TaskPacket` JSON adhering to `docs/schemas/task_packet.schema.json`.
 3.  **DELEGATE EXECUTION:** 
-    - **CLI Agents:** Run `dopetask tp exec path/to/packet.json --agent gemini`.
+    - **CLI Agents:** Run `dopetask tp series exec path/to/packet.json --agent gemini`.
     - **Web Agents:** Instruct the user to run the above command and return the result.
 4.  **AUDIT PROOF:** Read `proof/<TP_ID>_PROOF_BUNDLE.json`.
     - If `status == "VALIDATED"`, the task is complete.
@@ -27,7 +27,7 @@ AI Agents (CLI or Web) are **SUPERVISORS**.
 ---
 
 ## 2) DOPE-TASK KERNEL COMMANDS
-- `dopetask tp exec <file>`: Primary implementation engine.
+- `dopetask tp series exec <file>`: Primary implementation engine.
 - `dopetask tmux ls|attach|kill`: Manage isolated agent sessions.
 - `dopetask neon set <theme>`: Cosmetic terminal overrides.
 
