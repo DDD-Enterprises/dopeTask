@@ -1,21 +1,36 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Dopetask Proof Archive Manifest",
+  "title": "Dopetask Proof Archive Manifest Schema",
+  "description": "Schema for the manifest included within a Dopetask proof archive zip.",
   "type": "object",
-  "required": ["tp_id", "archive_filename", "generated_at", "included_files"],
+  "required": [
+    "tp_id",
+    "archive_filename",
+    "generated_at",
+    "included_files"
+  ],
   "properties": {
-    "tp_id": { "type": "string" },
-    "archive_filename": { "type": "string" },
-    "generated_at": { "type": "string", "format": "date-time" },
+    "tp_id": {
+      "type": "string",
+      "pattern": "^TP-[A-Z0-9]+-[0-9]+$"
+    },
+    "archive_filename": {
+      "type": "string",
+      "pattern": "^TP-[A-Z0-9]+-[0-9]+_PROOF_ARCHIVE\\.zip$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "included_files": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["path"],
+        "required": ["filename"],
         "properties": {
-          "path": { "type": "string" },
-          "description": { "type": "string" },
-          "sha256": { "type": "string" }
+          "filename": { "type": "string" },
+          "sha256": { "type": ["string", "null"] },
+          "description": { "type": "string" }
         }
       }
     }
