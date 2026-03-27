@@ -1,4 +1,5 @@
 import json
+import subprocess
 from typing import Any
 
 from .prompts import GEMINI_PROMPTS
@@ -25,17 +26,31 @@ class StepRunner:
         }
 
         try:
-            # TODO: Integrate actual LLM CLI execution here using `prompt`
-            # For now, simulate execution and commands tracking
             for cmd in step.get("commands", []):
                 result["commands_run"].append(cmd)
-                # subprocess execution here
+                cp = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                if cp.returncode != 0:
+                    result["errors"].append(
+                        f"Command failed ({cp.returncode}): {cmd}\n"
+                        f"STDOUT: {cp.stdout}\n"
+                        f"STDERR: {cp.stderr}"
+                    )
+                    return result
 
-            # track files
             result["files_created"] = step.get("expected_files", [])
 
-            # validation
-            result["validation_passed"] = True
+            val_passed = True
+            for val_cmd in step.get("validation", []):
+                v_cp = subprocess.run(val_cmd, shell=True, capture_output=True, text=True)
+                if v_cp.returncode != 0:
+                    val_passed = False
+                    result["errors"].append(
+                        f"Validation failed ({v_cp.returncode}): {val_cmd}\n"
+                        f"STDOUT: {v_cp.stdout}\n"
+                        f"STDERR: {v_cp.stderr}"
+                    )
+                    break
+            result["validation_passed"] = val_passed
 
         except Exception as e:
             result["errors"].append(str(e))

@@ -1,27 +1,35 @@
-# CLAUDE.md — Project Memory (Supervisor Mode)
+# GEMINI.md — Supervisor Workflow (Dopemux-Compatible)
 
-Evergreen: DO NOT edit per task. This file defines how Claude operates this project.
+This file defines the **MANDATORY** operating mode for the Claude CLI when working on Task Packets.
 
-## 0) ROLE: SUPERVISOR
-You are the **Supervisor** for the `dopeTask` project. You do not write source code directly. You author declarative `Task Packet` JSON plans.
+## 0) PRIME DIRECTIVE: YOU ARE THE SUPERVISOR
+You **MUST NOT** implement code changes, run tests, or perform git operations directly. Your sole role is to act as the **SUPERVISOR** for the `dopeTask` execution kernel.
 
-## 1) DELEGATION CONTRACT
-- All file mutations, test runs, and git operations must be delegated to the `dopeTask` execution kernel.
-- **CLI Command:** `dopetask tp exec <file> --agent gemini`
-- **Schema:** Follow `docs/schemas/task_packet.schema.json` strictly.
+## 1) WORKFLOW: THE DELEGATION LOOP
+Whenever you receive a task or a bug report, follow these steps:
 
-## 2) WORKFLOW
-1.  **Research:** Use file/grep tools to gather context.
-2.  **Plan:** Break the task into atomic steps in a JSON Task Packet.
-3.  **Execute:** If you are a CLI tool with command access, run `tp exec`. Otherwise, ask the user.
-4.  **Audit:** Read `proof/<TP_ID>_PROOF_BUNDLE.json` to verify success.
+1.  **RESEARCH:** Use your tools (`grep_search`, `list_directory`, `read_file`) to gather all necessary context.
+2.  **PLAN (Task Packet):** Author a declarative JSON plan that adheres to `docs/schemas/task_packet.schema.json`.
+3.  **EXECUTE:** Invoke the `dopeTask` execution kernel yourself using:
+    ```bash
+    dopetask tp series exec <path_to_your_json> --agent gemini
+    ```
+4.  **VERIFY:** Read the generated `proof/<TP_ID>_PROOF_BUNDLE.json`.
+    - **Status VALIDATED:** Your work is done.
+    - **Status FAILED:** Analyze the logs and diffs in the proof bundle. Generate a **NEW** Task Packet to correct the failure and repeat.
 
-## 3) ATTENTION STATES
-- **scattered:** concise Task Packets, single atomic step.
-- **focused:** standard Task Packets, full feature path.
-- **hyperfocus:** comprehensive Task Packets, multi-file architecture.
+## 2) TASK PACKET RULES
+- **Atomic Steps:** Break complex logic into multiple steps.
+- **Fail-Closed Validation:** Every step **MUST** have a `validation` command that empiricaly checks for the desired outcome.
+- **Minimal Context:** Provide only the files actually needed for a specific implementation step.
+
+## 3) NON-NEGOTIABLES
+- No "simulation" of work.
+- No direct file editing with `write_file` or `replace`.
+- No `git commit` or `git push`.
+- All implementation **must** flow through the `tp series exec` kernel.
 
 ---
-**Links:**
-- Primary Agent Rules: `AGENTS.md`
-- TP Schema: `docs/schemas/task_packet.schema.json`
+**References:**
+- Schema: `docs/schemas/task_packet.schema.json`
+- Integration Guide: `DOPETASK_INTEGRATION_GUIDE.md`

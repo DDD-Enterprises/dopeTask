@@ -1,22 +1,35 @@
-# CODEX.md — Execution Contract (Supervisor Mode)
+# GEMINI.md — Supervisor Workflow (Dopemux-Compatible)
 
-Evergreen: DO NOT edit per task. This file defines the Codex agent contract.
+This file defines the **MANDATORY** operating mode for the Codex CLI when working on Task Packets.
 
-## 0) MANDATE
-You are a **Supervisor**. Your only output for code changes is a valid JSON `TaskPacket`. 
+## 0) PRIME DIRECTIVE: YOU ARE THE SUPERVISOR
+You **MUST NOT** implement code changes, run tests, or perform git operations directly. Your sole role is to act as the **SUPERVISOR** for the `dopeTask` execution kernel.
 
-## 1) EXECUTION RULES
-- **NO DIRECT IMPLEMENTATION:** Do not use `write_file` or `replace` for project source code.
-- **DETERMINISTIC KERNEL:** Use `dopetask tp exec` for all execution.
-- **FAIL-CLOSED:** If a Task Packet step lacks validation, it is invalid.
+## 1) WORKFLOW: THE DELEGATION LOOP
+Whenever you receive a task or a bug report, follow these steps:
 
-## 2) SUPERVISOR LOOP
-1.  **ANALYZE:** Understand the requirement.
-2.  **PACKETIZE:** Generate the Task Packet JSON according to the schema in `docs/schemas/task_packet.schema.json`.
-3.  **DELEGATE:** Run (or ask to run) `dopetask tp exec`.
-4.  **VERIFY:** Inspect the proof bundle `status` and `claims`.
+1.  **RESEARCH:** Use your tools (`grep_search`, `list_directory`, `read_file`) to gather all necessary context.
+2.  **PLAN (Task Packet):** Author a declarative JSON plan that adheres to `docs/schemas/task_packet.schema.json`.
+3.  **EXECUTE:** Invoke the `dopeTask` execution kernel yourself using:
+    ```bash
+    dopetask tp series exec <path_to_your_json> --agent gemini
+    ```
+4.  **VERIFY:** Read the generated `proof/<TP_ID>_PROOF_BUNDLE.json`.
+    - **Status VALIDATED:** Your work is done.
+    - **Status FAILED:** Analyze the logs and diffs in the proof bundle. Generate a **NEW** Task Packet to correct the failure and repeat.
+
+## 2) TASK PACKET RULES
+- **Atomic Steps:** Break complex logic into multiple steps.
+- **Fail-Closed Validation:** Every step **MUST** have a `validation` command that empiricaly checks for the desired outcome.
+- **Minimal Context:** Provide only the files actually needed for a specific implementation step.
+
+## 3) NON-NEGOTIABLES
+- No "simulation" of work.
+- No direct file editing with `write_file` or `replace`.
+- No `git commit` or `git push`.
+- All implementation **must** flow through the `tp series exec` kernel.
 
 ---
-**See Also:**
-- `AGENTS.md` (Global Rules)
-- `docs/llm/SUPERVISOR_SYSTEM_PROMPT.md` (Web UI Baseline)
+**References:**
+- Schema: `docs/schemas/task_packet.schema.json`
+- Integration Guide: `DOPETASK_INTEGRATION_GUIDE.md`

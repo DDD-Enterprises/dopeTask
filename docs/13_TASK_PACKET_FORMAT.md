@@ -72,3 +72,10 @@ Each JSON TP runs in its own worktree, creates one commit, and records its outco
 - Additive changes to the packet format should remain backward-compatible where possible.
 - Contract-breaking schema changes require a major version bump of dopeTask.
 - `dopetask_schemas` package versioning is separate from the dopeTask app version.
+
+## Security Considerations
+
+Task Packet commands currently execute via `subprocess.run(shell=True)`. This allows for complex shell pipelines but requires that Task Packets originate from a **trusted source** (e.g., a verified Supervisor LLM).
+
+- **Isolation**: Each Task Packet runs in a dedicated git worktree to prevent side effects on the primary repository state.
+- **Auditability**: All commands and their outputs are recorded in deterministic proof bundles for post-execution auditing.
