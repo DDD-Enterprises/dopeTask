@@ -15,7 +15,7 @@ To continue with the CRM User Stories using the newly built `dopeTask` execution
 - We will define the CRM user stories as Task Packets (YAML/JSON).
 - We will use the command:
   ```bash
-  dopetask tp exec path/to/crm_story.json --agent gemini
+  dopetask tp series exec path/to/crm_story.json --agent gemini
   ```
 - This will use the **STRICT_EXECUTOR** profile we just built to ensure the CRM components are implemented deterministically without agent drift.
 

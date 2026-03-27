@@ -31,7 +31,7 @@ pip install -e .
 
 ## 2. Using the Series Execution CLI
 
-Downstream pipelines should no longer treat `dopetask tp exec` as the default new-work path. Supervisors should author JSON Task Packets with explicit `depends_on`, `series`, and `commit` metadata, then execute each ready packet with:
+Downstream pipelines should no longer treat `dopetask tp series exec` as the default new-work path. Supervisors should author JSON Task Packets with explicit `depends_on`, `series`, and `commit` metadata, then execute each ready packet with:
 
 ```bash
 dopetask tp series exec path/to/packet.json --agent gemini
@@ -83,7 +83,7 @@ This pushes the final packet branch and opens one PR against `series.base_branch
 
 ## 5. Optional Manual Session Handling
 
-`dopetask tmux` remains available for manual or legacy flows that invoke `dopetask tp exec --tmux`, but it is not part of the default JSON series workflow.
+`dopetask tmux` remains available for manual or legacy flows that invoke `dopetask tp series exec --tmux`, but it is not part of the default JSON series workflow.
 
 - List active agents: `dopetask tmux ls`
 - Attach to a session: `dopetask tmux attach <TP-ID>`
