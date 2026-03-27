@@ -18,6 +18,19 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
+## [0.5.1] - 2026-03-26
+
+### Added
+
+- Added hardened regression tests for `ProofAggregator` with zip manifest verification.
+
+### Changed
+
+- Reconciled standard proof bundle contract with the runtime writer authority.
+- Removed non-standard `decision` and `dopetask` blocks from the core proof bundle contract.
+- Normalized historical proof bundles and aligned documentation with emitted artifact reality.
+- Corrected archive manifest definition to use `filename` instead of `path`.
+
 ## [0.5.0] - 2026-03-26
 
 ### Added
