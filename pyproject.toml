@@ -4,17 +4,18 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dopetask"
-version = "0.5.5"
-description = "dopeTask - deterministic task-packet lifecycle + gates"
+version = "0.5.6"
+description = "Deterministic Task Packet execution kernel with proof bundles, worktree isolation, and series-based PR workflows."
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
-authors = [{name = "Dopemux Contributors"}]
-keywords = ["dopetask", "task-packet", "lifecycle", "deterministic", "cli"]
+authors = [{name = "DDD Enterprises"}]
+keywords = ["dopetask", "task-packet", "deterministic", "workflow", "automation", "proof-bundles", "git-worktree", "cli"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -22,6 +23,10 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Utilities",
 ]
 
 dependencies = [
@@ -36,6 +41,9 @@ dependencies = [
 Homepage = "https://github.com/DDD-Enterprises/dopeTask"
 Repository = "https://github.com/DDD-Enterprises/dopeTask"
 Issues = "https://github.com/DDD-Enterprises/dopeTask/issues"
+Releases = "https://github.com/DDD-Enterprises/dopeTask/releases"
+Documentation = "https://github.com/DDD-Enterprises/dopeTask/tree/main/docs"
+Changelog = "https://github.com/DDD-Enterprises/dopeTask/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
@@ -67,6 +75,7 @@ include = [
     "tests/",
     "scripts/",
     "pyproject.toml",
+    "README.md",
     "README_DOPETASK_INSTALL.md",
 ]
 
