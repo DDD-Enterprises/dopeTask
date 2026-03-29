@@ -2,8 +2,19 @@
 
 import subprocess
 from pathlib import Path
-import pytest
+
 from dopetask.ops.tp_series.logic import _parse_status_paths, _worktree_context
+
+
+def _current_branch(repo: Path) -> str:
+    return subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
 
 def test_parse_status_paths_nul_terminated_with_renames():
     # Simulate git status --porcelain -z output
@@ -29,15 +40,16 @@ def test_worktree_context_cleanup(tmp_path):
     (repo / "README.md").write_text("# Test")
     subprocess.run(["git", "add", "README.md"], cwd=repo, check=True)
     subprocess.run(["git", "commit", "-m", "initial"], cwd=repo, check=True)
-    
+
+    base_ref = _current_branch(repo)
     worktree_path = tmp_path / "wt"
     branch = "test-branch"
-    
+
     # Verify cleanup on success
-    with _worktree_context(repo_root=repo, branch=branch, worktree_path=worktree_path, base_ref="main"):
+    with _worktree_context(repo_root=repo, branch=branch, worktree_path=worktree_path, base_ref=base_ref):
         assert worktree_path.exists()
         assert (worktree_path / ".git").exists()
-    
+
     assert not worktree_path.exists()
     # Check branch exists but worktree is gone
     res = subprocess.run(["git", "worktree", "list"], cwd=repo, capture_output=True, text=True)
@@ -52,17 +64,18 @@ def test_worktree_context_cleanup_on_failure(tmp_path):
     (repo / "README.md").write_text("# Test")
     subprocess.run(["git", "add", "README.md"], cwd=repo, check=True)
     subprocess.run(["git", "commit", "-m", "initial"], cwd=repo, check=True)
-    
+
+    base_ref = _current_branch(repo)
     worktree_path = tmp_path / "wt_fail"
     branch = "test-branch-fail"
-    
+
     try:
-        with _worktree_context(repo_root=repo, branch=branch, worktree_path=worktree_path, base_ref="main"):
+        with _worktree_context(repo_root=repo, branch=branch, worktree_path=worktree_path, base_ref=base_ref):
             assert worktree_path.exists()
             raise RuntimeError("Intentional failure")
     except RuntimeError:
         pass
-    
+
     # CRITICAL: Worktree must be cleaned up even on failure
     assert not worktree_path.exists()
     res = subprocess.run(["git", "worktree", "list"], cwd=repo, capture_output=True, text=True)

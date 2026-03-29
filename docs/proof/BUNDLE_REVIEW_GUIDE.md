@@ -21,13 +21,10 @@ Review the `validation` section.
 - Were sufficient scenarios evaluated?
 - What do the `coverage_notes` reveal about gaps?
 
-### Step 4: Check Decisions
-If the packet involves operational or governance judgments, review the `decision` object for `value`, `confidence`, and `rationale`.
-
-### Step 5: Drill Down (Only If Necessary)
+### Step 4: Drill Down (Only If Necessary)
 If (and only if) you need forensic detail, locate the relevant filename in `artifacts.supporting`.
 - For a small number of supporting artifacts, you will find them next to the bundle.
 - For a large number, locate the `*_PROOF_ARCHIVE.zip` (referenced in `artifacts.archive`) and extract the specific file needed.
 
-### Step 6: Avoid Archive Reliance
+### Step 5: Avoid Archive Reliance
 The zip must never be used as the canonical proof surface. If the bundle lacks the summary detail necessary to make a basic judgment without opening the archive, then the bundle itself is deficient and needs improvement.

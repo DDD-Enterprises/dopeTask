@@ -1,0 +1,17 @@
+{
+  "tp_id": "TP-EXAMPLE-001",
+  "archive_filename": "TP-EXAMPLE-001_PROOF_ARCHIVE.zip",
+  "generated_at": "2026-03-28T00:00:00+00:00",
+  "included_files": [
+    {
+      "filename": "TP-EXAMPLE-001_PROOF.json",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "description": "Artifact generated during TP-EXAMPLE-001 execution."
+    },
+    {
+      "filename": "TP-EXAMPLE-001.json",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "description": "Artifact generated during TP-EXAMPLE-001 execution."
+    }
+  ]
+}

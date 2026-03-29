@@ -6,6 +6,7 @@ This document describes the technical structure of the canonical `PROOF_BUNDLE_S
 
 The JSON bundle uses a strictly defined JSON Schema (`proof/standards/PROOF_BUNDLE_SCHEMA.json`). 
 All standard proof bundles must validate against this schema.
+The standard schema is intentionally strict: the top-level shape matches the current `ProofAggregator` output exactly and does not allow undocumented extension blocks.
 
 ## Root Object
 
@@ -20,6 +21,11 @@ All standard proof bundles must validate against this schema.
 | `validation` | `object` | Yes | Information regarding scenario validation and coverage. |
 | `artifacts` | `object` | Yes | Pointers to generated evidence and artifacts. |
 | `manifest` | `object` | Yes | Generation metadata like timestamps and schema versions. |
+
+## Contract Notes
+
+- `tp_id` is the packet identifier string as emitted by runtime. Existing bundle IDs may include additional hyphenated suffixes such as `TP-CORE-007-release-v0.5.2`.
+- The standard schema does not include top-level `decision` or `dopetask` objects. If an adapter needs extra top-level fields, it must define a separate schema or normalize that data outside the standard proof bundle.
 
 ## Sub-Objects
 
