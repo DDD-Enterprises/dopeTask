@@ -18,6 +18,14 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
+## [0.5.6] - 2026-03-28
+
+### Changed
+
+- Rewrote the package `README.md` so the PyPI long description reflects the current JSON TP series workflow, canonical docs map, and installation paths without stale relative links or duplicated sections.
+- Expanded package metadata in `pyproject.toml` with clearer description text, richer keywords and classifiers, and direct links for releases, documentation, and changelog.
+- Included `README.md` explicitly in the sdist surface so the published package and rendered long description use the checked-in canonical README.
+
 ## [0.5.5] - 2026-03-28
 
 ### Added
