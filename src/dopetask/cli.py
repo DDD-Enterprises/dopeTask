@@ -4503,7 +4503,6 @@ def execute_cmd(
             repo=repo_root,
         )
         typer.echo(f"Imported/Updated: {import_result.tp_id}")
-
         result = exec_series_packet(
             tp_file=import_result.packet_path,
             agent=agent,
