@@ -26,7 +26,7 @@ AVAILABILITY_CONFIG_TEMPLATE: dict[str, Any] = {
             "cost_tier": "cheap",
             "context": "medium",
         },
-        "gpt-5.2": {
+        "gpt-5.4": {
             "strengths": ["correctness", "gates", "finalization"],
             "cost_tier": "medium",
             "context": "medium",
@@ -36,12 +36,17 @@ AVAILABILITY_CONFIG_TEMPLATE: dict[str, Any] = {
             "cost_tier": "high",
             "context": "large",
         },
+        "opus-4.6": {
+            "strengths": ["reasoning", "correctness", "code_edit"],
+            "cost_tier": "high",
+            "context": "large",
+        },
         "haiku-4.5": {
             "strengths": ["cheap", "docs", "summaries"],
             "cost_tier": "cheap",
             "context": "small",
         },
-        "sonnet-4.55": {
+        "sonnet-4.6": {
             "strengths": ["code_edit", "tests", "balanced"],
             "cost_tier": "medium",
             "context": "large",
@@ -69,7 +74,7 @@ AVAILABILITY_CONFIG_TEMPLATE: dict[str, Any] = {
         "require_explain": True,
         "stop_on_ambiguity": True,
         "max_cost_tier": "high",
-        "escalation_ladder": ["gpt-5.1-mini", "haiku-4.5", "sonnet-4.55", "gpt-5.3-codex"],
+        "escalation_ladder": ["gpt-5.1-mini", "haiku-4.5", "sonnet-4.6", "gpt-5.3-codex"],
         "max_escalations": 2,
         "min_total_score": 50,
     },

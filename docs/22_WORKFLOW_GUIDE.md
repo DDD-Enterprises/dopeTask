@@ -8,6 +8,8 @@ The series workflow is designed for high-trust, deterministic execution of multi
 
 Use this as the canonical workflow reference. If you are upgrading from older `tp exec` or `commit-sequence` habits, read `24_UPGRADE_GUIDE.md` alongside this guide. If you intentionally need the older manual path, see `20_WORKTREES_COMMIT_SEQUENCING.md`.
 
+Before you start a fresh supervisor session, generate or apply the current prompt using `26_SUPERVISOR_PROMPTS.md`.
+
 ## Lifecycle Stages
 
 ### 1. Planning (Task Packet Authoring)

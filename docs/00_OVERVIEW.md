@@ -35,6 +35,7 @@ Given the same packet, declared inputs, and dopeTask version, output artifacts a
 - `23_INTEGRATION_GUIDE.md`
 - `24_UPGRADE_GUIDE.md`
 - `25_CONSUMER_INSTALL.md`
+- `26_SUPERVISOR_PROMPTS.md`
 
 ### Supporting reference docs
 
@@ -46,6 +47,7 @@ Given the same packet, declared inputs, and dopeTask version, output artifacts a
 ### Beginner onboarding
 
 - `beginner/00_WELCOME.md`
+- `beginner/00A_HOW_DOPETASK_WORKS.md`
 - `beginner/01_CONCEPTS.md`
 - `beginner/02_INSTALLATION.md`
 - `beginner/03_WEB_LLM_SETUP.md`

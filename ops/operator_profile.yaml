@@ -1,11 +1,11 @@
 platform:
-  model: gpt-5.2-thinking
+  model: gpt-5.4
   target: chatgpt
 project:
   name: dopeTask
   repo_root: .
   timezone: America/Vancouver
 dopetask:
-  cli_min_version: 0.5.0
+  cli_min_version: 0.5.7
   pin_type: git_commit
-  pin_value: 8570642a5199134ecd5ed991b0953699b0e1bc5e
+  pin_value: 97bc168810bae3b0add5cc6036cb320d582d2f26

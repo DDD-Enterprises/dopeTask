@@ -186,7 +186,7 @@ def test_orchestrate_executes_only_selected_runner(monkeypatch, tmp_path: Path) 
 
 def test_refusal_route_plan_preserves_ladder_and_step_order(tmp_path: Path) -> None:
     repo = create_dopetask_repo(tmp_path / "repo")
-    custom_ladder = ["sonnet-4.55", "gpt-5.3-codex", "haiku-4.5"]
+    custom_ladder = ["sonnet-4.6", "gpt-5.3-codex", "haiku-4.5"]
     write_availability(
         repo,
         policy_overrides={"min_total_score": 999, "escalation_ladder": custom_ladder},

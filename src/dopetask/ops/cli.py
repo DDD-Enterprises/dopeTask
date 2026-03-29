@@ -76,7 +76,7 @@ def compile(
 @app.command()
 def init(
     platform: str = typer.Option("chatgpt", "--platform"),
-    model: str = typer.Option("gpt-5.2-thinking", "--model"),
+    model: str = typer.Option("gpt-5.4", "--model"),
     yes: bool = typer.Option(
         False,
         "--yes",

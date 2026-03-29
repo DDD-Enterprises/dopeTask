@@ -45,6 +45,24 @@ dopetask --version
 dopetask doctor
 ```
 
+## Supervisor prompt setup
+
+Generate the current supervisor prompt instead of copying an old static markdown file:
+
+```bash
+dopetask ops init --platform chatgpt --model gpt-5.4
+```
+
+This writes a pasteable prompt to `ops/EXPORTED_OPERATOR_PROMPT.md`.
+
+For workspace-aware agents, apply the generated prompt into the repo instructions:
+
+```bash
+dopetask ops apply
+```
+
+For the full prompt-generation workflow, recommended current models, and current CLI versions as of March 29, 2026, see the [Supervisor prompt guide](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/26_SUPERVISOR_PROMPTS.md).
+
 ## Consumer repository install
 
 To wire dopeTask into another repository with repo-local pinning and launch shims:
@@ -64,10 +82,12 @@ curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scrip
 - [Integration guide](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/23_INTEGRATION_GUIDE.md)
 - [Upgrade guide](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/24_UPGRADE_GUIDE.md)
 - [Consumer install](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/25_CONSUMER_INSTALL.md)
+- [Supervisor prompts](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/26_SUPERVISOR_PROMPTS.md)
 
 ### Beginner onboarding
 
 - [Welcome](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/beginner/00_WELCOME.md)
+- [How dopeTask works](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/beginner/00A_HOW_DOPETASK_WORKS.md)
 - [Concepts](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/beginner/01_CONCEPTS.md)
 - [Installation](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/beginner/02_INSTALLATION.md)
 - [Web LLM setup](https://github.com/DDD-Enterprises/dopeTask/blob/main/docs/beginner/03_WEB_LLM_SETUP.md)

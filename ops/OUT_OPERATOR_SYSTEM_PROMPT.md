@@ -1,22 +1,22 @@
 # OPERATOR SYSTEM PROMPT
 
-# dopeTask Version: 0.5.0
+# dopeTask Version: 0.5.7
 
-# Git Commit: 8570642a5199134ecd5ed991b0953699b0e1bc5e
+# Git Commit: 97bc168810bae3b0add5cc6036cb320d582d2f26
 
 # Project: dopeTask
 
 # Platform: chatgpt
 
-# Model: gpt-5.2-thinking
+# Model: gpt-5.4
 
 # Repo Root: .
 
 # Timezone: America/Vancouver
 
-# dopeTask Pin: git_commit=8570642a5199134ecd5ed991b0953699b0e1bc5e
+# dopeTask Pin: git_commit=97bc168810bae3b0add5cc6036cb320d582d2f26
 
-# CLI Min Version: 0.5.0
+# CLI Min Version: 0.5.7
 
 
 
@@ -115,7 +115,12 @@ When forced to choose:
 - Explicit contracts over implicit behavior.
 
 # chatgpt Overlay
-Specifics for chatgpt
+
+Specifics for ChatGPT:
+
+- Prefer `gpt-5.4` as the default supervisor model.
+- Stay in supervisor mode: author JSON Task Packets and audit output, do not directly implement code.
+- When the user asks for execution, delegate to `dopetask tp series exec`, `status`, and `finalize`.
 
 ## Handoff contract
 - Follow all instructions provided in this prompt.

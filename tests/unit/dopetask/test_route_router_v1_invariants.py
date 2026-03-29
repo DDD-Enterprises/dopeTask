@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import typing
@@ -36,11 +37,16 @@ def _write_packet(repo_root: Path, text: str = "# Packet\n") -> Path:
 
 
 def _run(repo_root: Path, args: list[str], expect: typing.Optional[int] = None) -> CompletedProcess:
+    project_root = Path(__file__).resolve().parents[3]
+    src_path = str(project_root / "src")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     result = subprocess.run(
         [sys.executable, "-m", "dopetask", *args],
         cwd=repo_root,
         text=True,
         capture_output=True,
+        env=env,
     )
     if expect is not None:
         assert result.returncode == expect, result.stdout + result.stderr
@@ -128,7 +134,7 @@ def test_route_plan_preserves_declared_ladder_order(repo: Path) -> None:
     text = availability_path.read_text()
     ladder_section = "escalation_ladder"
     assert ladder_section in text
-    new_ladder = ["sonnet-4.55", "gpt-5.3-codex", "haiku-4.5"]
+    new_ladder = ["sonnet-4.6", "gpt-5.3-codex", "haiku-4.5"]
     lines = text.splitlines()
     start = next(i for i, line in enumerate(lines) if ladder_section in line) + 1
     end = start

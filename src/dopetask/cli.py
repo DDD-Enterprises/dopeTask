@@ -1177,7 +1177,7 @@ def init_cmd(
                 },
                 "platform": {
                     "target": platform,
-                    "model": "gpt-5.2-thinking",
+                    "model": "gpt-5.4",
                 },
             }
             with open(profile_path, "w") as f:
