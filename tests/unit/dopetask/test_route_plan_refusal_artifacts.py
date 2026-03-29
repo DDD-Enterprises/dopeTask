@@ -16,7 +16,7 @@ from tests.unit.dopetask.route_test_utils import (
     write_packet,
 )
 
-DEFAULT_ESCALATION_LADDER = ["gpt-5.1-mini", "haiku-4.5", "sonnet-4.55", "gpt-5.3-codex"]
+DEFAULT_ESCALATION_LADDER = ["gpt-5.1-mini", "haiku-4.5", "sonnet-4.6", "gpt-5.3-codex"]
 
 
 def test_route_plan_refusal_writes_expected_artifacts(tmp_path: Path) -> None:
@@ -60,7 +60,7 @@ def test_route_plan_refusal_writes_expected_artifacts(tmp_path: Path) -> None:
 def test_escalation_ladder_order_respects_declaration(tmp_path: Path) -> None:
     repo = create_dopetask_repo(tmp_path / "ladder")
     packet = write_packet(repo)
-    custom_ladder = ["sonnet-4.55", "gpt-5.3-codex", "haiku-4.5"]
+    custom_ladder = ["sonnet-4.6", "gpt-5.3-codex", "haiku-4.5"]
     write_availability(repo, policy_overrides={"escalation_ladder": custom_ladder, "min_total_score": 10})
 
     runner = CliRunner()
@@ -173,7 +173,7 @@ def test_route_handoff_reports_step_order_and_packet(tmp_path: Path) -> None:
     contents = (repo / "out" / "dopetask_route" / "HANDOFF.md").read_text(encoding="utf-8")
     assert f"- packet_path: {packet}" in contents
     assert contents.index("## Step: alpha") < contents.index("## Step: beta")
-    assert "Model: sonnet-4.55" in contents
+    assert "Model: sonnet-4.6" in contents
 
 
 def test_route_explain_is_reproducible(tmp_path: Path) -> None:
