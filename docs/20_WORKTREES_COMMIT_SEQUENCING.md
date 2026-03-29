@@ -2,7 +2,7 @@
 
 This document is maintainer-level.
 
-Note: this flow documents the legacy markdown packet + commit-sequence path. New supervisor-driven work should use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`.
+Note: this flow documents the legacy/manual markdown packet + commit-sequence path. New supervisor-driven work should use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`. For the current default path, see `22_WORKFLOW_GUIDE.md` and `24_UPGRADE_GUIDE.md`.
 
 ## CLI UX (Final Wording)
 

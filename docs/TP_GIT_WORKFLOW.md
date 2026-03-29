@@ -2,7 +2,7 @@
 
 This document describes the legacy/manual `dopetask tp git` path.
 
-For new supervisor-driven work, use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`. Keep `tp git` for low-level manual intervention or older maintainer workflows only.
+For new supervisor-driven work, use JSON Task Packets with `dopetask tp series exec`, `dopetask tp series status`, and `dopetask tp series finalize`. Keep `tp git` for low-level manual intervention or older maintainer workflows only. For the default workflow, see `22_WORKFLOW_GUIDE.md`. For migration notes, see `24_UPGRADE_GUIDE.md`.
 
 ## Required flow
 

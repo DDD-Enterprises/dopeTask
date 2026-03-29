@@ -32,4 +32,4 @@ Whenever you receive a task or a bug report, follow these steps:
 ---
 **References:**
 - Schema: `docs/schemas/task_packet.schema.json`
-- Integration Guide: `DOPETASK_INTEGRATION_GUIDE.md`
+- Integration Guide: `docs/23_INTEGRATION_GUIDE.md`

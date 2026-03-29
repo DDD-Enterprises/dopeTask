@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dopetask"
-version = "0.5.4"
+version = "0.5.5"
 description = "dopeTask - deterministic task-packet lifecycle + gates"
 readme = "README.md"
 license = {text = "MIT"}
@@ -33,9 +33,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hu3mann/dopeTask"
-Repository = "https://github.com/hu3mann/dopeTask"
-Issues = "https://github.com/hu3mann/dopeTask/issues"
+Homepage = "https://github.com/DDD-Enterprises/dopeTask"
+Repository = "https://github.com/DDD-Enterprises/dopeTask"
+Issues = "https://github.com/DDD-Enterprises/dopeTask/issues"
 
 [project.optional-dependencies]
 dev = [

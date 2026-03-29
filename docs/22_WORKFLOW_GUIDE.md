@@ -6,12 +6,19 @@ This guide details the modern, DAG-aware workflow for executing complex tasks us
 
 The series workflow is designed for high-trust, deterministic execution of multi-step engineering tasks. Each step is represented by a JSON Task Packet (TP) and executes in an isolated git worktree.
 
+Use this as the canonical workflow reference. If you are upgrading from older `tp exec` or `commit-sequence` habits, read `24_UPGRADE_GUIDE.md` alongside this guide. If you intentionally need the older manual path, see `20_WORKTREES_COMMIT_SEQUENCING.md`.
+
 ## Lifecycle Stages
 
 ### 1. Planning (Task Packet Authoring)
 The Supervisor (AI or human) decomposes a high-level objective into atomic Task Packets.
 - **Key Metadata**: `series.id`, `depends_on`, `commit.allowlist`.
 - **Validation**: Every packet MUST have empirical verification commands.
+- **Clipboard handoff**: If your supervisor emitted strict JSON to the clipboard, import it with `dopetask tp series import` before execution.
+
+```bash
+dopetask tp series import
+```
 
 ### 2. Execution (`tp series exec`)
 Invoke the kernel to execute a specific packet:

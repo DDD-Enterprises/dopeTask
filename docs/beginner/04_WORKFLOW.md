@@ -4,6 +4,8 @@ You have dopeTask installed, and your AI is acting as a Supervisor. Now, how do 
 
 Building with dopeTask is a repeating 4-step loop. Once you get the hang of it, it becomes incredibly fast and incredibly safe.
 
+This page is the beginner tutorial version of the workflow. For the canonical operator reference, use `../22_WORKFLOW_GUIDE.md`. For migration from older workflows, use `../24_UPGRADE_GUIDE.md`.
+
 ---
 
 ## The Loop: Plan ➡️ Execute ➡️ Verify ➡️ Finalize

@@ -1,6 +1,22 @@
 # DOPEMUX ADAPTER SCHEMA
 
-This is the normalized object Dopemux should use internally after loading a Dopetask proof bundle or launching a Dopetask packet.
+This is the normalized integration envelope Dopemux can use internally after reading canonical dopeTask artifacts.
+
+It is a derived integration object, not a canonical artifact emitted by dopeTask itself.
+
+## Canonical inputs
+
+Build this envelope from the canonical sources below:
+
+- `proof/<TP_ID>_PROOF_BUNDLE.json`
+- `out/tp_series/<series-id>/SERIES_STATE.json`
+- `out/tp_series/<series-id>/SERIES_PR.json` after finalization
+- any Dopemux-local governance metadata you add above those sources
+
+The JSON schema for this envelope lives in:
+
+- `schemas/dopemux_adapter_envelope.schema.json`
+- `dopetask_schemas/dopemux_adapter_envelope.schema.json`
 
 ## Canonical Normalized Object
 
@@ -46,9 +62,9 @@ This is the normalized object Dopemux should use internally after loading a Dope
     ]
   },
   "proof": {
-    "bundle_path": "proof/bundles/TP-PRMS-050_PROOF_BUNDLE.json",
+    "bundle_path": "proof/TP-PRMS-050_PROOF_BUNDLE.json",
     "bundle_present": true,
-    "archive_path": "proof/archives/TP-PRMS-050_PROOF_ARCHIVE.zip",
+    "archive_path": "proof/TP-PRMS-050_PROOF_ARCHIVE.zip",
     "archive_present": true,
     "supporting_artifacts": [
       "proof/pr_merge/flight_deck/ops/OPERATIONALIZATION_REPORT.json",
@@ -74,8 +90,8 @@ This is the normalized object Dopemux should use internally after loading a Dope
     }
   },
   "operator_view": {
-    "open_first": "proof/bundles/TP-PRMS-050_PROOF_BUNDLE.json",
-    "open_second": "proof/archives/TP-PRMS-050_PROOF_ARCHIVE.zip",
+    "open_first": "proof/TP-PRMS-050_PROOF_BUNDLE.json",
+    "open_second": "proof/TP-PRMS-050_PROOF_ARCHIVE.zip",
     "recommended_panel": "mission_header",
     "artifact_priority": [
       "bundle",
@@ -98,3 +114,10 @@ This is the normalized object Dopemux should use internally after loading a Dope
 - **tp.status**: PLANNED, IN_PROGRESS, VALIDATED, OPERATIONAL, BLOCKED, DEFERRED, FAILED, UNKNOWN.
 - **posture.mode**: ADVISORY_ONLY, GO_SUPERVISED_ONLY, LIVE_SAFE, DEFER_ONLY, UNKNOWN.
 - **summary.headline_state**: READY, BLOCKED, DEFERRED, SUPERVISED, INCIDENT, UNKNOWN.
+
+## Contract notes
+
+- `proof.bundle_path` and `proof.archive_path` should point to canonical dopeTask artifacts, not to historical fixture folders.
+- `target.pr_number` may be `null` until the series is finalized.
+- `target.case_id` may be `null` if Dopemux has not assigned a case yet.
+- `integration.errors` and `integration.warnings` are integration-side status arrays and are not produced by dopeTask proof generation.

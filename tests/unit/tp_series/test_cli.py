@@ -84,6 +84,41 @@ def _write_packet(
     return path
 
 
+def _series_packet_payload(
+    *,
+    tp_id: str = "TPIMPORT",
+    target: str = "imported packet",
+    series_id: str = "SERIES-IMPORT",
+    base_branch: str = "main",
+    depends_on: list[str] | None = None,
+    parent_tp_id: str | None = None,
+    allowlist: list[str] | None = None,
+) -> dict:
+    return {
+        "id": tp_id,
+        "target": target,
+        "steps": [
+            {
+                "id": "step_1",
+                "task": "Validate packet",
+                "validation": ["true"],
+            }
+        ],
+        "depends_on": depends_on or [],
+        "series": {
+            "id": series_id,
+            "base_branch": base_branch,
+            "parent_tp_id": parent_tp_id,
+            "final_packet": False,
+        },
+        "commit": {
+            "message": f"{tp_id}: commit",
+            "allowlist": allowlist or ["src/import.txt"],
+            "verify": ["git status --short"],
+        },
+    }
+
+
 def _fake_execute_task_packet(tp_file: Path, *, agent: str = "gemini", working_dir: Path | None = None) -> Path:
     assert working_dir is not None
     packet = json.loads(Path(tp_file).read_text(encoding="utf-8"))
@@ -125,6 +160,263 @@ def _fake_run_command(argv: list[str], *, cwd: Path, check: bool = True) -> Exec
     if check:
         raise RuntimeError(f"unexpected command in test: {rendered}")
     return ExecResult(tuple(argv), cwd, 1, "", f"unexpected command: {rendered}")
+
+
+def _completed(*, args: list[str], stdout: str = "", stderr: str = "", returncode: int = 0) -> subprocess.CompletedProcess[str]:
+    return subprocess.CompletedProcess(args=args, returncode=returncode, stdout=stdout, stderr=stderr)
+
+
+def _clipboard_run_factory(handler):
+    original_run = subprocess.run
+
+    def fake_run(argv, *args, **kwargs):
+        if argv and argv[0] in {"pbpaste", "wl-paste", "xclip", "xsel"}:
+            return handler(argv, *args, **kwargs)
+        return original_run(argv, *args, **kwargs)
+
+    return fake_run
+
+
+def test_series_import_reads_macos_clipboard_and_writes_packet(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload()
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        assert argv == ["pbpaste"]
+        assert capture_output is True
+        assert text is True
+        assert check is False
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 0, result.stdout
+    packet_path = repo / "TPIMPORT.json"
+    assert packet_path.exists()
+    assert json.loads(packet_path.read_text(encoding="utf-8"))["id"] == "TPIMPORT"
+    assert "validation=structural-ok" in result.stdout
+    assert f"packet_path={packet_path}" in result.stdout
+    assert f"next_command=dopetask tp series exec {packet_path} --agent gemini" in result.stdout
+    assert not (repo / "out" / "tp_series" / "SERIES-IMPORT" / "SERIES_STATE.json").exists()
+
+
+def test_series_import_linux_auto_falls_back_to_xclip(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload(tp_id="TPLINUX")
+    calls: list[list[str]] = []
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        calls.append(argv)
+        if argv[0] == "wl-paste":
+            raise FileNotFoundError("missing wl-paste")
+        if argv[0] == "xclip":
+            return _completed(args=argv, stdout=json.dumps(payload))
+        raise AssertionError(f"unexpected clipboard command: {argv}")
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "linux")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 0, result.stdout
+    assert calls == [["wl-paste", "--no-newline"], ["xclip", "-selection", "clipboard", "-o"]]
+    assert (repo / "TPLINUX.json").exists()
+
+
+def test_series_import_linux_auto_falls_back_to_xsel(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload(tp_id="TPXSEL")
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        if argv[0] in {"wl-paste", "xclip"}:
+            raise FileNotFoundError(f"missing {argv[0]}")
+        if argv[0] == "xsel":
+            return _completed(args=argv, stdout=json.dumps(payload))
+        raise AssertionError(f"unexpected clipboard command: {argv}")
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "linux")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 0, result.stdout
+    assert (repo / "TPXSEL.json").exists()
+
+
+def test_series_import_refuses_non_strict_json_clipboard(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout="```json\n{\"id\":\"TP\"}\n```")
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "clipboard does not contain strict JSON" in _output_text(result)
+
+
+def test_series_import_refuses_schema_invalid_packet(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps({"id": "TPBAD", "target": "missing steps"}))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "Schema validation failed for 'task_packet'" in _output_text(result)
+
+
+def test_series_import_refuses_when_series_metadata_missing(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = {
+        "id": "TPNO-SERIES",
+        "target": "no series",
+        "steps": [{"id": "step_1", "task": "run", "validation": ["true"]}],
+    }
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "tp series import requires packet.series metadata" in _output_text(result)
+
+
+def test_series_import_refuses_existing_file_without_force_and_supports_force(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    out_dir = repo / "packets"
+    out_dir.mkdir()
+    packet_path = out_dir / "TPFORCE.json"
+    packet_path.write_text('{"stale": true}\n', encoding="utf-8")
+    payload = _series_packet_payload(tp_id="TPFORCE")
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    refused = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo), "--out-dir", str(out_dir)])
+    forced = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo), "--out-dir", str(out_dir), "--force"])
+
+    assert refused.exit_code == 1
+    assert "target file already exists" in _output_text(refused)
+    assert forced.exit_code == 0, forced.stdout
+    assert json.loads(packet_path.read_text(encoding="utf-8"))["id"] == "TPFORCE"
+
+
+def test_series_import_refuses_when_existing_series_state_conflicts(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload(tp_id="TPSTATE", series_id="SERIES-STATE", base_branch="main")
+    series_dir = repo / "out" / "tp_series" / "SERIES-STATE"
+    series_dir.mkdir(parents=True)
+    (series_dir / "SERIES_STATE.json").write_text(
+        json.dumps(
+            {
+                "series_id": "SERIES-STATE",
+                "base_branch": "develop",
+                "packets": {"TPSTATE": {"status": "completed"}},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "series base branch mismatch" in _output_text(result)
+
+
+def test_series_import_refuses_duplicate_packet_id_in_existing_series_state(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload(tp_id="TPDUP", series_id="SERIES-DUP")
+    series_dir = repo / "out" / "tp_series" / "SERIES-DUP"
+    series_dir.mkdir(parents=True)
+    (series_dir / "SERIES_STATE.json").write_text(
+        json.dumps(
+            {
+                "series_id": "SERIES-DUP",
+                "base_branch": "main",
+                "packets": {"TPDUP": {"status": "completed"}},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "packet already recorded in state: TPDUP" in _output_text(result)
+
+
+def test_series_import_refuses_invalid_parent_dependency_relationship(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    payload = _series_packet_payload(
+        tp_id="TPREL",
+        depends_on=["TPA"],
+        parent_tp_id="TPB",
+    )
+
+    def clipboard_run(argv: list[str], *, capture_output: bool, text: bool, check: bool):
+        return _completed(args=argv, stdout=json.dumps(payload))
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.subprocess.run", _clipboard_run_factory(clipboard_run))
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.sys.platform", "darwin")
+    monkeypatch.chdir(repo)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["tp", "series", "import", "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "parent_tp_id must also be present in depends_on" in _output_text(result)
 
 
 def test_series_exec_supports_multiple_completed_roots_in_one_series(tmp_path: Path, monkeypatch) -> None:

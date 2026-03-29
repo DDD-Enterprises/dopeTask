@@ -7,13 +7,50 @@ from pathlib import Path
 
 import typer
 
-from dopetask.ops.tp_series.logic import exec_series_packet, finalize_series, get_series_status
+from dopetask.ops.tp_series.logic import (
+    exec_series_packet,
+    finalize_series,
+    get_series_status,
+    import_series_packet,
+)
 
 app = typer.Typer(
     name="series",
     help="JSON Task Packet series commands",
     no_args_is_help=True,
 )
+
+
+@app.command("import")
+def import_cmd(
+    out_dir: typing.Optional[Path] = typer.Option(None, "--out-dir", help="Output directory for imported packet."),
+    force: bool = typer.Option(False, "--force", help="Overwrite an existing packet file if it already exists."),
+    clipboard_backend: str = typer.Option(
+        "auto",
+        "--clipboard-backend",
+        help="Clipboard backend: auto, pbpaste, wl-paste, xclip, or xsel.",
+    ),
+    repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
+) -> None:
+    """Import a JSON Task Packet from the clipboard and validate series metadata."""
+    try:
+        result = import_series_packet(
+            out_dir=out_dir,
+            force=force,
+            clipboard_backend=clipboard_backend,
+            repo=repo,
+        )
+    except Exception as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(1) from exc
+
+    typer.echo(f"repo_root={result.repo_root}")
+    typer.echo(f"series_id={result.series_id}")
+    typer.echo(f"tp_id={result.tp_id}")
+    typer.echo(f"packet_path={result.packet_path}")
+    typer.echo(f"validation={result.validation}")
+    typer.echo(f"next_command=dopetask tp series exec {result.packet_path} --agent gemini")
+    typer.echo(result.message)
 
 
 @app.command("exec")

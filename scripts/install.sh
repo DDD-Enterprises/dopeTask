@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # dopeTask Unified Installer and Upgrader
 # Installs or upgrades dopeTask in a repository.
-# Can be run via: curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash
+# Can be run via: curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default Configuration
-DEFAULT_REPO_URL="https://github.com/hu3mann/dopeTask.git"
+DEFAULT_REPO_URL="https://github.com/DDD-Enterprises/dopeTask.git"
 DEFAULT_REF="main"
 FORCE_REINSTALL=false
 TARGET_VERSION=""
@@ -220,11 +220,17 @@ main() {
     echo ""
 
     # Determine venv location
-    if [ -d "$REPO_ROOT/.venv" ]; then
+    if [ -d "$REPO_ROOT/.venv-dopetask" ]; then
+        VENV_PATH="$REPO_ROOT/.venv-dopetask"
+        log_info "Using existing venv: $VENV_PATH"
+    elif [ -d "$REPO_ROOT/.venv" ]; then
         VENV_PATH="$REPO_ROOT/.venv"
         log_info "Using existing venv: $VENV_PATH"
-    else
+    elif [ -d "$REPO_ROOT/.dopetask_venv" ]; then
         VENV_PATH="$REPO_ROOT/.dopetask_venv"
+        log_info "Using legacy venv: $VENV_PATH"
+    else
+        VENV_PATH="$REPO_ROOT/.venv-dopetask"
         log_info "Creating venv: $VENV_PATH"
         python3 -m venv "$VENV_PATH"
     fi

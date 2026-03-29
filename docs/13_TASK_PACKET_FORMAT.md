@@ -61,6 +61,7 @@ These fields define both packet readiness and git ancestry:
 The default execution flow for JSON packets is:
 
 1. Author one or more JSON packets with shared `series.id`
+   or import clipboard JSON with `dopetask tp series import`
 2. Run ready packets with `dopetask tp series exec <packet.json> --agent <agent>`
 3. Inspect proof bundles and the authoritative ledger with `dopetask tp series status <series-id>`
 4. Open one PR for the completed series with `dopetask tp series finalize <series-id> --title "..."`

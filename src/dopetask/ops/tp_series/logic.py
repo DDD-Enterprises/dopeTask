@@ -7,6 +7,7 @@ import fnmatch
 import json
 import shutil
 import subprocess
+import sys
 from collections.abc import Iterator
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
@@ -37,6 +38,18 @@ class SeriesExecResult:
     worktree_path: Path
     run_dir: Path
     proof_bundle: Optional[Path]
+    message: str
+
+
+@dataclass(frozen=True)
+class SeriesImportResult:
+    """Outcome envelope for `dopetask tp series import`."""
+
+    repo_root: Path
+    series_id: str
+    tp_id: str
+    packet_path: Path
+    validation: str
     message: str
 
 
@@ -244,6 +257,137 @@ def _ensure_series_packet(tp: TaskPacket) -> None:
         raise ValueError("series.parent_tp_id must be null only for root packets")
     if tp.series.parent_tp_id is not None and tp.series.parent_tp_id not in tp.depends_on:
         raise ValueError("series.parent_tp_id must also be present in depends_on")
+
+
+def _ensure_series_import_packet(tp: TaskPacket) -> None:
+    try:
+        _ensure_series_packet(tp)
+    except ValueError as exc:
+        message = str(exc)
+        if message == "tp series exec requires packet.series metadata":
+            raise ValueError("tp series import requires packet.series metadata") from exc
+        if message == "tp series exec requires packet.commit metadata":
+            raise ValueError("tp series import requires packet.commit metadata") from exc
+        if message == "tp series exec requires packet.commit.allowlist to be non-empty":
+            raise ValueError("tp series import requires packet.commit.allowlist to be non-empty") from exc
+        raise
+
+
+def _validate_series_import_state(*, repo_root: Path, tp: TaskPacket) -> None:
+    assert tp.series is not None
+    state_path = _state_path(_series_dir(repo_root, tp.series.id))
+    if not state_path.exists():
+        return
+
+    state = _read_json(state_path)
+    if state.get("series_id") != tp.series.id:
+        raise RuntimeError(f"series import failed: expected series_id {tp.series.id}, found {state.get('series_id')}")
+    if state.get("base_branch") != tp.series.base_branch:
+        raise RuntimeError(
+            "series import failed: series base branch mismatch: "
+            f"expected {state.get('base_branch')}, got {tp.series.base_branch}"
+        )
+
+    packets = state.get("packets", {})
+    if tp.id in packets:
+        raise RuntimeError(f"series import failed: packet already recorded in state: {tp.id}")
+
+
+def _clipboard_backend_command(backend: str) -> list[str]:
+    if backend == "pbpaste":
+        return ["pbpaste"]
+    if backend == "wl-paste":
+        return ["wl-paste", "--no-newline"]
+    if backend == "xclip":
+        return ["xclip", "-selection", "clipboard", "-o"]
+    if backend == "xsel":
+        return ["xsel", "--clipboard", "--output"]
+    raise RuntimeError(f"series import failed: unsupported clipboard backend: {backend}")
+
+
+def _clipboard_install_hint(backend: str) -> str:
+    if backend == "pbpaste":
+        return "pbpaste is required on macOS"
+    if backend == "wl-paste":
+        return "install wl-clipboard to provide wl-paste"
+    if backend == "xclip":
+        return "install xclip to read the X11 clipboard"
+    if backend == "xsel":
+        return "install xsel to read the X11 clipboard"
+    return f"install clipboard support for backend {backend}"
+
+
+def _auto_clipboard_backends() -> list[str]:
+    if sys.platform == "darwin":
+        return ["pbpaste"]
+    if sys.platform.startswith("linux"):
+        return ["wl-paste", "xclip", "xsel"]
+    raise RuntimeError(f"series import failed: unsupported platform for clipboard auto mode: {sys.platform}")
+
+
+def _read_clipboard(*, backend: str) -> str:
+    backends = _auto_clipboard_backends() if backend == "auto" else [backend]
+    missing: list[str] = []
+    last_error: Optional[str] = None
+
+    for candidate in backends:
+        command = _clipboard_backend_command(candidate)
+        try:
+            completed = subprocess.run(command, capture_output=True, text=True, check=False)
+        except FileNotFoundError:
+            missing.append(_clipboard_install_hint(candidate))
+            continue
+
+        if completed.returncode == 0:
+            return completed.stdout
+
+        detail = (completed.stderr or completed.stdout).strip()
+        last_error = f"{candidate} failed: {detail or f'exit {completed.returncode}'}"
+
+    if last_error is not None:
+        raise RuntimeError(f"series import failed: unable to read clipboard: {last_error}")
+
+    raise RuntimeError("series import failed: no supported clipboard backend available: " + "; ".join(missing))
+
+
+def import_series_packet(
+    *,
+    out_dir: Optional[Path] = None,
+    force: bool = False,
+    clipboard_backend: str = "auto",
+    repo: Optional[Path] = None,
+) -> SeriesImportResult:
+    """Import a JSON Task Packet from the clipboard into the current workspace."""
+    repo_root = resolve_repo_root(repo)
+    clipboard_text = _read_clipboard(backend=clipboard_backend)
+    try:
+        payload = json.loads(clipboard_text)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"series import failed: clipboard does not contain strict JSON: {exc}") from exc
+
+    if not isinstance(payload, dict):
+        raise RuntimeError("series import failed: clipboard JSON must be an object")
+
+    tp = TPParser.parse_dict(payload)
+    _ensure_series_import_packet(tp)
+    _validate_series_import_state(repo_root=repo_root, tp=tp)
+    assert tp.series is not None
+
+    target_dir = (out_dir or Path.cwd()).resolve()
+    target_dir.mkdir(parents=True, exist_ok=True)
+    packet_path = target_dir / f"{tp.id}.json"
+    if packet_path.exists() and not force:
+        raise RuntimeError(f"series import failed: target file already exists: {packet_path}")
+
+    packet_path.write_text(f"{json.dumps(tp.to_dict(), indent=2, sort_keys=True)}\n", encoding="utf-8")
+    return SeriesImportResult(
+        repo_root=repo_root,
+        series_id=tp.series.id,
+        tp_id=tp.id,
+        packet_path=packet_path,
+        validation="structural-ok",
+        message=f"series packet imported: {tp.id}",
+    )
 
 
 def _packet_branch(tp: TaskPacket) -> str:

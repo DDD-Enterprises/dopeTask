@@ -2,12 +2,14 @@
 
 This guide provides patterns for integrating `dopeTask` with CI/CD pipelines, custom agents, and external systems.
 
+Use this as the canonical integration reference for current `0.5.x` behavior. For packet structure, see `13_TASK_PACKET_FORMAT.md`. For migration from older execution assumptions, see `24_UPGRADE_GUIDE.md`.
+
 ## CI/CD Integration
 
 `dopeTask` is optimized for headless execution.
 
 ### GitHub Actions Pattern
-Use the following pattern to execute a Task Packet series in a workflow:
+Use the following pattern to execute one ready Task Packet in a workflow:
 
 ```yaml
 jobs:
@@ -32,15 +34,18 @@ jobs:
 
 ## External Agent Integration
 
-To integrate a new AI agent (e.g., GPT-4, Claude) with the `dopeTask` execution kernel:
+The current low-level JSON TP executor only implements the `gemini` agent profile in the runtime path.
 
-1. **Implement an Adapter**: Create a new class in `src/dopetask_adapters/` following the `BaseExecutor` interface.
-2. **Register the Agent**: Update the router in `src/dopetask/ops/tp_exec/engine.py` to recognize your agent slug.
-3. **Task Packet Hand-off**: Configure your supervisor to emit JSON packets matching the `task_packet.schema.json`.
+To add another agent profile:
+
+1. **Implement the executor**: add an executor under `src/dopetask_adapters/<agent>/` that can run a compiled JSON TP and return the raw proof path.
+2. **Register the agent slug**: update `src/dopetask/ops/tp_exec/engine.py` so `execute_task_packet()` recognizes the new `--agent` value.
+3. **Keep the packet contract stable**: supervisors still emit JSON packets matching `docs/schemas/task_packet.schema.json`.
+4. **Use the series workflow as the entrypoint**: new work should still run through `dopetask tp series exec ... --agent <agent>`.
 
 ## Proof Data Consumption
 
-Every `dopeTask` execution produces a `PROOF_BUNDLE.json`. External systems can ingest these bundles to:
+Every `dopeTask` execution produces a canonical proof bundle at `proof/<TP_ID>_PROOF_BUNDLE.json`. External systems can ingest these bundles to:
 - Verify deployment integrity.
 - Generate automated release notes.
 - Audit AI-driven code changes.
@@ -49,21 +54,34 @@ Every `dopeTask` execution produces a `PROOF_BUNDLE.json`. External systems can 
 {
   "tp_id": "TP-123",
   "status": "VALIDATED",
+  "packet_family": "implementation",
+  "lane": "default",
   "summary": {
     "result": "Success",
     "key_findings": ["All tests passed"]
+  },
+  "artifacts": {
+    "archive": {
+      "present": true,
+      "filename": "TP-123_PROOF_ARCHIVE.zip"
+    }
   }
 }
 ```
 
+If you need a higher-level derived object for Dopemux, use the schema documented in `docs/integrations/dopetask/ADAPTER_SCHEMA.md`. That envelope is an integration-side normalization layer, not the canonical dopeTask proof artifact.
+
+For proof bundle semantics, use `docs/proof/PROOF_BUNDLE_CONTRACT.md` and `docs/proof/DOPETASK_BUNDLE_SCHEMA.md` as the authority.
+
 ## Programmatic CLI Usage
 
-You can parse the JSON output of most `dopetask` commands using the `--json` flag (where supported) or by reading the state files in `out/tp_series/`.
+You can read the authoritative series ledger in `out/tp_series/` directly or call `dopetask tp series status <series-id>`.
 
 ```python
 import json
 from pathlib import Path
 
 state = json.loads(Path("out/tp_series/my-series/SERIES_STATE.json").read_text())
-print(f"Series Status: {state['status']}")
+print(f"Completed packets: {sum(1 for packet in state['packets'].values() if packet['status'] == 'completed')}")
+print(f"Tracked packets: {sorted(state['packets'])}")
 ```
