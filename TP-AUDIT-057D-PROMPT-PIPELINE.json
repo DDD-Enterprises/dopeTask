@@ -1,0 +1,69 @@
+{
+  "commit": {
+    "allowlist": [
+      "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ],
+    "message": "docs: audit prompt pipeline",
+    "verify": [
+      "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ]
+  },
+  "depends_on": [],
+  "id": "TP-AUDIT-057D-PROMPT-PIPELINE",
+  "invariants": [],
+  "project": "dopetask",
+  "series": {
+    "base_branch": "main",
+    "final_packet": true,
+    "id": "SERIES-AUDIT-057D-PROMPT-PIPELINE",
+    "parent_tp_id": null
+  },
+  "steps": [
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S1",
+      "requirements": [],
+      "task": "Ensure directory docs/audits exists.",
+      "validation": [
+        "mkdir -p docs/audits",
+        "test -d docs/audits"
+      ]
+    },
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S2",
+      "requirements": [],
+      "task": "Write file docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md using a shell command. The file must include the exact strings: 'dopeTask 0.5.7 Prompt Pipeline Audit', 'EXPORTED_OPERATOR_PROMPT', 'Generated vs Static', 'Shipped vs Source-Repo-Only', and 'Evidence'.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'dopeTask 0.5.7 Prompt Pipeline Audit' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'EXPORTED_OPERATOR_PROMPT' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Generated vs Static' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Shipped vs Source-Repo-Only' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Evidence' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ]
+    },
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S3",
+      "requirements": [],
+      "task": "Write file docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md using a shell command. The file must include the strings: 'Downstream Install Contract', 'uv tool install dopetask', 'dopetask init', and 'consumer repos'.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'Downstream Install Contract' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'uv tool install dopetask' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'dopetask init' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'consumer repos' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+      ]
+    }
+  ],
+  "target": "Audit dopeTask prompt pipeline."
+}
