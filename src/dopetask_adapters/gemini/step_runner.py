@@ -5,6 +5,9 @@ from typing import Any
 from .prompts import GEMINI_PROMPTS
 
 class StepRunner:
+    def __init__(self, model: str = None) -> None:
+        self.model = model
+
     def compile_step_prompt(self, step: dict[str, Any]) -> str:
         """Compiles the TURN 3+ prompt for Gemini."""
         return GEMINI_PROMPTS["TURN_3_STEP"].format(
@@ -22,13 +25,24 @@ class StepRunner:
             "files_created": [],
             "commands_run": [],
             "validation_passed": False,
-            "errors": []
+            "errors": [],
+            "output_log": []  # New field for trace capture
         }
 
         try:
             for cmd in step.get("commands", []):
                 result["commands_run"].append(cmd)
                 cp = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                
+                # Capture output for trace
+                result["output_log"].append({
+                    "command": cmd,
+                    "stdout": cp.stdout,
+                    "stderr": cp.stderr,
+                    "returncode": cp.returncode,
+                    "type": "execution"
+                })
+
                 if cp.returncode != 0:
                     result["errors"].append(
                         f"Command failed ({cp.returncode}): {cmd}\n"
@@ -42,6 +56,16 @@ class StepRunner:
             val_passed = True
             for val_cmd in step.get("validation", []):
                 v_cp = subprocess.run(val_cmd, shell=True, capture_output=True, text=True)
+                
+                # Capture validation output for trace
+                result["output_log"].append({
+                    "command": val_cmd,
+                    "stdout": v_cp.stdout,
+                    "stderr": v_cp.stderr,
+                    "returncode": v_cp.returncode,
+                    "type": "validation"
+                })
+
                 if v_cp.returncode != 0:
                     val_passed = False
                     result["errors"].append(

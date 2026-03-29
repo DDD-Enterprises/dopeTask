@@ -95,9 +95,13 @@ def _default_state(*, series_id: str, base_branch: str) -> dict[str, Any]:
 
 
 @contextmanager
-def _worktree_context(*, repo_root: Path, branch: str, worktree_path: Path, base_ref: str) -> Iterator[None]:
+def _worktree_context(
+    *, repo_root: Path, branch: str, worktree_path: Path, base_ref: str, force_cleanup: bool = False
+) -> Iterator[None]:
     """Deterministic lifecycle for TP worktrees."""
-    _start_worktree(repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref)
+    _start_worktree(
+        repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref, force_cleanup=force_cleanup
+    )
     try:
         yield
     finally:
@@ -273,7 +277,7 @@ def _ensure_series_import_packet(tp: TaskPacket) -> None:
         raise
 
 
-def _validate_series_import_state(*, repo_root: Path, tp: TaskPacket) -> None:
+def _validate_series_import_state(*, repo_root: Path, tp: TaskPacket, overwrite: bool = False) -> None:
     assert tp.series is not None
     state_path = _state_path(_series_dir(repo_root, tp.series.id))
     if not state_path.exists():
@@ -289,7 +293,7 @@ def _validate_series_import_state(*, repo_root: Path, tp: TaskPacket) -> None:
         )
 
     packets = state.get("packets", {})
-    if tp.id in packets:
+    if tp.id in packets and not overwrite:
         raise RuntimeError(f"series import failed: packet already recorded in state: {tp.id}")
 
 
@@ -353,30 +357,39 @@ def _read_clipboard(*, backend: str) -> str:
 def import_series_packet(
     *,
     out_dir: Optional[Path] = None,
+    source_file: Optional[Path] = None,
     force: bool = False,
+    overwrite: bool = False,
     clipboard_backend: str = "auto",
     repo: Optional[Path] = None,
 ) -> SeriesImportResult:
-    """Import a JSON Task Packet from the clipboard into the current workspace."""
+    """Import a JSON Task Packet into the current workspace.
+
+    By default, reads from the clipboard. If source_file is provided, reads from that file instead.
+    """
     repo_root = resolve_repo_root(repo)
-    clipboard_text = _read_clipboard(backend=clipboard_backend)
-    try:
-        payload = json.loads(clipboard_text)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"series import failed: clipboard does not contain strict JSON: {exc}") from exc
+
+    if source_file is not None:
+        payload = json.loads(source_file.read_text(encoding="utf-8"))
+    else:
+        clipboard_text = _read_clipboard(backend=clipboard_backend)
+        try:
+            payload = json.loads(clipboard_text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"series import failed: clipboard does not contain strict JSON: {exc}") from exc
 
     if not isinstance(payload, dict):
-        raise RuntimeError("series import failed: clipboard JSON must be an object")
+        raise RuntimeError("series import failed: JSON must be an object")
 
     tp = TPParser.parse_dict(payload)
     _ensure_series_import_packet(tp)
-    _validate_series_import_state(repo_root=repo_root, tp=tp)
+    _validate_series_import_state(repo_root=repo_root, tp=tp, overwrite=overwrite)
     assert tp.series is not None
 
     target_dir = (out_dir or Path.cwd()).resolve()
     target_dir.mkdir(parents=True, exist_ok=True)
     packet_path = target_dir / f"{tp.id}.json"
-    if packet_path.exists() and not force:
+    if packet_path.exists() and not (force or overwrite):
         raise RuntimeError(f"series import failed: target file already exists: {packet_path}")
 
     packet_path.write_text(f"{json.dumps(tp.to_dict(), indent=2, sort_keys=True)}\n", encoding="utf-8")
@@ -438,14 +451,71 @@ def _write_series_context(
     return payload
 
 
-def _start_worktree(*, repo_root: Path, branch: str, worktree_path: Path, base_ref: str) -> None:
+def _start_worktree(
+    *, repo_root: Path, branch: str, worktree_path: Path, base_ref: str, force_cleanup: bool = False
+) -> None:
     if worktree_path.exists():
-        raise RuntimeError(f"series exec failed: worktree already exists: {worktree_path}")
+        if force_cleanup:
+            _remove_worktree(repo_root=repo_root, worktree_path=worktree_path)
+        else:
+            raise RuntimeError(
+                f"series exec failed: worktree already exists: {worktree_path}\n"
+                f"Hint: Run `dopetask tp series cleanup --series-id <id>` or use `--force`."
+            )
+
     existing = run_git(["show-ref", "--verify", "--quiet", f"refs/heads/{branch}"], repo_root=repo_root, check=False)
     if existing.returncode == 0:
-        raise RuntimeError(f"series exec failed: branch already exists: {branch}")
+        if force_cleanup:
+            run_git(["branch", "-D", branch], repo_root=repo_root)
+        else:
+            raise RuntimeError(
+                f"series exec failed: branch already exists: {branch}\n"
+                f"Hint: Run `dopetask tp series cleanup --series-id <id>` or use `--force`."
+            )
+
     worktree_path.parent.mkdir(parents=True, exist_ok=True)
     run_git(["worktree", "add", "-b", branch, str(worktree_path), base_ref], repo_root=repo_root)
+
+
+def cleanup_series_artifacts(
+    *, repo_root: Path, series_id: str, packet_id: Optional[str] = None, force: bool = False
+) -> list[str]:
+    """Purge stale worktrees and branches for a series."""
+    series_dir = _series_dir(repo_root, series_id)
+    state_path = _state_path(series_dir)
+    if not state_path.exists():
+        raise RuntimeError(f"cleanup failed: series state not found for {series_id}")
+
+    state = _read_json(state_path)
+    packets = state.get("packets", {})
+    target_ids = [packet_id] if packet_id else list(packets.keys())
+
+    cleaned = []
+    for pid in target_ids:
+        record = packets.get(pid)
+        if not record:
+            continue
+
+        # Safety: do not auto-clean completed packets unless force is True
+        if record.get("status") == "completed" and not force:
+            continue
+
+        branch = record.get("branch")
+        worktree_path = Path(record.get("worktree_path", "")) if record.get("worktree_path") else None
+
+        if worktree_path and worktree_path.exists():
+            _remove_worktree(repo_root=repo_root, worktree_path=worktree_path)
+            cleaned.append(f"worktree:{worktree_path}")
+
+        if branch:
+            existing = run_git(
+                ["show-ref", "--verify", "--quiet", f"refs/heads/{branch}"], repo_root=repo_root, check=False
+            )
+            if existing.returncode == 0:
+                run_git(["branch", "-D", branch], repo_root=repo_root)
+                cleaned.append(f"branch:{branch}")
+
+    return cleaned
 
 
 def _stage_commit_changes(*, repo_root: Path, worktree_path: Path, tp: TaskPacket) -> tuple[str, list[str]]:
@@ -495,6 +565,7 @@ def exec_series_packet(
     *,
     tp_file: Path,
     agent: str = "gemini",
+    force: bool = False,
     repo: Optional[Path] = None,
 ) -> SeriesExecResult:
     """Execute a JSON Task Packet inside a series-aware git workflow."""
@@ -525,7 +596,7 @@ def exec_series_packet(
             )
 
         existing_record = packets.get(tp.id)
-        if isinstance(existing_record, dict) and existing_record.get("status") in {"running", "completed"}:
+        if isinstance(existing_record, dict) and existing_record.get("status") in {"running", "completed"} and not force:
             raise RuntimeError(f"series packet already recorded with status {existing_record.get('status')}: {tp.id}")
 
         dependency_records = _dependency_records(state, tp.depends_on)
@@ -558,7 +629,13 @@ def exec_series_packet(
     dependency_records = _dependency_records(_read_json(_state_path(series_dir)), tp.depends_on)
 
     try:
-        with _worktree_context(repo_root=repo_root, branch=branch, worktree_path=worktree_path, base_ref=base_ref):
+        with _worktree_context(
+            repo_root=repo_root,
+            branch=branch,
+            worktree_path=worktree_path,
+            base_ref=base_ref,
+            force_cleanup=force,
+        ):
             context_payload = _write_series_context(
                 repo_root=repo_root,
                 worktree_path=worktree_path,
@@ -566,9 +643,13 @@ def exec_series_packet(
                 tp=tp,
                 dependency_records=dependency_records,
             )
-            bundle_path = execute_task_packet(packet_path, agent=agent, working_dir=worktree_path)
-            proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
+            try:
+                bundle_path = execute_task_packet(packet_path, agent=agent, working_dir=worktree_path)
+            finally:
+                proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
+
             _cleanup_generated_files(worktree_path)
+
             verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
             head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
             _write_json(
@@ -634,6 +715,61 @@ def exec_series_packet(
             },
         )
         raise
+
+
+def discover_next_runnable_tp(*, repo_root: Path) -> Optional[Path]:
+    """Search for the next runnable JSON Task Packet in the workspace.
+
+    It scans out/task_packets/*.json and checks SERIES_STATE.json to find
+    a packet whose dependencies are met but is not yet completed/running.
+    """
+    packets_dir = repo_root / "out" / "task_packets"
+    if not packets_dir.exists():
+        return None
+
+    # Get all candidate JSON packets
+    candidates = sorted(packets_dir.glob("*.json"))
+    if not candidates:
+        return None
+
+    for packet_path in candidates:
+        try:
+            tp = TPParser.parse_file(packet_path)
+            if not tp.series:
+                continue
+
+            series_dir = _series_dir(repo_root, tp.series.id)
+            state_path = _state_path(series_dir)
+            if not state_path.exists():
+                # If no state yet, the first packet in the series (no depends_on) is runnable
+                if not tp.depends_on:
+                    return packet_path
+                continue
+
+            state = _read_json(state_path)
+            packets_state = state.get("packets", {})
+            record = packets_state.get(tp.id)
+
+            # If already completed or running, skip
+            if record and record.get("status") in {"completed", "running"}:
+                continue
+
+            # Check if all dependencies are completed in the state
+            deps_met = True
+            for dep_id in tp.depends_on:
+                dep_record = packets_state.get(dep_id)
+                if not dep_record or dep_record.get("status") != "completed":
+                    deps_met = False
+                    break
+
+            if deps_met:
+                return packet_path
+
+        except Exception:
+            # Skip malformed packets during discovery
+            continue
+
+    return None
 
 
 def get_series_status(*, series_id: str, repo: Optional[Path] = None) -> dict[str, Any]:
