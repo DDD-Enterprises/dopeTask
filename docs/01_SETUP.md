@@ -17,7 +17,7 @@ This guide covers the necessary steps to set up your environment to use `dopeTas
 To install `dopeTask` for development, clone the repository and install it in editable mode:
 
 ```bash
-git clone https://github.com/hu3mann/dopeTask.git
+git clone https://github.com/DDD-Enterprises/dopeTask.git
 cd dopeTask
 pip install -e .
 ```
@@ -34,6 +34,7 @@ uv sync
 
 -   **Environment Variables**: Ensure `GITHUB_TOKEN` is set if you are running in a CI environment where `gh auth login` is not practical.
 -   **Path**: Ensure the `scripts/` directory is in your `PATH` if you want to use the repository shims.
+-   **Repo-local venvs**: The repo-local launcher prefers `.venv-dopetask`, then `.venv`, then legacy `.dopetask_venv`.
 
 ## Verification
 

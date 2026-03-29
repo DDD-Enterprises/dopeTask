@@ -18,6 +18,21 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
+## [0.5.5] - 2026-03-28
+
+### Added
+
+- Added `dopetask tp series import` to read a strict JSON Task Packet from the clipboard, validate it structurally, and write a deterministic `<tp-id>.json` packet file for later execution.
+
+### Changed
+
+- Standardized repo-local dopeTask installs around `.venv-dopetask` while preserving compatibility with `.venv` and legacy `.dopetask_venv`.
+- Updated package metadata and install docs to point at the current `DDD-Enterprises/dopeTask` repository.
+
+### Fixed
+
+- Eliminated install/runtime drift where the installer default venv name did not match the repo-local shell launcher.
+
 ## [0.5.4] - 2026-03-28
 
 ### Added

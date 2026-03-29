@@ -66,5 +66,5 @@ pip install dopetask
 
 **Using the Unified Installer:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash -s -- --pypi
+curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash -s -- --pypi
 ```

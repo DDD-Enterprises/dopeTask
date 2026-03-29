@@ -15,19 +15,19 @@ The easiest way to install dopeTask into your repository is using the unified in
 Run this from your repository root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash
 ```
 
 This will:
 - Detect your repository root.
 - Create a `.dopetask-pin` file (defaulting to the latest `main` version) if one doesn't exist.
-- Create a virtual environment (`.dopetask_venv` or reuse `.venv`).
+- Create a virtual environment (`.venv-dopetask` by default, or reuse `.venv` / legacy `.dopetask_venv`).
 - Install dopeTask.
 
 **2. Verify installation:**
 
 ```bash
-source .dopetask_venv/bin/activate  # or .venv/bin/activate
+source .venv-dopetask/bin/activate  # or .venv/bin/activate / .dopetask_venv/bin/activate
 dopetask doctor --timestamp-mode deterministic
 ```
 
@@ -38,13 +38,13 @@ You can customize the installation by providing arguments to the script or creat
 **Install a specific version:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash -s -- --version v0.2.0
+curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash -s -- --version v0.2.0
 ```
 
 **Install from PyPI:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash -s -- --pypi
+curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash -s -- --pypi
 ```
 
 **Manual Pin Configuration:**
@@ -54,11 +54,11 @@ Create `.dopetask-pin` before running the installer:
 ```bash
 cat > .dopetask-pin <<'EOF'
 install=git
-repo=https://github.com/hu3mann/dopeTask.git
+repo=https://github.com/DDD-Enterprises/dopeTask.git
 ref=v0.1.0
 EOF
 
-curl -fsSL https://raw.githubusercontent.com/hu3mann/dopeTask/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/DDD-Enterprises/dopeTask/main/scripts/install.sh | bash
 ```
 
 ### Repo Shell Wiring (`project shell`)
@@ -74,6 +74,11 @@ dopetask project shell status --repo-root .
 - `.envrc` with `export PATH="$(pwd)/scripts:$PATH"`
 - `scripts/dopetask` shim
 - `scripts/dopetask-local` launcher
+
+The launcher prefers repo-local installs in this order:
+- `.venv-dopetask`
+- `.venv`
+- legacy `.dopetask_venv`
 
 ### Upgrading dopeTask
 
@@ -103,7 +108,7 @@ Install from a specific git tag:
 
 ```
 install=git
-repo=https://github.com/hu3mann/dopeTask.git
+repo=https://github.com/DDD-Enterprises/dopeTask.git
 ref=v0.1.0
 ```
 
@@ -130,11 +135,15 @@ path=dist/dopetask-0.1.0-py3-none-any.whl
 The installer creates or uses a virtual environment:
 
 **Priority:**
-1. If `.venv` exists -> use it
-2. Otherwise -> create `.dopetask_venv`
+1. If `.venv-dopetask` exists -> use it
+2. Otherwise if `.venv` exists -> use it
+3. Otherwise if legacy `.dopetask_venv` exists -> use it
+4. Otherwise -> create `.venv-dopetask`
 
 **Activate:**
 ```bash
+source .venv-dopetask/bin/activate
+# or
 source .venv/bin/activate
 # or
 source .dopetask_venv/bin/activate
