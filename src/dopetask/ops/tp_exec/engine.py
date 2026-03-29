@@ -11,7 +11,8 @@ from typing import Optional
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
 from dopetask.obs.proof_aggregator import ProofAggregator
-from dopetask_adapters.gemini.executor import GeminiExecutor
+from dopetask.pipeline.task_runner.executor import TaskExecutor
+from dopetask_adapters.gemini.executor import GeminiAdapter
 
 
 @contextlib.contextmanager
@@ -63,11 +64,18 @@ def execute_task_packet(
                 # Fallback to default behavior if router fails
                 pass
 
-            executor = GeminiExecutor(model=model)
+            adapter = GeminiAdapter(model=model)
         else:
             raise ValueError(f"Agent profile '{agent}' not yet fully implemented in executor.")
 
-        raw_proof_path = Path(executor.run_tp(compiled_tp)).resolve()
+        # Kernel-side TaskExecutor handles adapter validation and fail-fast logic.
+        kernel_executor = TaskExecutor(adapter)
+        
+        # Transitional Phase 1: Unpack the new ExecutionResult stream while 
+        # still using the legacy_proof_path for backward compatibility.
+        results, raw_proof_path_str = kernel_executor.execute(compiled_tp)
+        raw_proof_path = Path(raw_proof_path_str).resolve()
+        
         aggregator = ProofAggregator(tp.id)
 
         with raw_proof_path.open(encoding="utf-8") as handle:

@@ -9,10 +9,10 @@ from dopetask.pipeline.task_runner.types import ExecutionResult
 
 
 class Adapter(Protocol):
-    """Protocol for task execution adapters."""
+    """Protocol for task execution adapters (Transitional V0)."""
 
-    def run_tp(self, tp: dict[str, Any]) -> list[ExecutionResult]:
-        """Execute a full Task Packet and return results."""
+    def run_tp(self, tp: dict[str, Any]) -> tuple[list[ExecutionResult], str]:
+        """Execute a full Task Packet and return (results, legacy_proof_path)."""
 
 
 class TaskExecutor:
@@ -21,13 +21,19 @@ class TaskExecutor:
     def __init__(self, adapter: Adapter) -> None:
         self.adapter = adapter
 
-    def execute(self, tp: dict[str, Any]) -> list[ExecutionResult]:
-        """Execute the task packet via the adapter and validate the results."""
-        results = self.adapter.run_tp(tp)
+    def execute(self, tp: dict[str, Any]) -> tuple[list[ExecutionResult], str]:
+        """Execute the task packet via the adapter and validate the results.
+
+        Returns:
+            A tuple of (execution_results, legacy_proof_path).
+            The legacy_proof_path is retained for backward compatibility with 
+            Phase 1 aggregation logic.
+        """
+        results, legacy_proof_path = self.adapter.run_tp(tp)
         
         # Kernel validation of adapter output
         if not isinstance(results, list):
-            raise TypeError(f"Adapter must return a list of ExecutionResult, got {type(results)}")
+            raise TypeError(f"Adapter results must be a list of ExecutionResult, got {type(results)}")
             
         for result in results:
             if not isinstance(result, ExecutionResult):
@@ -35,7 +41,7 @@ class TaskExecutor:
                 
             # Fail-fast: Stop execution if a step failed
             if result.status == "failed":
-                # In a real implementation, we would write proof artifacts here
+                # Note: In Phase 2, the kernel will manage artifact collection here.
                 raise RuntimeError(f"Step {result.step_id} failed: {result.error}")
                 
-        return results
+        return results, legacy_proof_path
