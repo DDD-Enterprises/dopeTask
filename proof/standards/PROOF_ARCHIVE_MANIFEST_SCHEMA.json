@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dopetask Standard Proof Archive Manifest Schema",
+  "description": "Canonical schema for PROOF_ARCHIVE_MANIFEST.json files embedded inside standard proof archive zips.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tp_id",
+    "archive_filename",
+    "generated_at",
+    "included_files"
+  ],
+  "properties": {
+    "tp_id": {
+      "type": "string",
+      "pattern": "^TP-[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "archive_filename": {
+      "type": "string",
+      "pattern": "^TP-[A-Za-z0-9][A-Za-z0-9._-]*_PROOF_ARCHIVE\\.zip$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "included_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "filename",
+          "sha256",
+          "description"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "tp_id": "TP-EXAMPLE-001",
+  "status": "VALIDATED",
+  "packet_family": "example_family",
+  "lane": "agent_exec",
+  "summary": {
+    "result": "Execution of TP-EXAMPLE-001 completed successfully.",
+    "key_findings": [
+      "Step 'step_prepare' passed validation.",
+      "Step 'step_verify' passed validation."
+    ],
+    "key_caveats": []
+  },
+  "acceptance_checks": {
+    "passed": [
+      "step_prepare",
+      "step_verify"
+    ],
+    "failed": [],
+    "not_applicable": []
+  },
+  "validation": {
+    "scenario_count": 2,
+    "scenario_summary": [
+      "Validated 2 atomic steps."
+    ],
+    "coverage_notes": []
+  },
+  "artifacts": {
+    "primary": [
+      "TP-EXAMPLE-001_PROOF_BUNDLE.json"
+    ],
+    "supporting": [
+      "TP-EXAMPLE-001_PROOF.json",
+      "TP-EXAMPLE-001.json"
+    ],
+    "archive": {
+      "present": true,
+      "filename": "TP-EXAMPLE-001_PROOF_ARCHIVE.zip",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  },
+  "manifest": {
+    "generated_at": "2026-03-28T00:00:00+00:00",
+    "bundle_schema_version": "1.0"
+  }
+}

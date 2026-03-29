@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project follows Semantic Versioning.
 
+## [Unreleased]
+
+### Added
+
+- N/A
+
+### Changed
+
+- N/A
+
+### Fixed
+
+- N/A
+
+## [0.5.4] - 2026-03-28
+
+### Added
+
+- Added canonical proof contract assets under `proof/standards`, including bundle and archive-manifest schemas plus machine-valid examples.
+
+### Changed
+
+- Aligned proof docs with the current `ProofAggregator` output and documented the standard proof bundle as a strict, machine-readable shape.
+
+### Fixed
+
+- Restored the missing proof standard files referenced by the docs and added regression tests that validate checked-in proof bundles and archive manifests against them.
+- Fixed existing `ruff` violations in `tp_series` worktree cleanup and status parsing so release and CI workflows can run cleanly.
+
 ## [0.5.3] - 2026-03-27
 
 ### Added

@@ -44,5 +44,5 @@ Each zip should include a file `PROOF_ARCHIVE_MANIFEST.json` with:
 - `generated_at`: ISO timestamp of generation.
 - `included_files`: A list of objects, each containing:
   - `filename`: The name of the file within the zip (no paths).
-  - `sha256`: Optional hash for integrity validation.
-  - `description`: Optional text description of the artifact.
+  - `sha256`: Hash for integrity validation.
+  - `description`: Text description of the artifact.

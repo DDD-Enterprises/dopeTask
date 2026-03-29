@@ -27,4 +27,6 @@ runs/
 
 # dopeTask local plans and proofs
 llm-plans/
-proof/
+proof/*
+!proof/standards/
+!proof/standards/**

@@ -8,7 +8,7 @@ import json
 import shutil
 import subprocess
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -88,10 +88,8 @@ def _worktree_context(*, repo_root: Path, branch: str, worktree_path: Path, base
     try:
         yield
     finally:
-        try:
+        with suppress(Exception):
             _remove_worktree(repo_root=repo_root, worktree_path=worktree_path)
-        except Exception:
-            pass
 
 
 @contextmanager
@@ -127,21 +125,21 @@ def _relative_to_repo(repo_root: Path, path: Path) -> str:
 
 def _parse_status_paths(status_output: str) -> list[str]:
     """Parse NUL-terminated porcelain v1 output.
-    
+
     Format: XY PATH\0 [PATH2\0]
     PATH2 is only present for Renames (R) and Copies (C).
     """
     changed: list[str] = []
-    items = iter(status_output.split('\0'))
+    items = iter(status_output.split("\0"))
     for raw_item in items:
         if not raw_item:
             continue
-        
+
         status_code = raw_item[:2]
         path_fragment = raw_item[3:]
-        
+
         # If it's a rename (R) or copy (C), the next item is the destination path
-        if 'R' in status_code or 'C' in status_code:
+        if "R" in status_code or "C" in status_code:
             try:
                 dest_path = next(items)
                 changed.append(dest_path)
@@ -150,7 +148,7 @@ def _parse_status_paths(status_output: str) -> list[str]:
                 changed.append(path_fragment)
         else:
             changed.append(path_fragment)
-            
+
     return changed
 
 

@@ -35,7 +35,7 @@ Each bundle must contain at least:
 
 Required when applicable depending on the TP:
 - `caveats`: Operational or contextual caveats inside the summary.
-- Other extension blocks defined by specific execution adapters.
+- Adapter-specific metadata must live in a separate documented schema or normalized adapter object, not as ad hoc top-level additions to the standard proof bundle.
 
 ## References
 
