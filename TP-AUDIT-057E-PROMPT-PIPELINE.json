@@ -1,0 +1,51 @@
+{
+  "commit": {
+    "allowlist": [
+      "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+    ],
+    "message": "docs: audit prompt pipeline",
+    "verify": [
+      "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+    ]
+  },
+  "depends_on": [],
+  "id": "TP-AUDIT-057E-PROMPT-PIPELINE",
+  "invariants": [],
+  "project": "dopetask",
+  "series": {
+    "base_branch": "main",
+    "final_packet": true,
+    "id": "SERIES-AUDIT-057E-PROMPT-PIPELINE",
+    "parent_tp_id": null
+  },
+  "steps": [
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S1",
+      "requirements": [],
+      "task": "mkdir -p docs/audits",
+      "validation": [
+        "test -d docs/audits"
+      ]
+    },
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S2",
+      "requirements": [],
+      "task": "printf '# dopeTask 0.5.7 Prompt Pipeline Audit\n\n## Generated vs Static\n\n## Shipped vs Source-Repo-Only\n\n## EXPORTED_OPERATOR_PROMPT\n\n## Evidence\n' > docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'dopeTask 0.5.7 Prompt Pipeline Audit' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Generated vs Static' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Shipped vs Source-Repo-Only' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'EXPORTED_OPERATOR_PROMPT' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Evidence' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ]
+    }
+  ],
+  "target": "Audit dopeTask prompt pipeline."
+}
