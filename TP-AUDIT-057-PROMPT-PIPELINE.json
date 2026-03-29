@@ -1,0 +1,112 @@
+{
+  "commit": {
+    "allowlist": [
+      "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+      "docs/**/*.md",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "message": "docs: add dopeTask 0.5.7 prompt pipeline audit and downstream install contract",
+    "verify": [
+      "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ]
+  },
+  "depends_on": [],
+  "id": "TP-AUDIT-057-PROMPT-PIPELINE",
+  "invariants": [
+    "Do not redesign the system.",
+    "Do not invent architecture, packaging behavior, or commands not supported by repo truth.",
+    "Treat JSON TaskPacket workflow as the default supervisor path.",
+    "Treat legacy markdown packet docs as maintainer-only unless code or docs explicitly prove broader use.",
+    "Prefer evidence from source code, package data, templates, schemas, tests, and docs over inference."
+  ],
+  "project": "dopetask",
+  "series": {
+    "base_branch": "main",
+    "final_packet": true,
+    "id": "SERIES-AUDIT-057-PROMPT-PIPELINE",
+    "parent_tp_id": null
+  },
+  "steps": [
+    {
+      "commands": [
+        "pwd",
+        "git rev-parse --show-toplevel",
+        "find . -maxdepth 4 \\( -iname '*schema*' -o -iname '*prompt*' -o -iname '*operator*' -o -iname '*init*' -o -iname '*series*' -o -iname '*task*packet*' \\) | sort > /tmp/dopetask_audit_candidates.txt",
+        "python - <<'PY'\nfrom pathlib import Path\nroots = [Path('src'), Path('docs'), Path('tests')]\nneedles = ['EXPORTED_OPERATOR_PROMPT', 'operator_profile', 'tp series exec', 'tp series status', 'tp series finalize', 'TaskPacket', 'dopetask init']\nfor root in roots:\n    if root.exists():\n        for path in root.rglob('*'):\n            if path.is_file():\n                try:\n                    text = path.read_text(encoding='utf-8', errors='ignore')\n                except Exception:\n                    continue\n                hits = [n for n in needles if n in text]\n                if hits:\n                    print(f'{path}: {\", \".join(hits)}')\nPY",
+        "mkdir -p docs/audits"
+      ],
+      "context_files": [
+        "SUPERVISOR_SYSTEM_PROMPT.md",
+        "13_TASK_PACKET_FORMAT.md",
+        "22_WORKFLOW_GUIDE.md",
+        "20_WORKTREES_COMMIT_SEQUENCING.md",
+        "12_ROUTER.md"
+      ],
+      "expected_files": [
+        "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ],
+      "id": "S1",
+      "requirements": [
+        "Work from the dopeTask source repository root.",
+        "Use only repository evidence.",
+        "Capture exact file paths and, where practical, symbol names or function names."
+      ],
+      "task": "Trace the source-of-truth implementation for the JSON-native supervisor path and exported operator prompt generation. Identify the exact modules, functions, templates, schemas, package-data declarations, and docs involved in: TaskPacket validation, tp series exec/status/finalize, dopetask init, operator_profile generation, and EXPORTED_OPERATOR_PROMPT generation.",
+      "validation": [
+        "test -d docs/audits"
+      ]
+    },
+    {
+      "commands": [
+        "python - <<'PY'\nfrom pathlib import Path\np = Path('docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md')\nif not p.exists():\n    p.write_text('# dopeTask 0.5.7 Prompt Pipeline Audit\\n\\nDraft created by Task Packet. Replace with evidence-backed findings.\\n', encoding='utf-8')\nPY"
+      ],
+      "context_files": [
+        "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ],
+      "expected_files": [
+        "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ],
+      "id": "S2",
+      "requirements": [
+        "The report must distinguish code, templates, package data, docs, tests, and generated artifacts.",
+        "The report must explicitly call out any ambiguity or unresolved evidence gaps.",
+        "Do not claim that the full historical multi-surface pack is productized unless the repo proves it."
+      ],
+      "task": "Write a concise audit report at docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md that answers: (1) what generates ops/EXPORTED_OPERATOR_PROMPT.md, (2) how JSON TaskPacket contracts and overlays relate to prompt generation, (3) which supervisor capabilities are generated versus static, (4) which capabilities ship downstream versus remain source-repo-only, and (5) what evidence supports each conclusion. Include a generated-vs-static table and a shipped-vs-source-only table.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Prompt Pipeline Audit' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ]
+    },
+    {
+      "commands": [
+        "python - <<'PY'\nfrom pathlib import Path\np = Path('docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md')\nif not p.exists():\n    p.write_text('# dopeTask 0.5.7 Downstream Install Contract\\n\\nDraft created by Task Packet. Replace with evidence-backed downstream guidance.\\n', encoding='utf-8')\nPY"
+      ],
+      "context_files": [
+        "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "README.md",
+        "CHANGELOG.md",
+        "INSTALL.md",
+        "QUICK_START.md"
+      ],
+      "expected_files": [
+        "docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+      ],
+      "id": "S3",
+      "requirements": [
+        "Choose the downstream contract only from repo evidence.",
+        "If evidence is mixed, document the uncertainty rather than smoothing it over.",
+        "Keep doc edits minimal and scoped to clarifying generated versus static behavior."
+      ],
+      "task": "Write a downstream install contract document at docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md that states, based only on repo truth, what uv tool install dopetask provides, what dopetask init generates, whether additional static instruction surfaces are required or optional for downstream repos, and what the correct consumer workflow is now. If current docs are clearly misleading on this point, apply only the smallest justified doc corrections and record them in the audit report.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'Downstream Install Contract' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+      ]
+    }
+  ],
+  "target": "Audit the dopeTask 0.5.7 JSON-native supervisor and operator prompt pipeline, classify generated versus static instruction surfaces, determine what is shipped downstream versus source-repo-only, and document the exact downstream install contract."
+}
