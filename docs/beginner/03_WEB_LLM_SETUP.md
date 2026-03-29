@@ -8,6 +8,12 @@ If you just tell Claude, *"Build me a login page,"* it will immediately start wr
 
 Instead, we want the AI to act as a **Supervisor**. We want it to write a **Task Packet** (the blueprint), which dopeTask will then execute safely.
 
+This page is the beginner onboarding version of the supervisor setup. For the canonical packet contract and workflow, use:
+
+- `../13_TASK_PACKET_FORMAT.md`
+- `../22_WORKFLOW_GUIDE.md`
+- `../24_UPGRADE_GUIDE.md`
+
 ---
 
 ## 1. The System Prompt

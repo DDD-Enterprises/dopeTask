@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dopetask.dev/schemas/dopemux_adapter_envelope.schema.json",
+  "title": "Dopemux Adapter Envelope Schema",
+  "description": "Derived integration envelope for Dopemux after reading canonical dopeTask proof and series artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "schema_version",
+    "tp",
+    "target",
+    "posture",
+    "summary",
+    "proof",
+    "governance",
+    "operator_view",
+    "integration"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "const": "dopetask"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "tp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "family", "lane", "title", "status", "run_id"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "family": {"type": "string", "minLength": 1},
+        "lane": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "status": {
+          "type": "string",
+          "enum": ["PLANNED", "IN_PROGRESS", "VALIDATED", "OPERATIONAL", "BLOCKED", "DEFERRED", "FAILED", "UNKNOWN"]
+        },
+        "run_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo", "worktree", "ref", "pr_number", "case_id"],
+      "properties": {
+        "repo": {"type": "string", "minLength": 1},
+        "worktree": {"type": "string", "minLength": 1},
+        "ref": {"type": "string", "minLength": 1},
+        "pr_number": {"type": ["integer", "null"], "minimum": 1},
+        "case_id": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "posture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "advisory_only",
+        "signoff_required",
+        "defer_only",
+        "auto_apply_allowed",
+        "auto_apply_risk_threshold"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["ADVISORY_ONLY", "GO_SUPERVISED_ONLY", "LIVE_SAFE", "DEFER_ONLY", "UNKNOWN"]
+        },
+        "advisory_only": {"type": "boolean"},
+        "signoff_required": {"type": "boolean"},
+        "defer_only": {"type": "boolean"},
+        "auto_apply_allowed": {"type": "boolean"},
+        "auto_apply_risk_threshold": {"type": "string", "minLength": 1}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "next_action",
+        "headline_state",
+        "confidence",
+        "risk",
+        "key_findings",
+        "key_caveats"
+      ],
+      "properties": {
+        "result": {"type": "string", "minLength": 1},
+        "next_action": {"type": "string", "minLength": 1},
+        "headline_state": {
+          "type": "string",
+          "enum": ["READY", "BLOCKED", "DEFERRED", "SUPERVISED", "INCIDENT", "UNKNOWN"]
+        },
+        "confidence": {"type": "string", "minLength": 1},
+        "risk": {"type": "string", "minLength": 1},
+        "key_findings": {"type": "array", "items": {"type": "string"}},
+        "key_caveats": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_path",
+        "bundle_present",
+        "archive_path",
+        "archive_present",
+        "supporting_artifacts"
+      ],
+      "properties": {
+        "bundle_path": {"type": "string", "minLength": 1},
+        "bundle_present": {"type": "boolean"},
+        "archive_path": {"type": "string", "minLength": 1},
+        "archive_present": {"type": "boolean"},
+        "supporting_artifacts": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_actions", "blocked_actions", "signoff"],
+      "properties": {
+        "allowed_actions": {"type": "array", "items": {"type": "string"}},
+        "blocked_actions": {"type": "array", "items": {"type": "string"}},
+        "signoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "owner", "reason"],
+          "properties": {
+            "required": {"type": "boolean"},
+            "owner": {"type": "string", "minLength": 1},
+            "reason": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "operator_view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["open_first", "open_second", "recommended_panel", "artifact_priority"],
+      "properties": {
+        "open_first": {"type": "string", "minLength": 1},
+        "open_second": {"type": "string", "minLength": 1},
+        "recommended_panel": {"type": "string", "minLength": 1},
+        "artifact_priority": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loaded_from", "adapter_status", "errors", "warnings"],
+      "properties": {
+        "loaded_from": {"type": "string", "minLength": 1},
+        "adapter_status": {"type": "string", "minLength": 1},
+        "errors": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

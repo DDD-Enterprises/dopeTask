@@ -7,7 +7,12 @@ from pathlib import Path
 
 import typer
 
-from dopetask.ops.tp_series.logic import exec_series_packet, finalize_series, get_series_status, import_series_packet
+from dopetask.ops.tp_series.logic import (
+    exec_series_packet,
+    finalize_series,
+    get_series_status,
+    import_series_packet,
+)
 
 app = typer.Typer(
     name="series",

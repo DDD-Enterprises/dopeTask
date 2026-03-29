@@ -28,6 +28,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - Standardized repo-local dopeTask installs around `.venv-dopetask` while preserving compatibility with `.venv` and legacy `.dopetask_venv`.
 - Updated package metadata and install docs to point at the current `DDD-Enterprises/dopeTask` repository.
+- Consolidated the user-facing docs map around the top-level `docs/` canon, added upgrade and consumer-install guides, and reduced root-level duplicate docs to compatibility stubs plus archived artifacts.
 
 ### Fixed
 

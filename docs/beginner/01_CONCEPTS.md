@@ -65,6 +65,12 @@ If you combine all these concepts, the flow of building an app safely looks like
 6. dopeTask hands you a **Proof Bundle** (The Receipt).
 7. If the receipt looks good, a **Pull Request** (Proposal) is made to update your **Main Branch**.
 
+When you want the exact current contract behind these concepts, switch to the canonical references:
+
+- `../13_TASK_PACKET_FORMAT.md`
+- `../22_WORKFLOW_GUIDE.md`
+- `../24_UPGRADE_GUIDE.md`
+
 Ready to get started?
 
 👉 **[Next: Installation & Setup](02_INSTALLATION.md)**

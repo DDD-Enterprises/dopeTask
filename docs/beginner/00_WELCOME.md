@@ -38,4 +38,11 @@ dopeTask gives you **Deterministic Execution**. This means:
 
 Let's start by translating some developer jargon into plain English so you know exactly what dopeTask is doing under the hood.
 
+This beginner guide is the onboarding path. Once you are comfortable with the basics, use the top-level docs as the canonical reference:
+
+- `../00_OVERVIEW.md`
+- `../01_SETUP.md`
+- `../22_WORKFLOW_GUIDE.md`
+- `../24_UPGRADE_GUIDE.md`
+
 👉 **[Next: Understanding Core Concepts](01_CONCEPTS.md)**

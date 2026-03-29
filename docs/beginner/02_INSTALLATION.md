@@ -4,6 +4,8 @@ Before you can start building software safely with dopeTask, you need to install
 
 Don't worry—you only have to do this once!
 
+This page is the beginner walkthrough. For the canonical setup reference, see `../01_SETUP.md`.
+
 ---
 
 ## 1. Install dopeTask
@@ -70,5 +72,7 @@ This command creates a few hidden folders (like `.dopetask/`) where dopeTask wil
 ### You are done!
 
 Your computer is now ready. The next step is to set up your AI (like ChatGPT or Claude) so it knows how to act as your "Strict Manager."
+
+If you are upgrading an existing installation instead of starting fresh, read `../24_UPGRADE_GUIDE.md` before continuing.
 
 👉 **[Next: Setting up your Web LLM](03_WEB_LLM_SETUP.md)**
