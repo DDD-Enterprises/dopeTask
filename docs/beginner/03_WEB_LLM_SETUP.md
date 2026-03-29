@@ -16,22 +16,36 @@ This page is the beginner onboarding version of the supervisor setup. For the ca
 
 ---
 
-## 1. The System Prompt
+## 1. Generate the Prompt First
 
-To transform your AI into a dopeTask Supervisor, you must give it a specific set of instructions at the very beginning of your chat session.
+Do not start by manually opening a markdown file.
 
-We have created a pre-written set of instructions for you.
+Instead, let dopeTask generate the current prompt for your tool:
 
-You can find it in the dopeTask repository here:
-`docs/llm/SUPERVISOR_SYSTEM_PROMPT.md`
+```bash
+dopetask ops init --platform chatgpt --model gpt-5.4
+```
+
+This creates a generated prompt file at:
+
+```text
+ops/EXPORTED_OPERATOR_PROMPT.md
+```
+
+If you want Claude web instead, export a Claude-specific prompt:
+
+```bash
+dopetask ops export --platform claude --model claude-sonnet-4-6
+```
 
 ## 2. Bootstrapping Your Session
 
-Whenever you start a new conversation with ChatGPT or Claude to work on your project, follow this exact process:
+Whenever you start a new conversation with ChatGPT or Claude to work on your project, follow this process:
 
 1. **Open a new chat window.**
-2. **Copy** the entire contents of the `SUPERVISOR_SYSTEM_PROMPT.md` file.
-3. **Paste** it into the first message of the chat and press send.
+2. **Open** `ops/EXPORTED_OPERATOR_PROMPT.md`.
+3. **Copy** the entire contents of that file.
+4. **Paste** it into the first message of the chat and press send.
 
 The AI should respond by confirming it understands its new role as a Supervisor and that it will only output Task Packet JSON files.
 
@@ -45,9 +59,27 @@ By pasting that prompt, you have given the AI strict boundaries:
 
 ## 4. Cursor and CLI Agents
 
-If you are using an IDE like **Cursor**, or a CLI agent like the **Gemini CLI**, you do not need to paste this prompt manually every time.
+If you are using a workspace-aware coding tool like **Claude Code**, **Codex CLI**, **Gemini CLI**, or **Copilot CLI**, you usually do not need to paste the prompt manually every time.
 
-These tools can read "workspace files." As long as you have the `AGENTS.md` and `CLAUDE.md` files (provided in the dopeTask repo) in the root folder of your project, they will automatically adopt the Supervisor role when working in that folder.
+Instead, apply the generated prompt into the repo instruction files:
+
+```bash
+dopetask ops apply
+```
+
+Then verify it:
+
+```bash
+dopetask ops doctor --no-export
+```
+
+For the full current model and CLI matrix, see `../26_SUPERVISOR_PROMPTS.md`.
+
+If you need the manual fallback source prompt, it still exists at:
+
+```text
+docs/llm/SUPERVISOR_SYSTEM_PROMPT.md
+```
 
 ---
 

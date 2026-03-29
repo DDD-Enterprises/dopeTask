@@ -99,10 +99,11 @@ See `docs/integrations/dopetask/ADAPTER_SCHEMA.md` for the normalized integratio
 ## Recommended upgrade steps
 
 1. Upgrade the installed CLI to the current `dopeTask` release.
-2. Update supervisor prompts and local runbooks to use `tp series exec`, `status`, and `finalize`.
-3. Update any packet generators so they emit `depends_on`, `series`, and `commit`.
-4. Update any integrations that assumed a top-level `status` field in `SERIES_STATE.json`; the stable status summary now lives under `counts`, with packet details under `packets`.
-5. Keep legacy `commit-sequence` usage only where you intentionally need the old maintainer path.
+2. Regenerate supervisor prompts with `dopetask ops export` or reapply them with `dopetask ops apply`.
+3. Update supervisor prompts and local runbooks to use `tp series exec`, `status`, and `finalize`.
+4. Update any packet generators so they emit `depends_on`, `series`, and `commit`.
+5. Update any integrations that assumed a top-level `status` field in `SERIES_STATE.json`; the stable status summary now lives under `counts`, with packet details under `packets`.
+6. Keep legacy `commit-sequence` usage only where you intentionally need the old maintainer path.
 
 ## Documentation note
 

@@ -1,0 +1,8 @@
+display_name = "dopeTask Supervisor"
+description = "Generate and repair JSON Task Packets for dopeTask using strict deterministic planning, proof-first review, and refusal discipline."
+safety = "neutral"
+auto_approve = false
+enabled_tools = ["read_file", "grep", "glob", "run_command"]
+
+[persona]
+system_prompt_file = "~/.vibe/prompts/dopetask-supervisor.md"

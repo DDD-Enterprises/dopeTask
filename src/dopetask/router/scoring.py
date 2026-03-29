@@ -112,7 +112,7 @@ def _score_model_fit(
             score += 16
             reasons.append("cheap_model_preferred")
     elif step == "run-task":
-        if model_name == "sonnet-4.55":
+        if model_name == "sonnet-4.6":
             score += 20
             reasons.append("preferred_code_edit_model")
         if wide_edit_surface and model_name == "gpt-5.3-codex":
@@ -125,10 +125,10 @@ def _score_model_fit(
         if model_name == "gpt-5.1-mini":
             score += 14
             reasons.append("cheap_evidence_model")
-        if complex_parsing and model_name in {"sonnet-4.55", "gpt-5.2"}:
+        if complex_parsing and model_name in {"sonnet-4.6", "gpt-5.4", "opus-4.6"}:
             score += 12
             reasons.append("complex_parsing")
-    elif step in {"gate-allowlist", "commit-run", "finish"} and model_name == "gpt-5.2":
+    elif step in {"gate-allowlist", "commit-run", "finish"} and model_name in {"gpt-5.4", "opus-4.6"}:
         score += 22
         reasons.append("correctness_pressure")
 

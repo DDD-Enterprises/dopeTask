@@ -49,3 +49,29 @@ And checking the version:
 ```bash
 dopetask --version
 ```
+
+## Supervisor prompt setup
+
+The easiest way to set up a supervisor prompt is to use the built-in `ops` commands instead of copying a static markdown file by hand.
+
+Initialize the prompt profile and export a ChatGPT prompt:
+
+```bash
+dopetask ops init --platform chatgpt --model gpt-5.4
+```
+
+This writes the generated prompt to:
+
+```text
+ops/EXPORTED_OPERATOR_PROMPT.md
+```
+
+For workspace-aware tools such as Claude Code, Codex CLI, Gemini CLI, or Copilot CLI, apply the prompt directly into the repo instruction files:
+
+```bash
+dopetask ops apply
+```
+
+Use `dopetask ops doctor --no-export` to confirm the canonical target is current.
+
+For the full prompt-generation and installation matrix, see `26_SUPERVISOR_PROMPTS.md`.

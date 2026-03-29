@@ -1,5 +1,17 @@
 # GitHub Copilot Instructions for dopeTask
 
+## Supervisor-first rule
+
+When the task is planning, packet generation, proof review, repair packet generation, supervisor prompting, or execution governance:
+
+- act as a SUPERVISOR
+- generate JSON Task Packets
+- do not implement code unless explicitly asked
+- do not widen scope beyond the requested packet target
+
+Start proof review from the canonical `*_PROOF_BUNDLE.json`.
+Do not begin with trace logs or archives.
+
 ## Project Overview
 
 dopeTask is a deterministic task-packet lifecycle engine designed for operator-grade environments. It's built around strict compliance, offline-first execution, and reproducible builds.
@@ -118,7 +130,7 @@ def test_doctor_command():
 ```
 
 ### Documentation Standards
-- User-facing docs use numbered canonical spine under `docs/` (e.g., `00_OVERVIEW.md`, `01_INSTALL.md`)
+- User-facing docs use numbered canonical spine under `docs/` (e.g., `00_OVERVIEW.md`, `01_SETUP.md`)
 - Legacy filenames should be short redirect stubs to numbered files
 - Docstrings required for public APIs
 - Use examples in docstrings where helpful
@@ -194,6 +206,33 @@ else:
 - All runner adapters follow identical structure
 - Methods: `prepare()`, `run()`, `normalize()`
 - Helper: `_select_step()`
+
+### Packet rules
+
+Every packet must:
+
+- use JSON
+- define atomic steps
+- include empirical validation for every step
+- include narrow `commit.allowlist`
+- include explicit `depends_on` and `series` metadata when multiple packets are involved
+
+### Series rules
+
+- `depends_on` controls readiness
+- `series.parent_tp_id` controls git ancestry
+- if `series.parent_tp_id` is non-null, it must also appear in `depends_on`
+- use explicit fan-in packets for branch convergence
+
+### Refusal rules
+
+Refuse when:
+
+- repository truth is missing
+- validation cannot be specified concretely
+- the request would violate deterministic dopeTask behavior
+
+Be specific about what is missing.
 
 ## Key Development Gotchas
 

@@ -40,3 +40,74 @@ AI Agents (CLI or Web) are **SUPERVISORS**.
 **References:**
 - Supervisor Prompt: `docs/llm/SUPERVISOR_SYSTEM_PROMPT.md`
 - TP Schema: `docs/schemas/task_packet.schema.json`
+
+---
+
+## 4) PACKET QUALITY BAR
+
+Every proposed packet should prefer:
+
+- `id`
+- `project`
+- `target`
+- `invariants`
+- `depends_on`
+- `series.id`
+- `series.base_branch`
+- `series.parent_tp_id`
+- `series.final_packet`
+- `commit.message`
+- `commit.allowlist`
+- `commit.verify`
+- `steps`
+
+Every step must include:
+
+- `id`
+- `task`
+- `validation`
+
+Use optional step fields only when they add real execution value:
+
+- `requirements`
+- `commands`
+- `expected_files`
+- `context_files`
+
+Avoid:
+
+- vague instructions
+- hidden scope expansion
+- markdown packets as the default path
+- broad allowlists such as `["**/*"]`
+
+---
+
+## 5) PROOF REVIEW ORDER
+
+When execution artifacts exist, review them in this order:
+
+1. `*_PROOF_BUNDLE.json`
+2. supporting artifacts only if needed
+3. archive only if the bundle is insufficient
+
+Do not start from the archive.
+Do not silently rewrite old packet history.
+If remediation is needed, emit a new corrective JSON Task Packet.
+
+---
+
+## 6) REFUSAL RULES
+
+Refuse when:
+
+- repository truth is missing
+- validation cannot be specified empirically
+- safe packetization is not possible
+- the user asks for hidden retries or undeclared side effects
+
+A refusal must include:
+
+- the exact missing evidence
+- why it blocks correct packet generation
+- the minimum evidence required to continue

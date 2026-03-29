@@ -18,6 +18,19 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - N/A
 
+## [0.5.7] - 2026-03-29
+
+### Added
+
+- Added a canonical `docs/26_SUPERVISOR_PROMPTS.md` guide covering prompt generation, prompt installation, recommended current web models, and current CLI package versions.
+- Added beginner-friendly onboarding content in `docs/beginner/00A_HOW_DOPETASK_WORKS.md` and linked it into the beginner docs path.
+
+### Changed
+
+- Updated setup, beginner, workflow, overview, and README/PyPI docs to make `dopetask ops init`, `ops export`, `ops apply`, and `ops doctor` the primary supervisor-prompt workflow.
+- Updated the default ChatGPT operator model from `gpt-5.2-thinking` to `gpt-5.4` in the operator profile and prompt-init defaults.
+- Added platform overlays for ChatGPT, Claude web, Claude Code, Codex, Gemini CLI, and Copilot CLI so generated prompts are less generic for current tools.
+
 ## [0.5.6] - 2026-03-28
 
 ### Changed
