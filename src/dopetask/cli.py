@@ -4020,6 +4020,51 @@ def case_audit(
 cli.add_typer(case_app, name="case")
 
 
+@cli.command(name="execute")
+def execute_cmd(
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or vibe."),
+    repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
+) -> None:
+    """Automatically discover, import, and execute the next runnable Task Packet."""
+    from dopetask.ops.tp_git.guards import resolve_repo_root
+    from dopetask.ops.tp_series.logic import (
+        discover_next_runnable_tp,
+        exec_series_packet,
+        import_series_packet,
+    )
+
+    repo_root = resolve_repo_root(repo)
+    next_tp_path = discover_next_runnable_tp(repo_root=repo_root)
+
+    if not next_tp_path:
+        typer.echo("No runnable Task Packets found in out/task_packets/.")
+        return
+
+    typer.echo(f"Selected next Task Packet: [bold cyan]{next_tp_path.name}[/bold cyan]")
+
+    # Import with overwrite=True to ensure it's validated and recorded in state
+    try:
+        import_result = import_series_packet(
+            source_file=next_tp_path,
+            overwrite=True,
+            out_dir=repo_root / "out" / "task_packets",
+            repo=repo_root,
+        )
+        typer.echo(f"Imported/Updated: {import_result.tp_id}")
+        
+        result = exec_series_packet(
+            tp_file=import_result.packet_path,
+            agent=agent,
+            repo=repo_root
+        )
+        typer.echo(f"Execution successful: {result.tp_id}")
+        if result.proof_bundle:
+            typer.echo(f"Proof bundle: {result.proof_bundle}")
+    except Exception as exc:
+        typer.echo(f"Execution failed: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+
 if __name__ == "__main__":
 
     cli()
