@@ -1,40 +1,55 @@
 # Architecture Spec: Supervisor, Executor, and Adapter Contract
 
-## Overview
-This document defines the standardized relationship between the `dopeTask` execution kernel and provider-specific adapters. It introduces a formal contract for execution outcomes to ensure consistent validation and fail-fast behavior across all agent profiles.
+## 1. Purpose and Scope
+This document defines the structural relationship between the `dopeTask` execution kernel and its external provider interfaces. The primary goal is to standardize task execution outcomes, enabling a "plug-and-play" architecture for LLM providers and local shell execution while maintaining a strictly deterministic core.
 
-## Core Components
+## 2. Deterministic Kernel Philosophy
+The `dopeTask` kernel operates on the principle of **Atomic Finality**. 
+- **Authority:** The kernel is the absolute source of truth for execution state.
+- **Untrusted Adapters:** Adapters are treated as external shims. Their outputs MUST be normalized and validated by the kernel before being accepted.
+- **Fail-Closed:** The kernel terminates execution at the first sign of an unhandled error or a failed validation command.
+- **Evidence-First:** Execution is not complete until a proof bundle (EVIDENCE.md, artifacts, and logs) is successfully archived.
 
-### 1. ExecutionResult (The Contract)
-Located in `src/dopetask/pipeline/task_runner/types.py`, this dataclass is the authoritative outcome format for every task step.
+## 3. Core Definitions
 
-**Fields:**
-- `step_id`: Unique identifier for the step.
-- `status`: `succeeded`, `failed`, `pending`, or `running`.
-- `execution_mode`: `shell` (direct execution) or `agent` (LLM-orchestrated).
-- `raw_output`: Unprocessed output log (JSON-stringified trace for agents).
-- `normalized_output`: Standardized dictionary containing `files_created`, `commands_run`, and `validation_passed`.
-- `metrics`: Dictionary for execution telemetry (token usage, duration).
-- `error`: Optional string containing failure details.
+### Supervisor (The Planner)
+The high-level orchestration layer (Agent or User) that generates Task Packets. It is responsible for planning, but NOT for direct execution. It delegates the "Act" phase to the Kernel.
 
-### 2. TaskExecutor (The Kernel)
-Located in `src/dopetask/pipeline/task_runner/executor.py`, the `TaskExecutor` acts as the kernel-side gatekeeper.
+### TaskExecutor (The Kernel Authority)
+Located in `src/dopetask/pipeline/task_runner/executor.py`. It is responsible for:
+- Enforcing the `ExecutionResult` contract.
+- Managing status transitions (`pending` -> `running` -> `succeeded`|`failed`).
+- Orchestrating the "Fail-Closed" logic.
 
-**Responsibilities:**
-- Accepts an implementation of the `Adapter` protocol.
-- Invokes the adapter's `run_tp` method.
-- Validates that the adapter returns compliant `ExecutionResult` objects.
-- Enforces a "Fail-Closed" policy: Immediate termination and error reporting upon the first failed step.
+### Adapter (The Untrusted Shim)
+A provider-specific shim (e.g., `GeminiAdapter`). It translates the generic Task Packet into provider-specific actions and normalizes the results into the kernel's format.
 
-### 3. The Adapter Protocol
-Adapters provide the bridge between `dopeTask` and specific providers (e.g., Gemini, Claude).
+## 4. ExecutionResult Schema
+Every task step must produce an `ExecutionResult` with the following fields:
+- `step_id`: (str) Unique identifier for the step.
+- `status`: (Literal["pending", "running", "succeeded", "failed"]) Current execution state.
+- `execution_mode`: (Literal["shell", "agent"]) Direct execution or LLM-orchestrated.
+- `raw_output`: (str) Unprocessed output log (JSON-stringified trace for agents).
+- `normalized_output`: (dict) Standardized fields: `files_created`, `commands_run`, `validation_passed`.
+- `metrics`: (dict) Telemetry (tokens, duration).
+- `error`: (Optional[str]) Failure details.
 
-**Method Contract:**
-- `run_tp(tp: dict) -> tuple[list[ExecutionResult], str]`
-  - Returns a sequence of results for the kernel to process.
-  - Returns the path to the legacy proof bundle for backward compatibility with the `ProofAggregator`.
+## 5. Worktree Lifecycle Rules
+1. **Creation:** A dedicated git worktree is created per Task Packet ID.
+2. **Isolation:** Adapters execute strictly within this worktree.
+3. **Validation:** Kernel runs validation commands post-adapter execution.
+4. **Commit/Promotion:** Success triggers a commit in the worktree branch.
+5. **Removal:** Worktree is pruned only after successful aggregation or explicit cleanup.
 
-## Design Principles
-1. **Provider Isolation:** Adapters must not leak provider-specific fields (e.g., `finish_reason`, `usage_metadata`) into the `normalized_output`.
-2. **Empirical Validation:** The `status` of a result must be tied to the successful execution of `validation` commands defined in the Task Packet.
-3. **Atomic Finality:** A Task Packet is only considered `succeeded` if all steps in the sequence return a `succeeded` status.
+## 6. Degraded-Mode Transition Rules
+If a step fails:
+1. Kernel halts execution and locks the worktree.
+2. User/Supervisor enters **Degraded Mode** to apply manual fixes or "Correction Packets".
+3. The original failure evidence is preserved; correction is appended as a distinct event.
+
+## 7. Gemini Classification: Transitional
+`GeminiAdapter` is currently classified as **Transitional**. It implements the `ExecutionResult` contract but retains a deprecated return of the legacy proof path for backward compatibility. These transitional seams are temporary and will be removed once the kernel-side aggregator is fully implemented.
+
+## 8. Open Risks and v1 Scope
+- **Cross-Series Dependency:** Out of scope for v1. Each series is treated as a self-contained DAG.
+- **Worktree Collisions:** Assumes unique TP IDs; kernel must verify directory availability before creation.
