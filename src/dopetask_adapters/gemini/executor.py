@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+import json
 from typing import Any, Optional
+
+from dopetask.pipeline.task_runner.types import ExecutionResult
 
 from .step_runner import StepRunner
 from .proof_writer import ProofWriter
 from .validator import Validator
 from .prompts import GEMINI_PROMPTS
 
-class GeminiExecutor:
+class GeminiAdapter:
+    """Gemini-specific execution adapter."""
+
     def __init__(self, model: Optional[str] = None) -> None:
         self.model = model
         self.runner = StepRunner(model=model)
@@ -28,28 +35,46 @@ class GeminiExecutor:
         )
         return turn_1, turn_2
 
-    def run_tp(self, tp: dict[str, Any]) -> str:
-        turn_1, turn_2 = self.compile_system_prompts(tp)
+    def run_tp(self, tp: dict[str, Any]) -> tuple[list[ExecutionResult], str]:
+        """Execute a full Task Packet and return standardized results and proof path."""
+        self.compile_system_prompts(tp)
         
         # TODO: Send turn_1 and turn_2 to the LLM context to initialize the session.
         
-        results = []
-        failure_occured = False
+        raw_results = []
+        execution_results: list[ExecutionResult] = []
 
         for step in tp["steps"]:
-            result = self.runner.run_step(step)
-            results.append(result)
-            try:
-                self.validator.validate(result)
-            except Exception as exc:
-                failure_occured = True
+            result_dict = self.runner.run_step(step)
+            raw_results.append(result_dict)
+            
+            # Map raw step result to ExecutionResult contract
+            status = "succeeded" if result_dict.get("validation_passed") else "failed"
+            error = "\n".join(result_dict.get("errors", [])) if result_dict.get("errors") else None
+            
+            # Pack normalized fields without leaking provider internals
+            normalized = {
+                "files_created": result_dict.get("files_created", []),
+                "commands_run": result_dict.get("commands_run", []),
+                "validation_passed": result_dict.get("validation_passed", False)
+            }
+            
+            exec_result = ExecutionResult(
+                step_id=result_dict["step_id"],
+                status=status,  # type: ignore
+                execution_mode="agent",
+                raw_output=json.dumps(result_dict.get("output_log", []), indent=2),
+                normalized_output=normalized,
+                error=error,
+                metrics={}
+            )
+            execution_results.append(exec_result)
+
+            # Enforce immediate failure on step failure
+            if status == "failed":
                 break
 
-        path = self.writer.write(tp["id"], results)
-        if failure_occured:
-            # We still raise AFTER writing the proof to satisfy the engine's crash logic
-            # but now the aggregator can run if it's called.
-            # Wait, the engine calls aggregator AFTER run_tp returns path.
-            # So if we raise HERE, the engine STILL won't call the aggregator!
-            pass
-        return path
+        # Write proof artifact for backward compatibility/legacy engine logic
+        proof_path = self.writer.write(tp["id"], raw_results)
+        
+        return execution_results, proof_path

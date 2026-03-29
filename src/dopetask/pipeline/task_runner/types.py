@@ -46,3 +46,16 @@ class RunWorkspace:
 
     root: str
     files: list[dict[str, str]]
+
+
+@dataclass
+class ExecutionResult:
+    """Standardized outcome of a task step execution."""
+
+    step_id: str
+    status: typing.Literal["pending", "running", "succeeded", "failed"]
+    execution_mode: typing.Literal["shell", "agent"]
+    raw_output: str
+    normalized_output: dict[str, typing.Any]
+    metrics: dict[str, typing.Any]
+    error: typing.Optional[str] = None
