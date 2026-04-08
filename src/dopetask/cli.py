@@ -1099,6 +1099,452 @@ class InitTier(StrEnum):
     DEEP = "deep"
 
 
+def _git_init_state(repo_root: Path) -> dict[str, typing.Any]:
+    """Inspect minimal git bootstrap state for setup and readiness checks."""
+    git_dir = repo_root / ".git"
+    if not git_dir.exists():
+        return {
+            "is_git_repo": False,
+            "branch": None,
+            "has_commits": False,
+            "has_origin": False,
+            "has_origin_main": False,
+            "upstream": None,
+        }
+
+    branch_result = subprocess.run(
+        ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    branch = branch_result.stdout.strip() if branch_result.returncode == 0 else None
+
+    head_result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    has_commits = head_result.returncode == 0
+
+    origin_result = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    has_origin = origin_result.returncode == 0
+
+    origin_main_result = subprocess.run(
+        ["git", "show-ref", "--verify", "--quiet", "refs/remotes/origin/main"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    has_origin_main = origin_main_result.returncode == 0
+
+    upstream_result = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    upstream = upstream_result.stdout.strip() if upstream_result.returncode == 0 else None
+
+    return {
+        "is_git_repo": True,
+        "branch": branch,
+        "has_commits": has_commits,
+        "has_origin": has_origin,
+        "has_origin_main": has_origin_main,
+        "upstream": upstream,
+    }
+
+
+def _run_subprocess(
+    argv: list[str],
+    *,
+    cwd: Path,
+    check: bool = True,
+    input_text: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    completed = subprocess.run(
+        argv,
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        input=input_text,
+    )
+    if check and completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()
+        raise RuntimeError(f"command failed ({' '.join(argv)}): {detail}")
+    return completed
+
+
+def _install_command_for_tool(tool: str) -> list[str] | None:
+    if shutil.which("brew"):
+        return ["brew", "install", tool]
+    if shutil.which("apt-get"):
+        return ["sudo", "apt-get", "install", "-y", tool]
+    if shutil.which("dnf"):
+        return ["sudo", "dnf", "install", "-y", tool]
+    if shutil.which("yum"):
+        return ["sudo", "yum", "install", "-y", tool]
+    if shutil.which("pacman"):
+        return ["sudo", "pacman", "-Sy", "--noconfirm", tool]
+    return None
+
+
+def _ensure_tool_available(tool: str, *, cwd: Path, install_missing: bool) -> list[str]:
+    actions: list[str] = []
+    if shutil.which(tool):
+        return actions
+    if not install_missing:
+        raise RuntimeError(f"missing required tool: {tool}")
+
+    install_cmd = _install_command_for_tool(tool)
+    if install_cmd is None:
+        raise RuntimeError(f"missing required tool: {tool}; no supported installer found")
+
+    _run_subprocess(install_cmd, cwd=cwd)
+    if not shutil.which(tool):
+        raise RuntimeError(f"attempted to install {tool}, but it is still unavailable on PATH")
+    actions.append(f"installed {tool}")
+    return actions
+
+
+def _ensure_gh_auth(*, cwd: Path) -> list[str]:
+    status = _run_subprocess(["gh", "auth", "status"], cwd=cwd, check=False)
+    if status.returncode == 0:
+        return []
+
+    login = _run_subprocess(
+        ["gh", "auth", "login", "--web", "--git-protocol", "https"],
+        cwd=cwd,
+        check=False,
+    )
+    if login.returncode != 0:
+        detail = (login.stderr or login.stdout or status.stderr or status.stdout).strip()
+        raise RuntimeError(
+            "GitHub CLI authentication is required.\n"
+            f"gh detail: {detail}\n"
+            "Try one of these:\n"
+            "  1. gh auth login --web --git-protocol https\n"
+            "  2. gh auth login --with-token < token.txt\n"
+            "  3. export GH_TOKEN=... and re-run dopetask setup-git\n"
+            "Required token scopes: repo, read:org, gist"
+        )
+
+    verify = _run_subprocess(["gh", "auth", "status"], cwd=cwd, check=False)
+    if verify.returncode != 0:
+        detail = (verify.stderr or verify.stdout).strip()
+        raise RuntimeError(
+            "GitHub CLI login completed but authentication is still unavailable.\n"
+            f"gh detail: {detail}\n"
+            "Run `gh auth status` to inspect the stored account, or authenticate again with "
+            "`gh auth login --web --git-protocol https`."
+        )
+    return ["authenticated gh"]
+
+
+def _configure_safe_git_defaults(*, cwd: Path) -> list[str]:
+    actions: list[str] = []
+    settings = [
+        ("init.defaultBranch", "main"),
+        ("pull.ff", "only"),
+        ("fetch.prune", "true"),
+        ("push.default", "simple"),
+        ("push.autoSetupRemote", "true"),
+    ]
+    for key, value in settings:
+        current = _run_subprocess(["git", "config", "--local", "--get", key], cwd=cwd, check=False)
+        if current.returncode == 0 and current.stdout.strip() == value:
+            continue
+        _run_subprocess(["git", "config", "--local", key, value], cwd=cwd)
+        actions.append(f"set {key}={value}")
+    return actions
+
+
+def _ensure_initial_commit(*, cwd: Path, repo_name: str) -> list[str]:
+    actions: list[str] = []
+    state = _git_init_state(cwd)
+    if state["has_commits"]:
+        return actions
+
+    if state["branch"] != "main":
+        _run_subprocess(["git", "branch", "-M", "main"], cwd=cwd)
+        actions.append("renamed branch to main")
+
+    status = _run_subprocess(["git", "status", "--porcelain"], cwd=cwd)
+    if not status.stdout.strip():
+        readme_path = cwd / "README.md"
+        if not readme_path.exists():
+            readme_path.write_text(f"# {repo_name}\n", encoding="utf-8")
+            actions.append("created README.md")
+
+    _run_subprocess(["git", "add", "-A"], cwd=cwd)
+    commit = _run_subprocess(
+        [
+            "git",
+            "-c",
+            "user.name=dopeTask",
+            "-c",
+            "user.email=dopetask@local.invalid",
+            "commit",
+            "-m",
+            "chore: bootstrap repository",
+        ],
+        cwd=cwd,
+        check=False,
+    )
+    if commit.returncode != 0:
+        detail = (commit.stderr or commit.stdout).strip()
+        if "nothing to commit" not in detail.lower():
+            raise RuntimeError(f"unable to create initial commit: {detail}")
+    else:
+        actions.append("created initial commit")
+    return actions
+
+
+def _ensure_origin_remote(*, cwd: Path, repo_name: str, owner: typing.Optional[str], visibility: str) -> list[str]:
+    actions: list[str] = []
+    current_origin = _run_subprocess(["git", "remote", "get-url", "origin"], cwd=cwd, check=False)
+    if current_origin.returncode == 0:
+        return actions
+
+    target_name = f"{owner}/{repo_name}" if owner else repo_name
+    create_cmd = [
+        "gh",
+        "repo",
+        "create",
+        target_name,
+        f"--{visibility}",
+        "--source=.",
+        "--remote=origin",
+        "--push",
+    ]
+    _run_subprocess(create_cmd, cwd=cwd)
+    actions.append(f"created {visibility} GitHub remote {target_name}")
+    return actions
+
+
+def _ensure_main_upstream(*, cwd: Path) -> list[str]:
+    actions: list[str] = []
+    upstream = _run_subprocess(
+        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        cwd=cwd,
+        check=False,
+    )
+    if upstream.returncode == 0 and upstream.stdout.strip() == "origin/main":
+        return actions
+
+    if _run_subprocess(["git", "remote", "get-url", "origin"], cwd=cwd, check=False).returncode != 0:
+        return actions
+
+    _run_subprocess(["git", "push", "-u", "origin", "main"], cwd=cwd)
+    actions.append("pushed main to origin and set upstream")
+    return actions
+
+
+def _parse_github_owner_repo(remote_url: str) -> tuple[str, str] | None:
+    ssh_match = re.match(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?$", remote_url)
+    if ssh_match:
+        return ssh_match.group("owner"), ssh_match.group("repo")
+
+    https_match = re.match(
+        r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?/?$",
+        remote_url,
+    )
+    if https_match:
+        return https_match.group("owner"), https_match.group("repo")
+    return None
+
+
+def _configure_github_repo_defaults(*, cwd: Path) -> tuple[list[str], list[str]]:
+    actions: list[str] = []
+    warnings: list[str] = []
+
+    remote = _run_subprocess(["git", "remote", "get-url", "origin"], cwd=cwd, check=False)
+    if remote.returncode != 0:
+        return actions, warnings
+
+    owner_repo = _parse_github_owner_repo(remote.stdout.strip())
+    if owner_repo is None:
+        warnings.append("skipped GitHub repository defaults because origin is not a github.com remote")
+        return actions, warnings
+
+    owner, repo = owner_repo
+    repo_ref = f"{owner}/{repo}"
+
+    _run_subprocess(
+        [
+            "gh",
+            "repo",
+            "edit",
+            repo_ref,
+            "--default-branch",
+            "main",
+            "--delete-branch-on-merge",
+            "--enable-auto-merge",
+            "--allow-update-branch",
+            "--enable-squash-merge",
+            "--enable-rebase-merge",
+            "--enable-merge-commit=false",
+        ],
+        cwd=cwd,
+    )
+    actions.append("configured GitHub repository merge defaults")
+
+    actions_permissions_payload = json.dumps(
+        {
+            "default_workflow_permissions": "read",
+            "can_approve_pull_request_reviews": False,
+        }
+    )
+    _run_subprocess(
+        [
+            "gh",
+            "api",
+            "-X",
+            "PUT",
+            f"repos/{owner}/{repo}/actions/permissions/workflow",
+            "-H",
+            "Accept: application/vnd.github+json",
+            "-H",
+            "X-GitHub-Api-Version: 2022-11-28",
+            "--input",
+            "-",
+        ],
+        cwd=cwd,
+        input_text=actions_permissions_payload,
+    )
+    actions.append("set GitHub Actions default token permissions to read-only")
+
+    branch_protection_payload = json.dumps(
+        {
+            "required_status_checks": None,
+            "enforce_admins": True,
+            "required_pull_request_reviews": {
+                "dismiss_stale_reviews": True,
+                "require_code_owner_reviews": False,
+                "required_approving_review_count": 0,
+                "require_last_push_approval": False,
+            },
+            "restrictions": None,
+            "required_linear_history": True,
+            "allow_force_pushes": False,
+            "allow_deletions": False,
+            "block_creations": False,
+            "required_conversation_resolution": True,
+            "lock_branch": False,
+            "allow_fork_syncing": False,
+        }
+    )
+    _run_subprocess(
+        [
+            "gh",
+            "api",
+            "-X",
+            "PUT",
+            f"repos/{owner}/{repo}/branches/main/protection",
+            "-H",
+            "Accept: application/vnd.github+json",
+            "-H",
+            "X-GitHub-Api-Version: 2022-11-28",
+            "--input",
+            "-",
+        ],
+        cwd=cwd,
+        input_text=branch_protection_payload,
+    )
+    actions.append("enabled GitHub branch protection on main")
+
+    optional_repo_edit = _run_subprocess(
+        [
+            "gh",
+            "repo",
+            "edit",
+            repo_ref,
+            "--enable-secret-scanning",
+            "--enable-secret-scanning-push-protection",
+        ],
+        cwd=cwd,
+        check=False,
+    )
+    if optional_repo_edit.returncode == 0:
+        actions.append("enabled GitHub secret scanning and push protection")
+    else:
+        detail = (optional_repo_edit.stderr or optional_repo_edit.stdout).strip()
+        warnings.append(f"optional GitHub security features were not enabled: {detail}")
+
+    return actions, warnings
+
+
+@cli.command(name="setup-git")
+def setup_git_cmd(
+    visibility: str = typer.Option("private", "--visibility", help="GitHub repository visibility: private or public."),
+    repo_name: typing.Optional[str] = typer.Option(None, "--repo-name", help="GitHub repository name. Defaults to current directory name."),
+    owner: typing.Optional[str] = typer.Option(None, "--owner", help="Optional GitHub owner or organization."),
+    install_missing: bool = typer.Option(
+        True,
+        "--install-missing/--no-install-missing",
+        help="Install git/gh with a detected package manager when missing.",
+    ),
+) -> None:
+    """Bootstrap git + GitHub repo state for a fresh dopeTask workspace."""
+    if visibility not in {"private", "public"}:
+        console.print("[bold red]Error:[/bold red] --visibility must be private or public")
+        raise typer.Exit(1)
+
+    repo_root = Path.cwd().resolve()
+    resolved_repo_name = repo_name or repo_root.name
+    actions: list[str] = []
+    warnings: list[str] = []
+
+    try:
+        actions.extend(_ensure_tool_available("git", cwd=repo_root, install_missing=install_missing))
+        actions.extend(_ensure_tool_available("gh", cwd=repo_root, install_missing=install_missing))
+        actions.extend(_ensure_gh_auth(cwd=repo_root))
+
+        state = _git_init_state(repo_root)
+        if not state["is_git_repo"]:
+            _run_subprocess(["git", "init", "-b", "main"], cwd=repo_root)
+            actions.append("initialized git repository on main")
+        elif state["branch"] != "main":
+            _run_subprocess(["git", "branch", "-M", "main"], cwd=repo_root)
+            actions.append("renamed current branch to main")
+
+        actions.extend(_configure_safe_git_defaults(cwd=repo_root))
+        actions.extend(_ensure_initial_commit(cwd=repo_root, repo_name=resolved_repo_name))
+        actions.extend(_ensure_origin_remote(cwd=repo_root, repo_name=resolved_repo_name, owner=owner, visibility=visibility))
+        actions.extend(_ensure_main_upstream(cwd=repo_root))
+        actions.extend(_configure_safe_git_defaults(cwd=repo_root))
+        repo_actions, repo_warnings = _configure_github_repo_defaults(cwd=repo_root)
+        actions.extend(repo_actions)
+        warnings.extend(repo_warnings)
+    except Exception as exc:
+        console.print(f"[bold red]Error:[/bold red] Git setup failed: {exc}")
+        raise typer.Exit(1) from exc
+
+    remote_url = _run_subprocess(["git", "remote", "get-url", "origin"], cwd=repo_root, check=False)
+    if actions:
+        console.print(f"[green]Git setup:[/green] {'; '.join(actions)}.")
+    else:
+        console.print("[green]Git setup:[/green] already satisfied.")
+    if remote_url.returncode == 0:
+        console.print(f"[cyan]origin:[/cyan] {remote_url.stdout.strip()}")
+    for warning in warnings:
+        console.print(f"[yellow]Warning:[/yellow] {warning}")
+    console.print("[bold green]dopetask setup-git complete.[/bold green]")
+
+
 @cli.command(name="init")
 def init_cmd(
     tier: InitTier = typer.Option(
@@ -1149,7 +1595,13 @@ def init_cmd(
     try:
         repo_root_path = detect_repo_root(cwd).root
     except RuntimeError:
-        repo_root_path = cwd
+        console.print("[bold red]Error:[/bold red] dopetask init requires an existing git repository.")
+        console.print("Run `dopetask setup-git` first.")
+        raise typer.Exit(1)
+    if not _git_init_state(repo_root_path)["is_git_repo"]:
+        console.print("[bold red]Error:[/bold red] dopetask init requires an existing git repository.")
+        console.print("Run `dopetask setup-git` first.")
+        raise typer.Exit(1)
 
     # --- Tier: ops (and above) ---
     # Always run ops init
@@ -4018,6 +4470,51 @@ def case_audit(
 
 
 cli.add_typer(case_app, name="case")
+
+
+@cli.command(name="execute")
+def execute_cmd(
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or vibe."),
+    repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
+) -> None:
+    """Automatically discover, import, and execute the next runnable Task Packet."""
+    from dopetask.ops.tp_git.guards import resolve_repo_root
+    from dopetask.ops.tp_series.logic import (
+        discover_next_runnable_tp,
+        exec_series_packet,
+        import_series_packet,
+    )
+
+    repo_root = resolve_repo_root(repo)
+    next_tp_path = discover_next_runnable_tp(repo_root=repo_root)
+
+    if not next_tp_path:
+        typer.echo("No runnable Task Packets found in out/task_packets/.")
+        return
+
+    typer.echo(f"Selected next Task Packet: [bold cyan]{next_tp_path.name}[/bold cyan]")
+
+    # Import with overwrite=True to ensure it's validated and recorded in state
+    try:
+        import_result = import_series_packet(
+            source_file=next_tp_path,
+            overwrite=True,
+            out_dir=repo_root / "out" / "task_packets",
+            repo=repo_root,
+        )
+        typer.echo(f"Imported/Updated: {import_result.tp_id}")
+        
+        result = exec_series_packet(
+            tp_file=import_result.packet_path,
+            agent=agent,
+            repo=repo_root
+        )
+        typer.echo(f"Execution successful: {result.tp_id}")
+        if result.proof_bundle:
+            typer.echo(f"Proof bundle: {result.proof_bundle}")
+    except Exception as exc:
+        typer.echo(f"Execution failed: {exc}", err=True)
+        raise typer.Exit(1) from exc
 
 
 if __name__ == "__main__":

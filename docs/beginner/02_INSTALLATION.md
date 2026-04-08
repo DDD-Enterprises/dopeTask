@@ -47,19 +47,21 @@ cd my-awesome-app
 
 Remember from the [Concepts Guide](01_CONCEPTS.md) that dopeTask relies heavily on Git to keep your code safe. 
 
-If your project isn't already a Git repository, you need to initialize one. Inside your project folder, run:
+If your project isn't already a Git repository, use the bootstrap command inside your project folder:
 
 ```bash
-git init
+dopetask setup-git --visibility private
 ```
 
-This tells your computer: *"Start tracking all the changes made in this folder."*
+This command checks for `git` and `gh`, installs them when a supported package manager is available, makes sure `gh` is authenticated, initializes the repo on `main`, creates the remote GitHub repository, makes the first commit, pushes it, and sets safe local and GitHub defaults.
+
+If `gh` authentication fails, the command prints the next commands to try, including `gh auth login --web --git-protocol https` and token-based login guidance.
 
 ---
 
 ## 4. Install dopeTask into the Project
 
-Finally, tell dopeTask that it should manage this specific folder. Run:
+Once Git is set up, tell dopeTask that it should manage this specific folder. Run:
 
 ```bash
 dopetask project shell init

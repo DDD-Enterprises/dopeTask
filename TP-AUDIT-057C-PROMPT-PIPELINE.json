@@ -1,0 +1,63 @@
+{
+  "id": "TP-AUDIT-057C-PROMPT-PIPELINE",
+  "project": "dopetask",
+  "target": "Audit dopeTask 0.5.7 prompt pipeline.",
+  "invariants": [
+    "Do not redesign the system.",
+    "Do not invent architecture or packaging behavior.",
+    "Use only repository truth.",
+    "JSON TaskPacket workflow is the default supervisor path.",
+    "Distinguish clearly between generated and static surfaces."
+  ],
+  "depends_on": [],
+  "series": {
+    "id": "SERIES-AUDIT-057C-PROMPT-PIPELINE",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "commit": {
+    "message": "docs: audit prompt pipeline",
+    "allowlist": [
+      "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ],
+    "verify": [
+      "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S1",
+      "task": "Inspect the dopeTask source repository and identify the exact source files, modules, functions, templates, schemas, and package-data declarations involved in TaskPacket validation, tp series exec, tp series status, tp series finalize, dopetask init, operator_profile generation, and EXPORTED_OPERATOR_PROMPT generation. Create docs/audits if it does not exist. Capture exact file paths for later use in the audit documents.",
+      "validation": [
+        "mkdir -p docs/audits",
+        "test -d docs/audits"
+      ]
+    },
+    {
+      "id": "S2",
+      "task": "Create the file docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md in the repository and write the audit report into that file. The file must be saved to disk and must contain these headings or phrases: 'dopeTask 0.5.7 Prompt Pipeline Audit', 'EXPORTED_OPERATOR_PROMPT', 'Generated vs Static', 'Shipped vs Source-Repo-Only', and 'Evidence'. The report must explain how EXPORTED_OPERATOR_PROMPT.md is generated, how the JSON TaskPacket system relates to prompt generation, and which components are generated versus static.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'dopeTask 0.5.7 Prompt Pipeline Audit' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'EXPORTED_OPERATOR_PROMPT' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Generated vs Static' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Shipped vs Source-Repo-Only' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+        "grep -q 'Evidence' docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ]
+    },
+    {
+      "id": "S3",
+      "task": "Create the file docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md in the repository and write the downstream install contract into that file. The file must be saved to disk and must contain these headings or phrases: 'Downstream Install Contract', 'uv tool install dopetask', 'dopetask init', and 'consumer repos'. The document must state, based only on repository evidence, what the installed package provides, what dopetask init generates, and whether additional static instruction surfaces are required or optional.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'Downstream Install Contract' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'uv tool install dopetask' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'dopetask init' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+        "grep -q 'consumer repos' docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+      ]
+    }
+  ]
+}

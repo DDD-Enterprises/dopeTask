@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from .step_runner import StepRunner
 from .proof_writer import ProofWriter
@@ -6,8 +6,9 @@ from .validator import Validator
 from .prompts import GEMINI_PROMPTS
 
 class GeminiExecutor:
-    def __init__(self) -> None:
-        self.runner = StepRunner()
+    def __init__(self, model: Optional[str] = None) -> None:
+        self.model = model
+        self.runner = StepRunner(model=model)
         self.validator = Validator()
         self.writer = ProofWriter()
 
@@ -33,10 +34,22 @@ class GeminiExecutor:
         # TODO: Send turn_1 and turn_2 to the LLM context to initialize the session.
         
         results = []
+        failure_occured = False
 
         for step in tp["steps"]:
             result = self.runner.run_step(step)
-            self.validator.validate(result)
             results.append(result)
+            try:
+                self.validator.validate(result)
+            except Exception as exc:
+                failure_occured = True
+                break
 
-        return self.writer.write(tp["id"], results)
+        path = self.writer.write(tp["id"], results)
+        if failure_occured:
+            # We still raise AFTER writing the proof to satisfy the engine's crash logic
+            # but now the aggregator can run if it's called.
+            # Wait, the engine calls aggregator AFTER run_tp returns path.
+            # So if we raise HERE, the engine STILL won't call the aggregator!
+            pass
+        return path

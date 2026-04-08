@@ -45,6 +45,23 @@ def _init_repo_with_origin(tmp_path: Path) -> Path:
     return repo
 
 
+def _init_unborn_main_repo(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-b", "main")
+    return repo
+
+
+def _init_local_main_repo(tmp_path: Path) -> Path:
+    repo = _init_unborn_main_repo(tmp_path)
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "Test User")
+    (repo / "README.md").write_text("# repo\n", encoding="utf-8")
+    _git(repo, "add", "README.md")
+    _git(repo, "commit", "-m", "initial")
+    return repo
+
+
 def _write_packet(
     path: Path,
     *,
@@ -499,6 +516,44 @@ def test_series_exec_refuses_unmet_dependencies(tmp_path: Path, monkeypatch) -> 
 
     assert result.exit_code == 1
     assert "series dependency not found: TPA" in _output_text(result)
+
+
+def test_series_exec_refuses_unborn_main_without_initial_commit(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_unborn_main_repo(tmp_path)
+    packet = tmp_path / "packet.json"
+    packet.write_text("{}\n", encoding="utf-8")
+
+    runner = CliRunner()
+    monkeypatch.chdir(repo)
+    result = runner.invoke(cli, ["tp", "series", "exec", str(packet), "--repo", str(repo)])
+
+    assert result.exit_code == 1
+    assert "repository has no commits yet" in _output_text(result)
+
+
+def test_series_exec_supports_local_main_without_origin(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_local_main_repo(tmp_path)
+    packet = _write_packet(
+        tmp_path / "tp_local.json",
+        tp_id="TPLOCAL",
+        target="local root packet",
+        series_id="SERIES-LOCAL",
+        allowlist=["src/local.txt"],
+        depends_on=[],
+        parent_tp_id=None,
+    )
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.execute_task_packet", _fake_execute_task_packet)
+
+    runner = CliRunner()
+    monkeypatch.chdir(repo)
+    result = runner.invoke(cli, ["tp", "series", "exec", str(packet), "--repo", str(repo)])
+
+    assert result.exit_code == 0, result.stdout
+    state_path = repo / "out" / "tp_series" / "SERIES-LOCAL" / "SERIES_STATE.json"
+    payload = json.loads(state_path.read_text(encoding="utf-8"))
+    assert payload["packets"]["TPLOCAL"]["status"] == "completed"
+    assert payload["packets"]["TPLOCAL"]["base_ref"] == "main"
 
 
 def test_series_finalize_requires_all_completed_packets_to_be_in_final_closure(tmp_path: Path, monkeypatch) -> None:

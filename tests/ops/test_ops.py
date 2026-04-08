@@ -5,6 +5,7 @@ from dopetask.ops.blocks import update_file
 from dopetask.ops.cli import app
 from dopetask.ops.discover import discover_instruction_file, get_sidecar_path
 from dopetask.ops.export import calculate_hash, export_prompt
+import subprocess
 
 
 def test_idempotent_apply(tmp_path):
@@ -298,6 +299,8 @@ def test_dopetask_init_ops_tier(tmp_path, monkeypatch):
     from dopetask.cli import cli
     monkeypatch.chdir(tmp_path)
 
+    subprocess.run(["git", "init", "-b", "main"], cwd=tmp_path, check=True, capture_output=True, text=True)
+
     # Mock detect_repo_root to return tmp_path
     from types import SimpleNamespace
 
@@ -318,9 +321,127 @@ def test_dopetask_init_yes_no_prompts(tmp_path, monkeypatch):
 
     from dopetask.cli import cli
     from dopetask.utils import repo as repo_mod
+    subprocess.run(["git", "init", "-b", "main"], cwd=tmp_path, check=True, capture_output=True, text=True)
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(repo_mod, "detect_repo_root", lambda cwd: SimpleNamespace(root=tmp_path))
 
     runner = CliRunner()
     result = runner.invoke(cli, ["init", "--tier", "ops", "--yes"], input="")
     assert result.exit_code == 0
+
+
+def test_dopetask_init_refuses_without_git_repo(tmp_path, monkeypatch):
+    from dopetask.cli import cli
+
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'example'\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["init", "--tier", "ops", "--yes"])
+
+    assert result.exit_code == 1
+    assert "requires an existing git repository" in result.output
+    assert "dopetask setup-git" in result.output
+
+
+def test_dopetask_setup_git_bootstraps_local_repo(tmp_path, monkeypatch):
+    from dopetask.cli import cli
+
+    def _fake_ensure_tool_available(tool, *, cwd, install_missing):
+        _ = (tool, cwd, install_missing)
+        return []
+
+    def _fake_ensure_gh_auth(*, cwd):
+        _ = cwd
+        return ["authenticated gh"]
+
+    def _fake_ensure_origin_remote(*, cwd, repo_name, owner, visibility):
+        _ = (repo_name, owner, visibility)
+        subprocess.run(
+            ["git", "remote", "add", "origin", "https://github.com/example/test.git"],
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return ["created private GitHub remote test"]
+
+    def _fake_ensure_main_upstream(*, cwd):
+        _ = cwd
+        return ["pushed main to origin and set upstream"]
+
+    def _fake_configure_github_repo_defaults(*, cwd):
+        _ = cwd
+        return (["enabled GitHub branch protection on main"], [])
+
+    monkeypatch.setattr("dopetask.cli._ensure_tool_available", _fake_ensure_tool_available)
+    monkeypatch.setattr("dopetask.cli._ensure_gh_auth", _fake_ensure_gh_auth)
+    monkeypatch.setattr("dopetask.cli._ensure_origin_remote", _fake_ensure_origin_remote)
+    monkeypatch.setattr("dopetask.cli._ensure_main_upstream", _fake_ensure_main_upstream)
+    monkeypatch.setattr("dopetask.cli._configure_github_repo_defaults", _fake_configure_github_repo_defaults)
+    monkeypatch.chdir(tmp_path)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["setup-git", "--visibility", "private"])
+
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / ".git").exists()
+    branch = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    commit_subject = subprocess.run(
+        ["git", "log", "-1", "--pretty=%s"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    remote_url = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    assert branch == "main"
+    assert commit_subject == "chore: bootstrap repository"
+    assert remote_url == "https://github.com/example/test.git"
+    assert "dopetask setup-git complete" in result.output
+    assert "enabled GitHub branch protection on main" in result.output
+
+
+def test_dopetask_setup_git_surfaces_helpful_gh_auth_guidance(tmp_path, monkeypatch):
+    from dopetask.cli import cli
+
+    def _fake_ensure_tool_available(tool, *, cwd, install_missing):
+        _ = (tool, cwd, install_missing)
+        return []
+
+    def _fake_ensure_gh_auth(*, cwd):
+        _ = cwd
+        raise RuntimeError(
+            "GitHub CLI authentication is required.\n"
+            "gh detail: authentication failed\n"
+            "Try one of these:\n"
+            "  1. gh auth login --web --git-protocol https\n"
+            "  2. gh auth login --with-token < token.txt\n"
+            "  3. export GH_TOKEN=... and re-run dopetask setup-git\n"
+            "Required token scopes: repo, read:org, gist"
+        )
+
+    monkeypatch.setattr("dopetask.cli._ensure_tool_available", _fake_ensure_tool_available)
+    monkeypatch.setattr("dopetask.cli._ensure_gh_auth", _fake_ensure_gh_auth)
+    monkeypatch.chdir(tmp_path)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["setup-git", "--visibility", "private"])
+
+    assert result.exit_code == 1
+    assert "gh auth login --web --git-protocol https" in result.output
+    assert "gh auth login --with-token < token.txt" in result.output
+    assert "GH_TOKEN" in result.output

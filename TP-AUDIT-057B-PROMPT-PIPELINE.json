@@ -1,0 +1,69 @@
+{
+  "commit": {
+    "allowlist": [
+      "docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md",
+      "docs/**/*.md",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "message": "docs: audit prompt pipeline",
+    "verify": [
+      "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md",
+      "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+    ]
+  },
+  "depends_on": [],
+  "id": "TP-AUDIT-057B-PROMPT-PIPELINE",
+  "invariants": [
+    "Do not redesign the system.",
+    "Do not invent architecture or packaging behavior.",
+    "Use only repository truth.",
+    "JSON TaskPacket workflow is the default supervisor path.",
+    "Distinguish clearly between generated and static surfaces."
+  ],
+  "project": "dopetask",
+  "series": {
+    "base_branch": "main",
+    "final_packet": true,
+    "id": "SERIES-AUDIT-057B-PROMPT-PIPELINE",
+    "parent_tp_id": null
+  },
+  "steps": [
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S1",
+      "requirements": [],
+      "task": "Trace the implementation of the JSON TaskPacket system and exported operator prompt generation. Identify source files, modules, templates, and package data involved in: TaskPacket validation, tp series exec/status/finalize, dopetask init, operator_profile generation, and EXPORTED_OPERATOR_PROMPT generation. Capture exact file paths and relationships.",
+      "validation": [
+        "mkdir -p docs/audits",
+        "test -d docs/audits"
+      ]
+    },
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S2",
+      "requirements": [],
+      "task": "Write an audit report at docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md covering: (1) how EXPORTED_OPERATOR_PROMPT.md is generated, (2) how JSON TaskPacket system relates to prompt generation, (3) which components are generated vs static, (4) which capabilities are shipped vs repo-only, and (5) evidence for each conclusion. Include classification tables.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_PROMPT_PIPELINE_AUDIT.md"
+      ]
+    },
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [],
+      "id": "S3",
+      "requirements": [],
+      "task": "Write downstream install contract at docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md defining what dopetask init provides, what must or may be added manually, and the correct usage model for consumer repos. Only use repo evidence. Document uncertainty if present.",
+      "validation": [
+        "test -f docs/audits/DOPETASK_057_DOWNSTREAM_INSTALL_CONTRACT.md"
+      ]
+    }
+  ],
+  "target": "Audit dopeTask 0.5.7 prompt pipeline."
+}
