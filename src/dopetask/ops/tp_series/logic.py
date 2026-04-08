@@ -171,9 +171,26 @@ def _parse_status_paths(status_output: str) -> list[str]:
 
 def _run_series_doctor(*, repo_root: Path) -> None:
     """Fail closed on dirty main while allowing series-owned artifacts."""
-    branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root=repo_root).stdout.strip()
+    branch_result = run_git(["symbolic-ref", "--quiet", "--short", "HEAD"], repo_root=repo_root, check=False)
+    if branch_result.returncode != 0:
+        raise RuntimeError(
+            "doctor failed: detached HEAD state; check out main and create an initial commit before running "
+            "tp series exec"
+        )
+
+    branch = branch_result.stdout.strip()
+    if not branch:
+        raise RuntimeError("doctor failed: unable to determine current branch")
+
     if branch != "main":
         raise RuntimeError(f"doctor failed: expected branch main, found {branch}")
+
+    head_result = run_git(["rev-parse", "--verify", "HEAD"], repo_root=repo_root, check=False)
+    if head_result.returncode != 0:
+        raise RuntimeError(
+            "doctor failed: repository has no commits yet; create an initial commit on main and push it with "
+            "`git push -u origin main` before running tp series exec"
+        )
 
     status_output = run_git(["status", "--porcelain", "-z"], repo_root=repo_root).stdout
     ignored_prefixes = ("out/", ".worktrees/")
@@ -189,8 +206,25 @@ def _run_series_doctor(*, repo_root: Path) -> None:
     if stash_list.strip():
         raise RuntimeError("doctor failed: git stash list is non-empty; stash workflow is forbidden")
 
-    run_git(["fetch", "--all", "--prune"], repo_root=repo_root)
-    run_git(["pull", "--ff-only"], repo_root=repo_root)
+    origin_main = run_git(
+        ["show-ref", "--verify", "--quiet", "refs/remotes/origin/main"],
+        repo_root=repo_root,
+        check=False,
+    )
+    if origin_main.returncode == 0:
+        run_git(["fetch", "--all", "--prune"], repo_root=repo_root)
+        run_git(["pull", "--ff-only"], repo_root=repo_root)
+
+
+def _root_packet_base_ref(*, repo_root: Path, base_branch: str) -> str:
+    origin_main = run_git(
+        ["show-ref", "--verify", "--quiet", f"refs/remotes/origin/{base_branch}"],
+        repo_root=repo_root,
+        check=False,
+    )
+    if origin_main.returncode == 0:
+        return f"origin/{base_branch}"
+    return base_branch
 
 
 def _matches_allowlist(path: str, allowlist: list[str]) -> bool:
@@ -604,7 +638,7 @@ def exec_series_packet(
             parent_record = dependency_records[tp.series.parent_tp_id]
             base_ref = str(parent_record.get("branch"))
         else:
-            base_ref = f"origin/{tp.series.base_branch}"
+            base_ref = _root_packet_base_ref(repo_root=repo_root, base_branch=tp.series.base_branch)
 
         packets[tp.id] = {
             "tp_id": tp.id,

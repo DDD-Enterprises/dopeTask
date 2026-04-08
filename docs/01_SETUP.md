@@ -11,6 +11,7 @@ This guide covers the necessary steps to set up your environment to use `dopeTas
         ```bash
         gh auth login
         ```
+3.  **Git**: A working `git` installation is required. If you are starting from an empty folder, `dopetask setup-git` can check for `git`, install missing tools when possible, create the repository, create the GitHub remote, push the initial `main` branch, and configure repository safety defaults.
 
 ## Installation
 
@@ -49,6 +50,19 @@ And checking the version:
 ```bash
 dopetask --version
 ```
+
+If you are starting a brand-new project directory, bootstrap git and GitHub first:
+
+```bash
+dopetask setup-git --visibility private
+```
+
+This applies these defaults after the repository exists:
+
+- local git defaults such as `pull.ff=only`, `fetch.prune=true`, and `push.autoSetupRemote=true`
+- GitHub merge defaults: auto-merge on, delete branch on merge, update branch allowed, squash/rebase enabled, merge commits disabled
+- GitHub Actions default workflow token permission set to read-only
+- GitHub branch protection on `main` with linear history, PR-based changes, stale-review dismissal, conversation resolution, and force-push/deletion disabled
 
 ## Supervisor prompt setup
 

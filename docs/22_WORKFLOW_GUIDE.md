@@ -27,6 +27,7 @@ Invoke the kernel to execute a specific packet:
 ```bash
 dopetask tp series exec path/to/packet.json --agent gemini
 ```
+Prerequisite: the repository must have an initial commit on `main`. `origin/main` is used when available, but a local-only `main` branch is sufficient for execution.
 **Kernel Actions**:
 1. **Doctor Check**: Ensures the primary repository is clean and on `main`.
 2. **Worktree Isolation**: Creates a dedicated worktree and branch for the packet.
