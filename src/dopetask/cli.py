@@ -1172,7 +1172,7 @@ def _run_subprocess(
     *,
     cwd: Path,
     check: bool = True,
-    input_text: str | None = None,
+    input_text: typing.Optional[str] = None,
 ) -> subprocess.CompletedProcess[str]:
     completed = subprocess.run(
         argv,
@@ -1188,7 +1188,7 @@ def _run_subprocess(
     return completed
 
 
-def _install_command_for_tool(tool: str) -> list[str] | None:
+def _install_command_for_tool(tool: str) -> typing.Optional[list[str]]:
     if shutil.which("brew"):
         return ["brew", "install", tool]
     if shutil.which("apt-get"):
@@ -1353,7 +1353,7 @@ def _ensure_main_upstream(*, cwd: Path) -> list[str]:
     return actions
 
 
-def _parse_github_owner_repo(remote_url: str) -> tuple[str, str] | None:
+def _parse_github_owner_repo(remote_url: str) -> typing.Optional[tuple[str, str]]:
     ssh_match = re.match(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?$", remote_url)
     if ssh_match:
         return ssh_match.group("owner"), ssh_match.group("repo")
@@ -1597,7 +1597,7 @@ def init_cmd(
     except RuntimeError:
         console.print("[bold red]Error:[/bold red] dopetask init requires an existing git repository.")
         console.print("Run `dopetask setup-git` first.")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     if not _git_init_state(repo_root_path)["is_git_repo"]:
         console.print("[bold red]Error:[/bold red] dopetask init requires an existing git repository.")
         console.print("Run `dopetask setup-git` first.")
@@ -4503,7 +4503,7 @@ def execute_cmd(
             repo=repo_root,
         )
         typer.echo(f"Imported/Updated: {import_result.tp_id}")
-        
+
         result = exec_series_packet(
             tp_file=import_result.packet_path,
             agent=agent,
