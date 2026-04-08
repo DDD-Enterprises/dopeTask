@@ -356,11 +356,14 @@ def _clipboard_install_hint(backend: str) -> str:
 
 
 def _auto_clipboard_backends() -> list[str]:
-    if sys.platform == "darwin":
+    platform_name: str = sys.platform
+    if platform_name == "darwin":
         return ["pbpaste"]
-    if sys.platform.startswith("linux"):
+    if platform_name.startswith("linux"):
         return ["wl-paste", "xclip", "xsel"]
-    raise RuntimeError(f"series import failed: unsupported platform for clipboard auto mode: {sys.platform}")
+    raise RuntimeError(
+        f"series import failed: unsupported platform for clipboard auto mode: {platform_name}"
+    )
 
 
 def _read_clipboard(*, backend: str) -> str:
