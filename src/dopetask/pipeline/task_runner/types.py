@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -57,5 +57,5 @@ class ExecutionResult:
     execution_mode: typing.Literal["shell", "agent"]
     raw_output: str
     normalized_output: dict[str, typing.Any]
-    metrics: dict[str, typing.Any]
+    metrics: dict[str, typing.Any] = field(default_factory=dict)
     error: typing.Optional[str] = None

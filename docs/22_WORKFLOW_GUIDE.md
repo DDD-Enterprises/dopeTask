@@ -1,6 +1,8 @@
 # Workflow Guide: The Task Packet Series Lifecycle
 
 This guide details the modern, DAG-aware workflow for executing complex tasks using `dopeTask` series.
+This doc covers the default modern operator workflow.
+Other active planes still exist in dopeTask, but this guide is specifically about the `tp series` workflow.
 
 ## Overview
 
@@ -16,11 +18,7 @@ Before you start a fresh supervisor session, generate or apply the current promp
 The Supervisor (AI or human) decomposes a high-level objective into atomic Task Packets.
 - **Key Metadata**: `series.id`, `depends_on`, `commit.allowlist`.
 - **Validation**: Every packet MUST have empirical verification commands.
-- **Clipboard handoff**: If your supervisor emitted strict JSON to the clipboard, import it with `dopetask tp series import` before execution.
-
-```bash
-dopetask tp series import
-```
+- **Packet handoff**: Save the JSON Task Packet to a file before execution, then run `dopetask tp series exec path/to/packet.json --agent gemini`.
 
 ### 2. Execution (`tp series exec`)
 Invoke the kernel to execute a specific packet:

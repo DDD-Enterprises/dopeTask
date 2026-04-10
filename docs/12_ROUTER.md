@@ -1,6 +1,9 @@
 # Router
 
 dopeTask Router v1 selects runner/model pairs deterministically and writes route artifacts.
+This doc covers the router plane.
+The router is an active, non-default planning/handoff surface.
+It is not the default operator execution workflow.
 
 See `10_ARCHITECTURE.md` for kernel principles.
 
@@ -16,6 +19,9 @@ flowchart TD
   E -- "no" --> G["Write ROUTE_PLAN.json/.md (status=planned)"]
   G --> H["Emit HANDOFF.md when needed"]
 ```
+
+This flow covers route planning only.
+It does not execute packets or replace run, proof, or series-state surfaces.
 
 ## Commands
 
@@ -34,6 +40,8 @@ dopetask route explain --repo-root . --packet PACKET.md --step run-task
 
 ## Deterministic artifacts
 
+These are route-plane artifacts, not the main operator record for every workflow.
+
 - `out/dopetask_route/ROUTE_PLAN.json`
 - `out/dopetask_route/ROUTE_PLAN.md`
 - `out/dopetask_route/HANDOFF.md`
@@ -50,4 +58,3 @@ In refusal mode, plan artifacts are still written with:
 - `status: refused`
 - refusal reasons
 - top candidates per step
-

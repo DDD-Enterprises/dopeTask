@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
 from dopetask.pipeline.task_runner.types import ExecutionResult
 
@@ -49,7 +49,7 @@ class GeminiAdapter:
             raw_results.append(result_dict)
             
             # Map raw step result to ExecutionResult contract
-            status = "succeeded" if result_dict.get("validation_passed") else "failed"
+            status: Literal["succeeded", "failed"] = "succeeded" if result_dict.get("validation_passed") else "failed"
             error = "\n".join(result_dict.get("errors", [])) if result_dict.get("errors") else None
             
             # Pack normalized fields without leaking provider internals
@@ -61,12 +61,11 @@ class GeminiAdapter:
             
             exec_result = ExecutionResult(
                 step_id=result_dict["step_id"],
-                status=status,  # type: ignore
+                status=status,
                 execution_mode="agent",
                 raw_output=json.dumps(result_dict.get("output_log", []), indent=2),
                 normalized_output=normalized,
                 error=error,
-                metrics={}
             )
             execution_results.append(exec_result)
 

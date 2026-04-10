@@ -1,15 +1,26 @@
 # Public Contract
 
 This document defines dopeTask's public, user-visible contract: inputs, outputs, determinism, exit codes, and non-goals.
+Not all public surfaces are the default operator path.
+`tp series` is the default operator workflow; route/orchestrate remains an active public contract surface.
 
 ## Inputs
 
-- Task Packet: see `13_TASK_PACKET_FORMAT.md`
-- Route availability config: `.dopetask/runtime/availability.yaml`
+Default operator workflow inputs:
+
+- JSON Task Packet for `tp series`: see `13_TASK_PACKET_FORMAT.md`
+
+Active non-default public inputs:
+
+- Route availability config for route/orchestrate surfaces: `.dopetask/runtime/availability.yaml`
 
 ## Outputs
 
 dopeTask writes deterministic artifacts for a given invocation:
+
+Default operator workflow outputs include series and proof artifacts.
+
+Active non-default public outputs include:
 
 - Route plan artifacts under `out/dopetask_route/`
 - Refusal reasons when refusing
@@ -45,4 +56,3 @@ dopeTask follows Semantic Versioning.
 - Patch: bug fixes only
 - Minor: additive and backward-compatible
 - Major: contract-breaking
-

@@ -14,6 +14,10 @@ Every Task Packet must be valid JSON and include:
 
 The parser rejects packets that fail schema validation before any worktree or git mutation occurs.
 
+Runtime schema authority for Task Packets is `dopetask_schemas/task_packet.schema.json`.
+Runtime validation uses packaged schemas through `src/dopetask/utils/schema_registry.py` and `src/dopetask/schemas/validator.py`, not the docs tree.
+If you reference `docs/schemas/task_packet.schema.json`, treat it as a documentation mirror rather than the runtime validation source.
+
 ## Core execution fields
 
 - `project`: optional project name, defaults to `dopetask`
@@ -60,8 +64,7 @@ These fields define both packet readiness and git ancestry:
 
 The default execution flow for JSON packets is:
 
-1. Author one or more JSON packets with shared `series.id`
-   or import clipboard JSON with `dopetask tp series import`
+1. Author one or more JSON packets with shared `series.id`, then save each packet JSON to a file.
 2. Run ready packets with `dopetask tp series exec <packet.json> --agent <agent>`
 3. Inspect proof bundles and the authoritative ledger with `dopetask tp series status <series-id>`
 4. Open one PR for the completed series with `dopetask tp series finalize <series-id> --title "..."`
