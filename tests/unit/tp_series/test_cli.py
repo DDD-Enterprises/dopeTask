@@ -56,6 +56,8 @@ def _init_unborn_main_repo(tmp_path: Path) -> Path:
     repo = tmp_path / "repo"
     repo.mkdir()
     _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "Test User")
     (repo / "README.md").write_text("# repo\n", encoding="utf-8")
     (repo / ".dopetaskroot").write_text("", encoding="utf-8")
     (repo / ".dopetask").mkdir(parents=True, exist_ok=True)
@@ -69,10 +71,7 @@ def _init_unborn_main_repo(tmp_path: Path) -> Path:
 
 
 def _init_local_main_repo(tmp_path: Path) -> Path:
-    repo = _init_unborn_main_repo(tmp_path)
-    _git(repo, "config", "user.email", "test@example.com")
-    _git(repo, "config", "user.name", "Test User")
-    return repo
+    return _init_unborn_main_repo(tmp_path)
 
 
 def _write_packet(
