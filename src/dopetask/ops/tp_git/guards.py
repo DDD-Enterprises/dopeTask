@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from dopetask.ops.tp_git.exec import ExecError, ExecResult, run_git
+from dopetask.guard.identity import assert_repo_identity
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ def run_doctor(
 ) -> DoctorReport:
     """Enforce clean-main+no-stash gate and sync remote refs."""
     repo_root = resolve_repo_root(repo)
+    assert_repo_identity(repo_root)
 
     branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root=repo_root).stdout.strip()
     if branch != "main":

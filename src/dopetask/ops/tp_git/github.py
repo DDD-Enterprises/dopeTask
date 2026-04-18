@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from dopetask.ops.tp_git.exec import run_command, run_git
+from dopetask.guard.identity import assert_repo_identity
 from dopetask.ops.tp_git.guards import resolve_repo_root
 from dopetask.ops.tp_git.naming import build_worktree_path
 
@@ -68,6 +69,7 @@ def pr_create(
 ) -> dict[str, Any]:
     """Push TP branch and open PR via gh."""
     repo_root = resolve_repo_root(repo)
+    assert_repo_identity(repo_root)
     _ensure_gh_auth(repo_root)
 
     worktree_path = _worktree_for_tp(repo_root, tp_id)
@@ -132,6 +134,7 @@ def merge_pr(
         raise RuntimeError(f"unsupported merge mode: {mode}")
 
     repo_root = resolve_repo_root(repo)
+    assert_repo_identity(repo_root)
     _ensure_gh_auth(repo_root)
     worktree_path = _worktree_for_tp(repo_root, tp_id)
 

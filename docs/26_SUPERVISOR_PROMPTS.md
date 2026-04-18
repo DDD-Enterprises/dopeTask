@@ -175,6 +175,40 @@ Regenerate or reapply the prompt when:
 - `dopetask ops doctor` reports `BLOCK_STALE`
 - you changed `ops/templates/` or `ops/operator_profile.yaml`
 
+## JSON Packet Contract Notes
+
+When authoring JSON Task Packets for repo-bound work, include `repo_binding` and `execution` metadata when you need fail-closed identity checks or an explicit execution branch.
+Keep `commit` focused on commit behavior only. Do not move branch metadata into `commit`.
+
+## Strict Packet Policy
+
+Use the strict repo-aware Task Packet contract when a repository wants policy enforcement rather than the generic runtime minimum.
+
+Required strict fields:
+
+- `id`
+- `project`
+- `target`
+- `invariants`
+- `repo_binding`
+- `series`
+- `execution`
+- `commit`
+- `pr`
+- `steps`
+
+Required strict behaviors:
+
+- `commit.verify` must be non-empty
+- `execution.branch` must stay under `execution`
+- `execution.branch` should be deterministic, typically `series/<series.id>/<tp.id>`
+- `pr.base` should match `series.base_branch`
+- `pr.title` should include the series id when the packet is part of a series
+- `repo_binding.require_identity_match = true` must fail closed on repo mismatch
+- PAL metadata is allowed for all agents, but Gemini packets must carry enabled PAL chaining
+
+Use `dopetask_schemas/task_packet.schema.json` as the backward-compatible runtime schema and `dopetask_schemas/task_packet.strict.schema.json` as the policy schema for disciplined repos.
+
 ## Fallback: manual source prompt
 
 If you cannot use `dopetask ops export` for some reason, the fallback source prompt remains:

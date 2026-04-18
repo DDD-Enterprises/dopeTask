@@ -18,6 +18,25 @@ Runtime schema authority for Task Packets is `dopetask_schemas/task_packet.schem
 Runtime validation uses packaged schemas through `src/dopetask/utils/schema_registry.py` and `src/dopetask/schemas/validator.py`, not the docs tree.
 If you reference `docs/schemas/task_packet.schema.json`, treat it as a documentation mirror rather than the runtime validation source.
 
+Strict repo-aware packets may also include:
+
+- `repo_binding`
+- `execution`
+- `pr`
+
+These fields are optional in the generic runtime schema so older packets remain valid. When present, `repo_binding.require_identity_match` is the explicit fail-closed signal that the packet must only run inside the bound repository.
+
+The strict repo-aware policy schema is published separately at `dopetask_schemas/task_packet.strict.schema.json`. Use it when a repo wants the stricter contract surface:
+
+- required top-level fields: `project`, `target`, `invariants`, `repo_binding`, `series`, `execution`, `commit`, `pr`, `steps`
+- `commit.verify` must be non-empty
+- `execution.branch` belongs under `execution`, not `commit`
+- branch naming should remain deterministic, typically `series/<series.id>/<tp.id>`
+- `pr.base` should match `series.base_branch`
+- `pr.title` should include the series id when the packet participates in a series
+- `repo_binding.require_identity_match = true` means wrong-repo execution must fail closed
+- PAL metadata is allowed for all agents, but Gemini packets must include `pal_chain` with `enabled = true`
+
 ## Core execution fields
 
 - `project`: optional project name, defaults to `dopetask`
@@ -39,6 +58,11 @@ Optional step fields:
 
 `validation` must be non-empty. If you cannot verify a step with a shell command, the step is underspecified.
 
+Execution metadata, when present, belongs under `execution` rather than under `commit`:
+
+- `execution.agent` selects the agent profile
+- `execution.branch` carries the execution branch name when the packet wants to declare one explicitly
+
 ## Series fields
 
 New supervisor-driven work should include:
@@ -59,6 +83,8 @@ These fields define both packet readiness and git ancestry:
 - root packets use `series.parent_tp_id = null`
 - if `series.parent_tp_id` is set, it must also appear in `depends_on`
 - multi-branch fan-in happens in an explicit integration packet, not through implicit merging
+
+Mutating entrypoints now perform repo identity preflight before worktree or git changes. If a packet carries `repo_binding.require_identity_match = true`, the packet must run only in the repo that matches the binding.
 
 ## Runtime flow
 

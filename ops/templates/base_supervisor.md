@@ -42,6 +42,17 @@ If a conflict is detected:
 - Determinism over cleverness.
 - Every change must be auditable.
 
+## Strict Task Packet Policy
+
+- New repo-bound work should default to the strict repo-aware Task Packet contract.
+- Required strict packet fields: `id`, `project`, `target`, `invariants`, `repo_binding`, `series`, `execution`, `commit`, `pr`, `steps`.
+- `commit.verify` must be non-empty.
+- `execution.branch` is execution-scoped metadata and should be deterministic, typically `series/<series.id>/<tp.id>`.
+- `pr.base` should match `series.base_branch`, and `pr.title` should include the series id.
+- `repo_binding.require_identity_match = true` means wrong-repo execution must fail closed.
+- PAL metadata is allowed for all agents, but Gemini packets must include `pal_chain` with `enabled = true`.
+- Treat `dopetask_schemas/task_packet.strict.schema.json` as the strict policy schema and `dopetask_schemas/task_packet.schema.json` as the backward-compatible runtime schema.
+
 ## Determinism Contract
 
 - Same inputs -> same outputs.

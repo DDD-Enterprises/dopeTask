@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Optional
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
+from dopetask.guard.identity import load_repo_identity
+from dopetask.guard.identity import assert_repo_binding, assert_repo_identity
 from dopetask.obs.proof_aggregator import ProofAggregator
 from dopetask.pipeline.task_runner.executor import TaskExecutor
 from dopetask_adapters.codex.executor import CodexExecutor
@@ -44,9 +46,16 @@ def execute_task_packet(
     from dopetask.ops.tp_git.guards import resolve_repo_root
 
     repo_root = resolve_repo_root(working_dir or Path.cwd())
+    repo_identity = load_repo_identity(repo_root)
 
     with _pushd(working_dir):
         tp = TPParser.parse_file(resolved_tp_file)
+        assert_repo_identity(repo_root)
+        assert_repo_binding(repo_identity, repo_root, tp.repo_binding)
+        if tp.execution is not None and tp.execution.agent != agent:
+            raise RuntimeError(
+                f"Task Packet execution.agent '{tp.execution.agent}' does not match selected agent '{agent}'."
+            )
         compiled_tp = TPNormalizer.compile(tp, agent)
 
         effective_model, effective_model_source = _resolve_effective_model(

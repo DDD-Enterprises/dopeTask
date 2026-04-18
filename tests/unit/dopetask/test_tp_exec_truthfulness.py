@@ -14,6 +14,12 @@ def _init_repo(path: Path) -> Path:
     subprocess.run(["git", "init"], cwd=path, check=True, capture_output=True, text=True)
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=path, check=True, capture_output=True, text=True)
     subprocess.run(["git", "config", "user.name", "Test User"], cwd=path, check=True, capture_output=True, text=True)
+    (path / ".dopetaskroot").write_text("", encoding="utf-8")
+    (path / ".dopetask").mkdir(parents=True, exist_ok=True)
+    (path / ".dopetask" / "project.json").write_text(
+        json.dumps({"project_id": "dopetask.core"}, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return path
 
 
@@ -25,6 +31,7 @@ def test_gemini_raw_proof_does_not_claim_missing_expected_files(tmp_path: Path) 
             {
                 "id": "TP-TRUTH",
                 "target": "truthful proof",
+                "pal_chain": {"enabled": True, "steps": ["analysis"]},
                 "steps": [
                     {
                         "id": "S1",

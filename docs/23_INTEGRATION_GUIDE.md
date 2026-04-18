@@ -40,13 +40,16 @@ jobs:
 The current low-level JSON TP executor is a separate specialist surface.
 Its runtime-supported execution surface now includes both `gemini` and `codex`.
 It is still a different plane from the default `tp series` workflow and from route/orchestrate runners.
+Strict repo-aware packets can adopt `dopetask_schemas/task_packet.strict.schema.json` when a repo wants mandatory `repo_binding`, `execution`, `commit.verify`, and Gemini PAL rules.
 
 To add another agent profile:
 
 1. **Implement the executor**: add an executor under `src/dopetask_adapters/<agent>/` that can run a compiled JSON TP and return the raw proof path.
 2. **Register the agent slug**: update `src/dopetask/ops/tp_exec/engine.py` so `execute_task_packet()` recognizes the new `--agent` value.
-3. **Keep the packet contract stable**: supervisors still emit JSON packets matching `docs/schemas/task_packet.schema.json`.
+3. **Keep the packet contract stable**: supervisors still emit JSON packets matching `dopetask_schemas/task_packet.schema.json`. Strict repo-aware packets may add `repo_binding`, `execution`, and `pr` metadata, but the packaged generic schema remains the runtime authority. Use the strict policy schema only when the repo explicitly wants the stricter contract.
 4. **Use the series workflow as the entrypoint**: new work should still run through `dopetask tp series exec ... --agent <agent> [--model <model>]`.
+
+Mutating entrypoints refuse wrong-repo execution before worktree or PR mutation. If a packet declares `repo_binding.require_identity_match = true`, the active repo must match the binding before `tp exec`, `tp series exec`, `tp series finalize`, or `tp git` PR/merge operations proceed.
 
 Route/orchestrate surfaces remain separate from both `tp series` and low-level `tp exec`.
 They provide route planning and runner-based execution behavior, not the default integration path for new work.

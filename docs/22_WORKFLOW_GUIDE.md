@@ -11,14 +11,16 @@ The series workflow is designed for high-trust, deterministic execution of multi
 Use this as the canonical and default operator workflow reference. If you are upgrading from older `tp exec` or `commit-sequence` habits, read `24_UPGRADE_GUIDE.md` alongside this guide. If you intentionally need the older manual path, see `20_WORKTREES_COMMIT_SEQUENCING.md`.
 
 Before you start a fresh supervisor session, generate or apply the current prompt using `26_SUPERVISOR_PROMPTS.md`.
+If the repo is bound for identity-checked work, default to the strict repo-aware packet contract and keep `execution.branch` execution-scoped rather than under `commit`.
 
 ## Lifecycle Stages
 
 ### 1. Planning (Task Packet Authoring)
 The Supervisor (AI or human) decomposes a high-level objective into atomic Task Packets.
-- **Key Metadata**: `series.id`, `depends_on`, `commit.allowlist`.
+- **Key Metadata**: `series.id`, `depends_on`, `commit.allowlist`, `repo_binding`, `execution`.
 - **Validation**: Every packet MUST have empirical verification commands.
 - **Packet handoff**: Save the JSON Task Packet to a file before execution, then run `dopetask tp series exec path/to/packet.json --agent gemini`.
+If a packet declares `repo_binding.require_identity_match = true`, the kernel refuses to mutate anything unless the active repo identity matches that binding.
 
 ### 2. Execution (`tp series exec`)
 Invoke the kernel to execute a specific packet:
@@ -36,6 +38,7 @@ Prerequisite: the repository must have an initial commit on `main`. `origin/main
 6. **Cleanup**: Deterministically removes the worktree.
 
 Use `--model` when you need to override the route-derived model for the selected agent. Precedence is explicit override first, route-derived model second, agent default last.
+If the packet includes `execution.branch`, that branch name is treated as execution-scoped metadata and is used by the series executor when present.
 
 ### 3. Monitoring (`tp series status`)
 Track the progress of a series and its dependency graph:

@@ -25,6 +25,9 @@ def test_init_creates_files_when_missing(tmp_path: Path) -> None:
 
     for filename in ("PROJECT_INSTRUCTIONS.md", "CLAUDE.md", "CODEX.md", "AGENTS.md"):
         text = (out_dir / filename).read_text(encoding="utf-8")
+        assert "strict repo-aware Task Packet contract" in text
+        assert "repo_binding" in text
+        assert "pal_chain.enabled = true" in text
         assert "<!-- DOPETASK:BEGIN -->" in text
         assert "<!-- DOPETASK:END -->" in text
         assert "<!-- CHATX:BEGIN -->" in text

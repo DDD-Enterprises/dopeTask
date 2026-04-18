@@ -89,3 +89,15 @@ dopetask ops apply
 Use `dopetask ops doctor --no-export` to confirm the canonical target is current.
 
 For the full prompt-generation and installation matrix, see `26_SUPERVISOR_PROMPTS.md`.
+
+## Strict packet bootstrap
+
+If this repository should reject wrong-repo execution, bootstrap the repo-local instruction files and the strict packet policy at the same time:
+
+```bash
+dopetask project shell init
+dopetask ops init --platform chatgpt --model gpt-5.4
+dopetask ops apply
+```
+
+Then make sure new work uses the strict repo-aware Task Packet contract with `repo_binding`, `execution`, `commit.verify`, and `pr` when the work is repo-bound. PAL metadata stays optional for non-Gemini packets and is required and enabled for Gemini. The portable schema pack lives in `dopetask_schemas/task_packet.strict.schema.json`.

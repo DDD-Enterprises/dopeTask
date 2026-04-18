@@ -9,6 +9,7 @@ from pathlib import Path
 from dopetask.ops.tp_git.exec import run_git
 from dopetask.ops.tp_git.guards import DoctorReport, resolve_repo_root, run_doctor
 from dopetask.ops.tp_git.naming import resolve_target
+from dopetask.guard.identity import assert_repo_identity
 
 
 @dataclass(frozen=True)
@@ -116,6 +117,7 @@ def tp_status(*, tp_id: str, repo: typing.Optional[Path] = None) -> dict[str, st
 def sync_main(*, repo: typing.Optional[Path] = None) -> dict[str, str]:
     """Sync main branch with ff-only policy."""
     repo_root = resolve_repo_root(repo)
+    assert_repo_identity(repo_root)
     run_git(["checkout", "main"], repo_root=repo_root)
     fetch = run_git(["fetch", "--all", "--prune"], repo_root=repo_root)
     pull = run_git(["pull", "--ff-only"], repo_root=repo_root)
@@ -129,6 +131,7 @@ def sync_main(*, repo: typing.Optional[Path] = None) -> dict[str, str]:
 def cleanup_tp(*, tp_id: str, repo: typing.Optional[Path] = None) -> dict[str, str]:
     """Remove TP worktree after validating cleanliness."""
     repo_root = resolve_repo_root(repo)
+    assert_repo_identity(repo_root)
     worktree_path = (repo_root / ".worktrees" / tp_id).resolve()
     if not worktree_path.exists():
         raise RuntimeError(f"cleanup failed: worktree does not exist: {worktree_path}")
