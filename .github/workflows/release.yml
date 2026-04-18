@@ -144,7 +144,7 @@ jobs:
           echo "📦 Published dopetask v${{ env.TAG_VERSION }} to PyPI"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           name: dopeTask v${{ env.TAG_VERSION }}
