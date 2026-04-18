@@ -1,46 +1,47 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "dopeTask TaskPacket",
-  "description": "A declarative plan for the dopeTask execution kernel. It defines a sequence of atomic steps to accomplish a development task without agent drift.",
+  "title": "dopeTask TaskPacket - strict repo policy",
+  "description": "Strict Task Packet contract for repo-bound, series-driven execution with mandatory repo identity binding, explicit execution metadata, verification evidence, and Gemini-required PAL chaining.",
   "type": "object",
   "properties": {
     "id": {
-      "description": "A unique identifier for this task packet (e.g., 'TP-CRM-001-setup').",
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "project": {
-      "description": "The name of the project this task belongs to.",
       "type": "string",
-      "default": "dopetask"
+      "minLength": 1
     },
     "target": {
-      "description": "A high-level description of the ultimate goal of this Task Packet.",
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "invariants": {
-      "description": "A list of conditions that must remain true after every step (e.g., 'No existing tests fail').",
       "type": "array",
+      "minItems": 1,
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1
       }
     },
     "depends_on": {
-      "description": "Optional series-level packet dependencies that must complete before this packet may execute.",
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1
       },
-      "uniqueItems": true
+      "default": []
     },
     "repo_binding": {
-      "description": "Optional repo identity binding for stricter mutating workflows.",
       "type": "object",
       "properties": {
         "project_id": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "repo_marker": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "origin_hint": {
           "type": "string"
@@ -57,14 +58,15 @@
       "additionalProperties": false
     },
     "series": {
-      "description": "Optional series metadata for DAG-aware packet execution.",
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "base_branch": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "parent_tp_id": {
           "type": [
@@ -85,7 +87,6 @@
       "additionalProperties": false
     },
     "execution": {
-      "description": "Optional execution-scoped metadata for the target run.",
       "type": "object",
       "properties": {
         "agent": {
@@ -98,53 +99,61 @@
           ]
         },
         "branch": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [
-        "agent"
+        "agent",
+        "branch"
       ],
       "additionalProperties": false
     },
     "commit": {
-      "description": "Optional commit metadata used by the series executor.",
       "type": "object",
       "properties": {
         "message": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "allowlist": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "verify": {
           "type": "array",
+          "minItems": 1,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
       },
       "required": [
         "message",
-        "allowlist"
+        "allowlist",
+        "verify"
       ],
       "additionalProperties": false
     },
     "pr": {
-      "description": "Optional PR metadata for series finalization and reuse.",
       "type": "object",
       "properties": {
         "title": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "body": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "base": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [
@@ -154,55 +163,75 @@
       ],
       "additionalProperties": false
     },
+    "pal_chain": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "enabled",
+        "steps"
+      ],
+      "additionalProperties": false
+    },
     "steps": {
-      "description": "The ordered sequence of implementation steps.",
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
           "id": {
-            "description": "A unique ID for this step within the packet (e.g., 'step_1').",
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "task": {
-            "description": "A detailed description of the implementation work for this specific step.",
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "requirements": {
-            "description": "Specific constraints or rules for this step's implementation.",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "commands": {
-            "description": "A list of shell commands to execute during this step.",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "expected_files": {
-            "description": "A list of files that are expected to be created or modified by this step.",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "validation": {
-            "description": "CRITICAL: A list of shell commands used to verify the success of this step. MUST NOT BE EMPTY for Gemini agents.",
             "type": "array",
             "minItems": 1,
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "context_files": {
-            "description": "A list of existing file paths that the implementer needs as context for this step.",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           }
         },
@@ -213,34 +242,18 @@
         ],
         "additionalProperties": false
       }
-    },
-    "supersedes": {
-      "description": "Optional list of Task Packet IDs that this packet supersedes.",
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "uniqueItems": true
-    },
-    "pal_chain": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "steps": {
-          "type": "array"
-        }
-      },
-      "required": [
-        "enabled",
-        "steps"
-      ]
     }
   },
   "required": [
     "id",
+    "project",
     "target",
+    "invariants",
+    "repo_binding",
+    "series",
+    "execution",
+    "commit",
+    "pr",
     "steps"
   ],
   "allOf": [

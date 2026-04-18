@@ -17,6 +17,7 @@ from typing import Any, Optional, cast
 
 from dopetask.core.schema import TaskPacket
 from dopetask.core.tp_parser import TPParser
+from dopetask.guard.identity import assert_repo_binding, assert_repo_identity, load_repo_identity
 from dopetask.ops.tp_exec.engine import execute_task_packet
 from dopetask.ops.tp_git.exec import run_command, run_git
 from dopetask.ops.tp_git.guards import resolve_repo_root
@@ -171,6 +172,7 @@ def _parse_status_paths(status_output: str) -> list[str]:
 
 def _run_series_doctor(*, repo_root: Path) -> None:
     """Fail closed on dirty main while allowing series-owned artifacts."""
+    assert_repo_identity(repo_root)
     branch_result = run_git(["symbolic-ref", "--quiet", "--short", "HEAD"], repo_root=repo_root, check=False)
     if branch_result.returncode != 0:
         raise RuntimeError(
@@ -280,6 +282,13 @@ def _copy_proof_artifacts(*, worktree_path: Path, run_dir: Path) -> Optional[Pat
             if item.name.endswith("_PROOF_BUNDLE.json"):
                 copied_bundle = destination.resolve()
     return copied_bundle
+
+
+def _packet_branch(tp: TaskPacket) -> str:
+    execution = getattr(tp, "execution", None)
+    if execution is not None and getattr(execution, "branch", None):
+        return str(execution.branch)
+    return build_tp_branch(tp.id, normalize_slug(tp.target or tp.id))
 
 
 def _ensure_series_packet(tp: TaskPacket) -> None:
@@ -405,6 +414,7 @@ def import_series_packet(
     By default, reads from the clipboard. If source_file is provided, reads from that file instead.
     """
     repo_root = resolve_repo_root(repo)
+    repo_identity = load_repo_identity(repo_root)
 
     if source_file is not None:
         payload = json.loads(source_file.read_text(encoding="utf-8"))
@@ -420,6 +430,8 @@ def import_series_packet(
 
     tp = TPParser.parse_dict(payload)
     _ensure_series_import_packet(tp)
+    assert_repo_identity(repo_root)
+    assert_repo_binding(repo_identity, repo_root, tp.repo_binding)
     _validate_series_import_state(repo_root=repo_root, tp=tp, overwrite=overwrite)
     assert tp.series is not None
 
@@ -438,10 +450,6 @@ def import_series_packet(
         validation="structural-ok",
         message=f"series packet imported: {tp.id}",
     )
-
-
-def _packet_branch(tp: TaskPacket) -> str:
-    return build_tp_branch(tp.id, normalize_slug(tp.target or tp.id))
 
 
 def _dependency_records(state: dict[str, Any], depends_on: list[str]) -> dict[str, dict[str, Any]]:
@@ -518,6 +526,7 @@ def cleanup_series_artifacts(
     *, repo_root: Path, series_id: str, packet_id: Optional[str] = None, force: bool = False
 ) -> list[str]:
     """Purge stale worktrees and branches for a series."""
+    assert_repo_identity(repo_root)
     series_dir = _series_dir(repo_root, series_id)
     state_path = _state_path(series_dir)
     if not state_path.exists():
@@ -608,11 +617,18 @@ def exec_series_packet(
 ) -> SeriesExecResult:
     """Execute a JSON Task Packet inside a series-aware git workflow."""
     repo_root = resolve_repo_root(repo)
+    repo_identity = load_repo_identity(repo_root)
     _run_series_doctor(repo_root=repo_root)
 
     packet_path = tp_file.resolve()
     tp = TPParser.parse_file(packet_path)
     _ensure_series_packet(tp)
+    assert_repo_identity(repo_root)
+    assert_repo_binding(repo_identity, repo_root, tp.repo_binding)
+    if tp.execution is not None and tp.execution.agent != agent:
+        raise RuntimeError(
+            f"series exec failed: packet execution.agent '{tp.execution.agent}' does not match selected agent '{agent}'"
+        )
     assert tp.series is not None
     assert tp.commit is not None
 

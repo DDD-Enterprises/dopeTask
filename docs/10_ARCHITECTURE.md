@@ -48,6 +48,8 @@ The route/orchestrate plane remains active as a deterministic architecture surfa
 It plans one path, refuses with evidence, and supports runner-or-handoff outcomes.
 That plane is real, but it is not the only current execution story.
 
+All mutating planes now perform repo identity preflight before worktree creation, commit staging, or PR mutation. Packets that declare `repo_binding.require_identity_match = true` must only run in the repo whose canonical identity matches the binding.
+
 No side doors.
 No background threads.
 No secret tunnels.

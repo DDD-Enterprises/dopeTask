@@ -31,7 +31,7 @@ OUTPUT FORMAT (MANDATORY):
   "validation": true|false,
   "errors": []
 }""",
-    
+
     "TURN_2_CONTEXT_LOAD": """PROJECT: {project}
 TARGET: {target}
 
@@ -43,7 +43,7 @@ INVARIANTS:
 - fail closed
 - deterministic output
 - proof required""",
-    
+
     "TURN_3_STEP": """STEP ID: {step_id}
 
 TASK:
@@ -80,7 +80,7 @@ Return:
 1. files created
 2. code blocks per file
 3. verification steps""",
-    
+
     "TURN_2_TASK": """Implement {target} in:
 {target_dir}
 
@@ -111,7 +111,7 @@ TASK:
 
 OUTPUT:
 Only code.""",
-    
+
     "TURN_2_STEP": """TASK:
 {task}
 

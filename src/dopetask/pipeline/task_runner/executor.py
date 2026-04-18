@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import typing
 from typing import Any, Protocol
 
 from dopetask.pipeline.task_runner.types import ExecutionResult
@@ -26,15 +25,15 @@ class TaskExecutor:
 
         Returns:
             A tuple of (execution_results, legacy_proof_path).
-            The legacy_proof_path is retained for backward compatibility with 
+            The legacy_proof_path is retained for backward compatibility with
             Phase 1 aggregation logic.
         """
         results, legacy_proof_path = self.adapter.run_tp(tp)
-        
+
         # Kernel validation of adapter output
         if not isinstance(results, list):
             raise TypeError(f"Adapter results must be a list of ExecutionResult, got {type(results)}")
-            
+
         for result in results:
             if not isinstance(result, ExecutionResult):
                 raise TypeError(f"Invalid adapter output: expected ExecutionResult, got {type(result)}")

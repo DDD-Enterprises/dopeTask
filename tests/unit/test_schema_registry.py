@@ -3,7 +3,13 @@ import pytest
 
 from dopetask.utils.schema_registry import SchemaRegistry
 
-REQUIRED = {"allowlist_diff", "promotion_token", "run_envelope", "run_summary"}
+REQUIRED = {
+    "allowlist_diff",
+    "promotion_token",
+    "run_envelope",
+    "run_summary",
+    "task_packet.strict",
+}
 
 
 def test_required_schemas_available():

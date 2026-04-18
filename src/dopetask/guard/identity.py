@@ -16,6 +16,7 @@ from dopetask.obs.run_artifacts import (
 )
 
 if TYPE_CHECKING:
+    from dopetask.core.schema import TPRepoBinding
     from dopetask.pipeline.task_runner.types import ProjectIdentity
 
 
@@ -195,6 +196,31 @@ def assert_repo_branch_identity(repo_identity: RepoIdentity, branch_name: str) -
         )
 
 
+def assert_repo_binding(
+    repo_identity: RepoIdentity,
+    repo_root: Path,
+    repo_binding: typing.Optional[TPRepoBinding],
+) -> None:
+    """Hard-fail when a packet repo binding does not match the active repo."""
+    if repo_binding is None:
+        return
+
+    binding_project_id = repo_binding.project_id.strip()
+    if not binding_project_id:
+        raise RuntimeError("ERROR: Task Packet repo_binding.project_id is empty.\nRefusing to run.")
+
+    if repo_binding.require_identity_match and binding_project_id != repo_identity.project_id:
+        raise RuntimeError(
+            f"ERROR: Task Packet repo_binding.project_id '{binding_project_id}' does not match repo project_id '{repo_identity.project_id}'.\n"
+            "Refusing to run. Use the correct repo or correct packet."
+        )
+
+    marker_path = (repo_root / repo_binding.repo_marker).resolve()
+    if not marker_path.exists():
+        raise RuntimeError(
+            f"ERROR: Task Packet repo_marker '{repo_binding.repo_marker}' does not exist in repo_root '{repo_root}'.\n"
+            "Refusing to run."
+        )
 
 def run_identity_origin_warning(
     repo_identity: RepoIdentity,

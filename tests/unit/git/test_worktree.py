@@ -35,7 +35,13 @@ def repo_with_origin(tmp_path: Path) -> Path:
     _git(repo, "config", "user.name", "Test User")
 
     (repo / "README.md").write_text("# test\n", encoding="utf-8")
-    _git(repo, "add", "README.md")
+    (repo / ".dopetaskroot").write_text("", encoding="utf-8")
+    (repo / ".dopetask").mkdir(parents=True, exist_ok=True)
+    (repo / ".dopetask" / "project.json").write_text(
+        json.dumps({"project_id": "dopetask.core"}, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    _git(repo, "add", "README.md", ".dopetaskroot", ".dopetask/project.json")
     _git(repo, "commit", "-m", "initial")
     _git(repo, "branch", "-M", "main")
     _git(repo, "remote", "add", "origin", str(remote))

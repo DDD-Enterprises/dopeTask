@@ -89,8 +89,12 @@ def test_ops_init_exports_by_default(tmp_path, monkeypatch):
 
     export_file = tmp_path / "ops" / "EXPORTED_OPERATOR_PROMPT.md"
     assert export_file.exists()
+    exported = export_file.read_text()
+    assert "Strict Task Packet Policy" in exported
+    assert "task_packet.strict.schema.json" in exported
+    assert "pal_chain" in exported
 
-    first_hash = calculate_hash(export_file.read_text())
+    first_hash = calculate_hash(exported)
 
     # Run again - should be idempotent
     result = runner.invoke(app, ["init"])
@@ -168,6 +172,7 @@ def test_ops_export_write_on_change(tmp_path, monkeypatch):
 
     export_file = tmp_path / "ops" / "EXPORTED_OPERATOR_PROMPT.md"
     assert export_file.exists()
+    assert "Strict Task Packet Policy" in export_file.read_text()
 
     # Second export
     result = runner.invoke(app, ["export"])

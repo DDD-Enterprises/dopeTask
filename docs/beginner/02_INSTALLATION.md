@@ -27,6 +27,8 @@ dopetask --version
 ```
 If it prints a version number (like `0.3.0`), you are ready to go!
 
+If your repository wants the stricter repo-aware packet rules, the next setup step is `dopetask project shell init` followed by `dopetask ops init` and `dopetask ops apply`. Those commands write the repo-local instruction files that explain `repo_binding`, `execution`, `commit.verify`, `pr`, and PAL metadata rules for Gemini.
+
 ---
 
 ## 2. Set Up Your Project Folder

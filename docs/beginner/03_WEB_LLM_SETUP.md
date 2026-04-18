@@ -56,6 +56,8 @@ By pasting that prompt, you have given the AI strict boundaries:
 *   **"Only output a blueprint (Task Packet) formatted as JSON."**
 *   **"Every step in your blueprint must include automated validation."**
 *   **"New work must use `depends_on`, `series`, and `commit` metadata so dopeTask can run each TP in its own worktree and finish the series as one PR."**
+*   If the work is repo-bound, include `repo_binding`, `execution`, `commit.verify`, and `pr`; use the strict schema pack for identity-checked repos.
+*   If the packet target is Gemini, add `pal_chain` and keep it enabled so the PAL metadata is explicit.
 
 ## 4. Cursor and CLI Agents
 

@@ -10,8 +10,9 @@ from pathlib import Path
 from typing import Optional
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
+from dopetask.guard.identity import assert_repo_binding, assert_repo_identity, load_repo_identity
 from dopetask.obs.proof_aggregator import ProofAggregator
-from dopetask.pipeline.task_runner.executor import TaskExecutor
+from dopetask.pipeline.task_runner.executor import Adapter, TaskExecutor
 from dopetask_adapters.codex.executor import CodexExecutor
 from dopetask_adapters.gemini.executor import GeminiAdapter
 
@@ -44,9 +45,16 @@ def execute_task_packet(
     from dopetask.ops.tp_git.guards import resolve_repo_root
 
     repo_root = resolve_repo_root(working_dir or Path.cwd())
+    repo_identity = load_repo_identity(repo_root)
 
     with _pushd(working_dir):
         tp = TPParser.parse_file(resolved_tp_file)
+        assert_repo_identity(repo_root)
+        assert_repo_binding(repo_identity, repo_root, tp.repo_binding)
+        if tp.execution is not None and tp.execution.agent != agent:
+            raise RuntimeError(
+                f"Task Packet execution.agent '{tp.execution.agent}' does not match selected agent '{agent}'."
+            )
         compiled_tp = TPNormalizer.compile(tp, agent)
 
         effective_model, effective_model_source = _resolve_effective_model(
@@ -55,6 +63,7 @@ def execute_task_packet(
             requested_model=model,
         )
 
+        adapter: Adapter
         if agent == "gemini":
             adapter = GeminiAdapter(
                 model=effective_model,
@@ -72,12 +81,12 @@ def execute_task_packet(
 
         # Kernel-side TaskExecutor validates adapter output shape.
         kernel_executor = TaskExecutor(adapter)
-        
-        # Transitional Phase 1: Unpack the new ExecutionResult stream while 
+
+        # Transitional Phase 1: Unpack the new ExecutionResult stream while
         # still using the legacy_proof_path for backward compatibility.
         results, raw_proof_path_str = kernel_executor.execute(compiled_tp)
         raw_proof_path = Path(raw_proof_path_str).resolve()
-        
+
         aggregator = ProofAggregator(tp.id)
 
         with raw_proof_path.open(encoding="utf-8") as handle:

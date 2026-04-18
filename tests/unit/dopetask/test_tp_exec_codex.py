@@ -20,6 +20,12 @@ def _init_repo(path: Path) -> Path:
     subprocess.run(["git", "init"], cwd=path, check=True, capture_output=True, text=True)
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=path, check=True, capture_output=True, text=True)
     subprocess.run(["git", "config", "user.name", "Test User"], cwd=path, check=True, capture_output=True, text=True)
+    (path / ".dopetaskroot").write_text("", encoding="utf-8")
+    (path / ".dopetask").mkdir(parents=True, exist_ok=True)
+    (path / ".dopetask" / "project.json").write_text(
+        json.dumps({"project_id": "dopetask.core"}, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return path
 
 
@@ -29,6 +35,9 @@ def _write_json_packet(
     expected_files: list[str],
     validation: list[str],
     commands: list[str] | None = None,
+    repo_binding: dict[str, object] | None = None,
+    execution: dict[str, object] | None = None,
+    pal_chain: dict[str, object] | None = None,
 ) -> Path:
     payload = {
         "id": "TP-CODEX-TEST",
@@ -46,8 +55,56 @@ def _write_json_packet(
             }
         ],
     }
+    if repo_binding is not None:
+        payload["repo_binding"] = repo_binding
+    if execution is not None:
+        payload["execution"] = execution
+    if pal_chain is not None:
+        payload["pal_chain"] = pal_chain
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+def test_execute_task_packet_refuses_repo_binding_mismatch(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    packet = _write_json_packet(
+        repo / "packet.json",
+        expected_files=[],
+        validation=["true"],
+        repo_binding={
+            "project_id": "other.project",
+            "repo_marker": ".dopetaskroot",
+            "require_identity_match": True,
+        },
+    )
+
+    with pytest.raises(RuntimeError, match="repo_binding.project_id 'other.project' does not match"):
+        execute_task_packet(packet, agent="codex", working_dir=repo)
+
+
+def test_execute_task_packet_refuses_agent_mismatch(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    packet = _write_json_packet(
+        repo / "packet.json",
+        expected_files=[],
+        validation=["true"],
+        execution={
+            "agent": "gemini",
+            "branch": "series/TP-CODEX-TEST",
+        },
+        repo_binding={
+            "project_id": "dopetask.core",
+            "repo_marker": ".dopetaskroot",
+            "require_identity_match": True,
+        },
+        pal_chain={
+            "enabled": True,
+            "steps": ["analysis"],
+        },
+    )
+
+    with pytest.raises(RuntimeError, match="execution.agent 'gemini' does not match selected agent 'codex'"):
+        execute_task_packet(packet, agent="codex", working_dir=repo)
 
 
 def test_execute_task_packet_codex_creates_expected_files_and_bundle(monkeypatch, tmp_path: Path) -> None:

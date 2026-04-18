@@ -35,6 +35,7 @@ def test_doctor_passes_when_main_clean_no_stash(monkeypatch: pytest.MonkeyPatch)
         ("fetch", "--all", "--prune"): _result(["fetch", "--all", "--prune"], stdout=""),
         ("pull", "--ff-only"): _result(["pull", "--ff-only"], stdout="Already up to date.\n"),
     }
+    monkeypatch.setattr("dopetask.ops.tp_git.guards.assert_repo_identity", lambda repo_root: None)
     monkeypatch.setattr("dopetask.ops.tp_git.guards.run_git", _GitStub(outputs))
 
     report = run_doctor(repo=Path("/repo"))
@@ -47,6 +48,7 @@ def test_doctor_refuses_non_main(monkeypatch: pytest.MonkeyPatch) -> None:
         ("rev-parse", "--show-toplevel"): _result(["rev-parse", "--show-toplevel"], stdout="/repo\n"),
         ("rev-parse", "--abbrev-ref", "HEAD"): _result(["rev-parse", "--abbrev-ref", "HEAD"], stdout="feature\n"),
     }
+    monkeypatch.setattr("dopetask.ops.tp_git.guards.assert_repo_identity", lambda repo_root: None)
     monkeypatch.setattr("dopetask.ops.tp_git.guards.run_git", _GitStub(outputs))
 
     with pytest.raises(RuntimeError, match="expected branch main"):
@@ -59,6 +61,7 @@ def test_doctor_refuses_dirty(monkeypatch: pytest.MonkeyPatch) -> None:
         ("rev-parse", "--abbrev-ref", "HEAD"): _result(["rev-parse", "--abbrev-ref", "HEAD"], stdout="main\n"),
         ("status", "--porcelain"): _result(["status", "--porcelain"], stdout=" M file.py\n"),
     }
+    monkeypatch.setattr("dopetask.ops.tp_git.guards.assert_repo_identity", lambda repo_root: None)
     monkeypatch.setattr("dopetask.ops.tp_git.guards.run_git", _GitStub(outputs))
 
     with pytest.raises(RuntimeError, match="main has uncommitted changes"):
@@ -72,6 +75,7 @@ def test_doctor_refuses_stash(monkeypatch: pytest.MonkeyPatch) -> None:
         ("status", "--porcelain"): _result(["status", "--porcelain"], stdout=""),
         ("stash", "list"): _result(["stash", "list"], stdout="stash@{0}: WIP\n"),
     }
+    monkeypatch.setattr("dopetask.ops.tp_git.guards.assert_repo_identity", lambda repo_root: None)
     monkeypatch.setattr("dopetask.ops.tp_git.guards.run_git", _GitStub(outputs))
 
     with pytest.raises(RuntimeError, match="stash list is non-empty"):

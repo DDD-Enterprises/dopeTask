@@ -1,13 +1,11 @@
-from typing import List
-
 class StepResult:
     def __init__(
         self,
         step_id: str,
-        files_created: List[str],
-        commands_run: List[str],
+        files_created: list[str],
+        commands_run: list[str],
         validation_passed: bool,
-        errors: List[str]
+        errors: list[str],
     ):
         self.step_id = step_id
         self.files_created = files_created
@@ -17,6 +15,6 @@ class StepResult:
 
 
 class TPProofBundle:
-    def __init__(self, tp_id: str, steps: List[StepResult]):
+    def __init__(self, tp_id: str, steps: list[StepResult]):
         self.tp_id = tp_id
         self.steps = steps

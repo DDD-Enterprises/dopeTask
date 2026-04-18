@@ -29,6 +29,16 @@ dopetask doctor --timestamp-mode deterministic
 
 If the repository already uses `.venv` or the legacy `.dopetask_venv`, the launcher will reuse those environments.
 
+## Strict packet pack
+
+If the downstream repository wants the strict repo-aware contract, add the policy schema pack and update its bootstrap prompts after installing dopeTask:
+
+- `dopetask_schemas/task_packet.strict.schema.json`
+- strict packet examples for repo-bound work
+- repo instruction text that tells supervisors to emit `repo_binding`, `execution`, `commit.verify`, `pr`, and Gemini PAL metadata when applicable
+
+For a fresh downstream repository, run `dopetask project shell init`, then `dopetask ops init`, then `dopetask ops apply` so the installed prompt and repo instruction files explain the strict contract.
+
 ## Pinning and upgrades
 
 You can pin the install through `.dopetask-pin` and upgrade later with:

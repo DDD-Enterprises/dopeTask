@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 from typer.testing import CliRunner
 
@@ -37,7 +38,13 @@ def _init_repo_with_origin(tmp_path: Path) -> Path:
     _git(repo, "config", "user.email", "test@example.com")
     _git(repo, "config", "user.name", "Test User")
     (repo / "README.md").write_text("# repo\n", encoding="utf-8")
-    _git(repo, "add", "README.md")
+    (repo / ".dopetaskroot").write_text("", encoding="utf-8")
+    (repo / ".dopetask").mkdir(parents=True, exist_ok=True)
+    (repo / ".dopetask" / "project.json").write_text(
+        json.dumps({"project_id": "dopetask.core"}, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    _git(repo, "add", "README.md", ".dopetaskroot", ".dopetask/project.json")
     _git(repo, "commit", "-m", "initial")
     _git(repo, "branch", "-M", "main")
     _git(repo, "remote", "add", "origin", str(remote))
@@ -49,17 +56,22 @@ def _init_unborn_main_repo(tmp_path: Path) -> Path:
     repo = tmp_path / "repo"
     repo.mkdir()
     _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "Test User")
+    (repo / "README.md").write_text("# repo\n", encoding="utf-8")
+    (repo / ".dopetaskroot").write_text("", encoding="utf-8")
+    (repo / ".dopetask").mkdir(parents=True, exist_ok=True)
+    (repo / ".dopetask" / "project.json").write_text(
+        json.dumps({"project_id": "dopetask.core"}, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    _git(repo, "add", "README.md", ".dopetaskroot", ".dopetask/project.json")
+    _git(repo, "commit", "-m", "initial")
     return repo
 
 
 def _init_local_main_repo(tmp_path: Path) -> Path:
-    repo = _init_unborn_main_repo(tmp_path)
-    _git(repo, "config", "user.email", "test@example.com")
-    _git(repo, "config", "user.name", "Test User")
-    (repo / "README.md").write_text("# repo\n", encoding="utf-8")
-    _git(repo, "add", "README.md")
-    _git(repo, "commit", "-m", "initial")
-    return repo
+    return _init_unborn_main_repo(tmp_path)
 
 
 def _write_packet(
@@ -72,6 +84,8 @@ def _write_packet(
     depends_on: list[str],
     parent_tp_id: str | None,
     final_packet: bool = False,
+    repo_binding: dict | None = None,
+    execution: dict | None = None,
 ) -> Path:
     payload = {
         "id": tp_id,
@@ -97,6 +111,10 @@ def _write_packet(
             "verify": ["git status --short"],
         },
     }
+    if repo_binding is not None:
+        payload["repo_binding"] = repo_binding
+    if execution is not None:
+        payload["execution"] = execution
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
 
@@ -556,11 +574,32 @@ def test_series_exec_refuses_unmet_dependencies(tmp_path: Path, monkeypatch) -> 
 
 
 def test_series_exec_refuses_unborn_main_without_initial_commit(tmp_path: Path, monkeypatch) -> None:
-    repo = _init_unborn_main_repo(tmp_path)
-    packet = tmp_path / "packet.json"
-    packet.write_text("{}\n", encoding="utf-8")
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "Test User")
+    packet = _write_packet(
+        tmp_path / "packet.json",
+        tp_id="TPUNBORN",
+        target="unborn",
+        series_id="SERIES-UNBORN",
+        allowlist=["src/unborn.txt"],
+        depends_on=[],
+        parent_tp_id=None,
+    )
 
     runner = CliRunner()
+    monkeypatch.setattr(
+        "dopetask.ops.tp_series.logic.load_repo_identity",
+        lambda repo_root: SimpleNamespace(
+            project_id="dopetask.core",
+            project_slug=None,
+            repo_remote_hint=None,
+            packet_required_header=False,
+        ),
+    )
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.assert_repo_identity", lambda repo_root: None)
     monkeypatch.chdir(repo)
     result = runner.invoke(cli, ["tp", "series", "exec", str(packet), "--repo", str(repo)])
 
@@ -591,6 +630,34 @@ def test_series_exec_supports_local_main_without_origin(tmp_path: Path, monkeypa
     payload = json.loads(state_path.read_text(encoding="utf-8"))
     assert payload["packets"]["TPLOCAL"]["status"] == "completed"
     assert payload["packets"]["TPLOCAL"]["base_ref"] == "main"
+
+
+def test_series_exec_uses_execution_branch_when_present(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    packet = _write_packet(
+        tmp_path / "tp_branch.json",
+        tp_id="TPBRANCH",
+        target="branch override",
+        series_id="SERIES-BRANCH",
+        allowlist=["src/branch.txt"],
+        depends_on=[],
+        parent_tp_id=None,
+        execution={
+            "agent": "codex",
+            "branch": "series/SERIES-BRANCH/TPBRANCH",
+        },
+    )
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.execute_task_packet", _fake_execute_task_packet)
+
+    runner = CliRunner()
+    monkeypatch.chdir(repo)
+    result = runner.invoke(cli, ["tp", "series", "exec", str(packet), "--repo", str(repo), "--agent", "codex"])
+
+    assert result.exit_code == 0, result.stdout
+    state_path = repo / "out" / "tp_series" / "SERIES-BRANCH" / "SERIES_STATE.json"
+    payload = json.loads(state_path.read_text(encoding="utf-8"))
+    assert payload["packets"]["TPBRANCH"]["branch"] == "series/SERIES-BRANCH/TPBRANCH"
 
 
 def test_series_finalize_requires_all_completed_packets_to_be_in_final_closure(tmp_path: Path, monkeypatch) -> None:

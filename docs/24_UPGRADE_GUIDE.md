@@ -68,6 +68,10 @@ Older packets or prompts that only covered steps are underspecified for the defa
 - `commit.message`
 - `commit.allowlist`
 - `commit.verify`
+- `repo_binding` and `execution` when the work should fail closed on repo identity mismatch
+- `pr` when the series is expected to finalize into a PR
+
+If you are upgrading a repo that wants the stricter policy pack, install or publish `dopetask_schemas/task_packet.strict.schema.json` alongside the generic runtime schema and update prompt/bootstrap files so they explain the stricter contract.
 
 See `docs/13_TASK_PACKET_FORMAT.md` for the current packet contract.
 
@@ -102,10 +106,11 @@ See `docs/integrations/dopetask/ADAPTER_SCHEMA.md` for the normalized integratio
 
 1. Upgrade the installed CLI to the current `dopeTask` release.
 2. Regenerate supervisor prompts with `dopetask ops export` or reapply them with `dopetask ops apply`.
-3. Update supervisor prompts and local runbooks to use `tp series exec`, `status`, and `finalize`.
-4. Update any packet generators so they emit `depends_on`, `series`, and `commit`.
-5. Update any integrations that assumed a top-level `status` field in `SERIES_STATE.json`; the stable status summary now lives under `counts`, with packet details under `packets`.
-6. Keep legacy `commit-sequence` usage only where you intentionally need the old maintainer path.
+3. If the repository uses identity-checked packets, re-run `dopetask project shell init` and `dopetask ops init` so the repo instruction files and exported prompt mention the strict packet contract.
+4. Update supervisor prompts and local runbooks to use `tp series exec`, `status`, and `finalize`.
+5. Update any packet generators so they emit `depends_on`, `series`, `commit`, `repo_binding`, `execution`, and `pr` where appropriate.
+6. Update any integrations that assumed a top-level `status` field in `SERIES_STATE.json`; the stable status summary now lives under `counts`, with packet details under `packets`.
+7. Keep legacy `commit-sequence` usage only where you intentionally need the old maintainer path.
 
 ## Documentation note
 

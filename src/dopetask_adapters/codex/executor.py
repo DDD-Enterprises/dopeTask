@@ -5,11 +5,11 @@ from __future__ import annotations
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
-from dopetask.pipeline.task_runner.types import ExecutionResult
-from dopetask_adapters.codex.proof_writer import ProofWriter
+from dopetask.pipeline.task_runner.types import ExecutionResult, NormalizedOutput
 from dopetask_adapters.codex.prompts import build_step_prompt
+from dopetask_adapters.codex.proof_writer import ProofWriter
 
 
 def _parse_status_paths(status_output: str) -> set[str]:
@@ -194,9 +194,9 @@ class CodexExecutor:
             result_dict = self._run_step(tp, step)
             raw_results.append(result_dict)
 
-            status = "succeeded" if result_dict.get("validation_passed") else "failed"
+            status: Literal["succeeded", "failed"] = "succeeded" if result_dict.get("validation_passed") else "failed"
             error = "\n".join(result_dict.get("errors", [])) if result_dict.get("errors") else None
-            normalized = {
+            normalized: NormalizedOutput = {
                 "files_created": result_dict.get("files_created", []),
                 "changed_files": result_dict.get("changed_files", []),
                 "commands_run": result_dict.get("commands_run", []),
