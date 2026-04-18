@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import typing
-from typing import TypedDict
 from dataclasses import dataclass, field
+from typing import TypedDict
 
 
 class NormalizedOutput(TypedDict):

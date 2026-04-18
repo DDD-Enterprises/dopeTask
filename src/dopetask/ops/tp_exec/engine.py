@@ -10,8 +10,7 @@ from pathlib import Path
 from typing import Optional
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
-from dopetask.guard.identity import load_repo_identity
-from dopetask.guard.identity import assert_repo_binding, assert_repo_identity
+from dopetask.guard.identity import assert_repo_binding, assert_repo_identity, load_repo_identity
 from dopetask.obs.proof_aggregator import ProofAggregator
 from dopetask.pipeline.task_runner.executor import TaskExecutor
 from dopetask_adapters.codex.executor import CodexExecutor
@@ -81,12 +80,12 @@ def execute_task_packet(
 
         # Kernel-side TaskExecutor validates adapter output shape.
         kernel_executor = TaskExecutor(adapter)
-        
-        # Transitional Phase 1: Unpack the new ExecutionResult stream while 
+
+        # Transitional Phase 1: Unpack the new ExecutionResult stream while
         # still using the legacy_proof_path for backward compatibility.
         results, raw_proof_path_str = kernel_executor.execute(compiled_tp)
         raw_proof_path = Path(raw_proof_path_str).resolve()
-        
+
         aggregator = ProofAggregator(tp.id)
 
         with raw_proof_path.open(encoding="utf-8") as handle:

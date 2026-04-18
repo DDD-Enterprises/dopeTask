@@ -6,10 +6,10 @@ import typing
 from dataclasses import dataclass
 from pathlib import Path
 
+from dopetask.guard.identity import assert_repo_identity
 from dopetask.ops.tp_git.exec import run_git
 from dopetask.ops.tp_git.guards import DoctorReport, resolve_repo_root, run_doctor
 from dopetask.ops.tp_git.naming import resolve_target
-from dopetask.guard.identity import assert_repo_identity
 
 
 @dataclass(frozen=True)

@@ -6,8 +6,8 @@ import typing
 from dataclasses import dataclass
 from pathlib import Path
 
-from dopetask.ops.tp_git.exec import ExecError, ExecResult, run_git
 from dopetask.guard.identity import assert_repo_identity
+from dopetask.ops.tp_git.exec import ExecError, ExecResult, run_git
 
 
 @dataclass(frozen=True)

@@ -7,8 +7,8 @@ import typing
 from pathlib import Path
 from typing import Any
 
-from dopetask.ops.tp_git.exec import run_command, run_git
 from dopetask.guard.identity import assert_repo_identity
+from dopetask.ops.tp_git.exec import run_command, run_git
 from dopetask.ops.tp_git.guards import resolve_repo_root
 from dopetask.ops.tp_git.naming import build_worktree_path
 
