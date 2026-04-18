@@ -14,9 +14,7 @@ class NormalizedOutput(TypedDict):
     commands_run: list[str]
     validation_passed: bool
 
-class ExecutionMetrics(TypedDict, total=False):
-    tokens: int
-    duration_seconds: float
+ExecutionMetrics = dict[str, typing.Any]
 
 @dataclass
 class ProjectIdentity:
@@ -71,5 +69,4 @@ class ExecutionResult:
     normalized_output: NormalizedOutput
     metrics: ExecutionMetrics = field(default_factory=dict)
     error: typing.Optional[str] = None
-
 

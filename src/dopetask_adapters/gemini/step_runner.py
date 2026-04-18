@@ -1,12 +1,12 @@
-import json
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from .prompts import GEMINI_PROMPTS
 
+
 class StepRunner:
-    def __init__(self, model: str = None) -> None:
+    def __init__(self, model: Optional[str] = None) -> None:
         self.model = model
 
     def compile_step_prompt(self, step: dict[str, Any]) -> str:
@@ -39,7 +39,7 @@ class StepRunner:
             for cmd in step.get("commands", []):
                 result["commands_run"].append(cmd)
                 cp = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                
+
                 # Capture output for trace
                 result["output_log"].append({
                     "command": cmd,
@@ -66,7 +66,7 @@ class StepRunner:
             val_passed = True
             for val_cmd in step.get("validation", []):
                 v_cp = subprocess.run(val_cmd, shell=True, capture_output=True, text=True)
-                
+
                 # Capture validation output for trace
                 result["output_log"].append({
                     "command": val_cmd,

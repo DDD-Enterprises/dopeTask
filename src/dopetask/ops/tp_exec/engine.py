@@ -12,7 +12,7 @@ from typing import Optional
 from dopetask.core.tp_parser import TPNormalizer, TPParser
 from dopetask.guard.identity import assert_repo_binding, assert_repo_identity, load_repo_identity
 from dopetask.obs.proof_aggregator import ProofAggregator
-from dopetask.pipeline.task_runner.executor import TaskExecutor
+from dopetask.pipeline.task_runner.executor import Adapter, TaskExecutor
 from dopetask_adapters.codex.executor import CodexExecutor
 from dopetask_adapters.gemini.executor import GeminiAdapter
 
@@ -63,6 +63,7 @@ def execute_task_packet(
             requested_model=model,
         )
 
+        adapter: Adapter
         if agent == "gemini":
             adapter = GeminiAdapter(
                 model=effective_model,

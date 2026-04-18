@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
+
 
 class ProofWriter:
     def write(
@@ -9,7 +10,7 @@ class ProofWriter:
         tp_id: str,
         steps: list[dict[str, Any]],
         *,
-        metadata: dict[str, Any] | None = None,
+        metadata: Optional[dict[str, Any]] = None,
     ) -> str:
         bundle = {
             "tp_id": tp_id,
@@ -37,30 +38,30 @@ class ProofWriter:
                 step_id = step_res.get("step_id", "UNKNOWN")
                 f.write(f"STEP: {step_id}\n")
                 f.write("-" * 40 + "\n")
-                
-                output_log = step_res.get("output_log", [])
+                output_log = step_res.get("output_log") or []
                 for entry in output_log:
                     cmd_type = entry.get("type", "exec").upper()
                     f.write(f"[{cmd_type}] Command: {entry.get('command')}\n")
                     f.write(f"Return Code: {entry.get('returncode')}\n")
-                    
+
                     stdout = entry.get("stdout", "").strip()
                     if stdout:
                         f.write("STDOUT:\n")
                         f.write(stdout + "\n")
-                    
+
                     stderr = entry.get("stderr", "").strip()
                     if stderr:
                         f.write("STDERR:\n")
                         f.write(stderr + "\n")
                     f.write("\n")
-                
-                if step_res.get("errors"):
+
+                errors = step_res.get("errors") or []
+                if errors:
                     f.write("ERRORS:\n")
-                    for err in step_res.get("errors"):
+                    for err in errors:
                         f.write(f"- {err}\n")
                     f.write("\n")
-                
+
                 f.write(f"Status: {'VALIDATED' if step_res.get('validation_passed') else 'FAILED'}\n")
                 f.write("\n")
 
