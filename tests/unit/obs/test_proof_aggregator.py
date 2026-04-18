@@ -1,4 +1,5 @@
 import json
+import zipfile
 
 from dopetask.obs.proof_aggregator import ProofAggregator
 
@@ -70,3 +71,29 @@ def test_proof_aggregator_archive_manifest(tmp_path):
     assert meta["present"] is True
     assert meta["filename"] == "TP-TEST-002_PROOF_ARCHIVE.zip"
     assert "sha256" in meta
+
+
+def test_proof_aggregator_avoids_basename_collisions(tmp_path):
+    agg = ProofAggregator(tp_id="TP-TEST-003", output_dir=tmp_path)
+    dir_a = tmp_path / "a"
+    dir_b = tmp_path / "b"
+    dir_a.mkdir()
+    dir_b.mkdir()
+    file_a = dir_a / "shared.txt"
+    file_b = dir_b / "shared.txt"
+    file_a.write_text("alpha", encoding="utf-8")
+    file_b.write_text("beta", encoding="utf-8")
+
+    bundle_path = agg.aggregate({"steps": []}, [file_a, file_b])
+    bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+    supporting = bundle["artifacts"]["supporting"]
+
+    assert len(supporting) == 2
+    assert len(set(supporting)) == 2
+
+    archive_path = tmp_path / "TP-TEST-003_PROOF_ARCHIVE.zip"
+    with zipfile.ZipFile(archive_path) as archive:
+        names = archive.namelist()
+    archived_shared = [name for name in names if name.endswith(".txt")]
+    assert len(archived_shared) == 2
+    assert len(set(archived_shared)) == 2

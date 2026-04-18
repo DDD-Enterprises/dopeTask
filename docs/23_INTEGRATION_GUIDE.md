@@ -1,12 +1,15 @@
 # Integration Guide: Connecting dopeTask to Your Ecosystem
 
 This guide provides patterns for integrating `dopeTask` with CI/CD pipelines, custom agents, and external systems.
+For new work, `tp series` is the default integration path.
+Low-level and non-default surfaces still exist, but they remain separate planes and should not be treated as interchangeable.
 
 Use this as the canonical integration reference for current `0.5.x` behavior. For packet structure, see `13_TASK_PACKET_FORMAT.md`. For migration from older execution assumptions, see `24_UPGRADE_GUIDE.md`.
 
 ## CI/CD Integration
 
 `dopeTask` is optimized for headless execution.
+For new work, prefer the `tp series` workflow as the first-choice integration surface.
 
 ### GitHub Actions Pattern
 Use the following pattern to execute one ready Task Packet in a workflow:
@@ -34,14 +37,19 @@ jobs:
 
 ## External Agent Integration
 
-The current low-level JSON TP executor only implements the `gemini` agent profile in the runtime path.
+The current low-level JSON TP executor is a separate specialist surface.
+Its runtime-supported execution surface now includes both `gemini` and `codex`.
+It is still a different plane from the default `tp series` workflow and from route/orchestrate runners.
 
 To add another agent profile:
 
 1. **Implement the executor**: add an executor under `src/dopetask_adapters/<agent>/` that can run a compiled JSON TP and return the raw proof path.
 2. **Register the agent slug**: update `src/dopetask/ops/tp_exec/engine.py` so `execute_task_packet()` recognizes the new `--agent` value.
 3. **Keep the packet contract stable**: supervisors still emit JSON packets matching `docs/schemas/task_packet.schema.json`.
-4. **Use the series workflow as the entrypoint**: new work should still run through `dopetask tp series exec ... --agent <agent>`.
+4. **Use the series workflow as the entrypoint**: new work should still run through `dopetask tp series exec ... --agent <agent> [--model <model>]`.
+
+Route/orchestrate surfaces remain separate from both `tp series` and low-level `tp exec`.
+They provide route planning and runner-based execution behavior, not the default integration path for new work.
 
 ## Proof Data Consumption
 

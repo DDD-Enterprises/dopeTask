@@ -10,6 +10,8 @@ Use this guide when you need to:
 
 For the JSON Task Packet contract, see `13_TASK_PACKET_FORMAT.md`. For the execution flow after the prompt is installed, see `22_WORKFLOW_GUIDE.md`. For migration notes, see `24_UPGRADE_GUIDE.md`.
 
+Runtime note: the low-level `tp exec` plane currently supports `gemini` and `codex`. Route/orchestrate remains a separate runner plane; do not assume parity between those surfaces.
+
 ## Recommended targets as of March 29, 2026
 
 ### Web supervisors

@@ -1172,7 +1172,7 @@ def _run_subprocess(
     *,
     cwd: Path,
     check: bool = True,
-    input_text: typing.Optional[str] = None,
+    input_text: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     completed = subprocess.run(
         argv,
@@ -1188,7 +1188,7 @@ def _run_subprocess(
     return completed
 
 
-def _install_command_for_tool(tool: str) -> typing.Optional[list[str]]:
+def _install_command_for_tool(tool: str) -> list[str] | None:
     if shutil.which("brew"):
         return ["brew", "install", tool]
     if shutil.which("apt-get"):
@@ -1353,7 +1353,7 @@ def _ensure_main_upstream(*, cwd: Path) -> list[str]:
     return actions
 
 
-def _parse_github_owner_repo(remote_url: str) -> typing.Optional[tuple[str, str]]:
+def _parse_github_owner_repo(remote_url: str) -> tuple[str, str] | None:
     ssh_match = re.match(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?$", remote_url)
     if ssh_match:
         return ssh_match.group("owner"), ssh_match.group("repo")
@@ -4474,7 +4474,8 @@ cli.add_typer(case_app, name="case")
 
 @cli.command(name="execute")
 def execute_cmd(
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or vibe."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    model: typing.Optional[str] = typer.Option(None, "--model", help="Optional explicit model override."),
     repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
 ) -> None:
     """Automatically discover, import, and execute the next runnable Task Packet."""
@@ -4506,6 +4507,7 @@ def execute_cmd(
         result = exec_series_packet(
             tp_file=import_result.packet_path,
             agent=agent,
+            model=model,
             repo=repo_root
         )
         typer.echo(f"Execution successful: {result.tp_id}")

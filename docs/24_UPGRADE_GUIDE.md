@@ -13,17 +13,19 @@ Use this guide if you previously:
 
 ## What changed
 
-### New default execution path
+### New default operator execution path
 
 New supervisor-driven work is now JSON-only and runs through the series workflow:
 
 ```bash
 dopetask tp series exec path/to/packet.json --agent gemini
+dopetask tp series exec path/to/packet.json --agent codex --model gpt-5.3-codex
 dopetask tp series status <series-id>
 dopetask tp series finalize <series-id> --title "..." --body "..."
 ```
 
 `dopetask tp exec` still exists as a low-level executor, but it is no longer the primary path for new multi-packet work.
+When you pass `--model`, the runtime uses explicit override first, route-derived model second, and the agent default last.
 
 ### Commit behavior changed
 

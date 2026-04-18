@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shlex
 from pathlib import Path
 
 import typer
@@ -27,7 +28,12 @@ def register(tp_app: typer.Typer) -> None:
         agent: str = typer.Option(
             "gemini",
             "--agent",
-            help="Agent profile: gemini, codex, or vibe.",
+            help="Agent profile: gemini or codex.",
+        ),
+        model: str | None = typer.Option(
+            None,
+            "--model",
+            help="Optional explicit model override for the selected agent.",
         ),
         dry_run: bool = typer.Option(
             False,
@@ -49,7 +55,10 @@ def register(tp_app: typer.Typer) -> None:
                 manager = TmuxManager()
                 session_name = f"tp-{tp.id.lower()}"
                 # Construct command to run itself without --tmux
-                cmd = f"dopetask tp exec {resolved_tp_file} --agent {agent}"
+                command_parts = ["dopetask", "tp", "exec", str(resolved_tp_file), "--agent", agent]
+                if model:
+                    command_parts.extend(["--model", model])
+                cmd = shlex.join(command_parts)
                 if manager.start_session(session_name, Path.cwd(), cmd):
                     typer.echo(f"Spawned execution in tmux session: {session_name}")
                     typer.echo(f"Run 'dopetask tmux attach {tp.id}' to monitor.")
@@ -63,7 +72,7 @@ def register(tp_app: typer.Typer) -> None:
                 typer.echo(json.dumps(TPNormalizer.compile(tp, agent), indent=2))
                 raise typer.Exit(0)
 
-            bundle_path = execute_task_packet(resolved_tp_file, agent=agent)
+            bundle_path = execute_task_packet(resolved_tp_file, agent=agent, model=model)
             typer.echo(f"Success! Canonical Proof Bundle written to: {bundle_path}")
             typer.echo("Audit archive created in same directory.")
 

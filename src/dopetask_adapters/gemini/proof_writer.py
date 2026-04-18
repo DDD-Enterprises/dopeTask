@@ -4,12 +4,20 @@ from pathlib import Path
 from typing import Any
 
 class ProofWriter:
-    def write(self, tp_id: str, steps: list[dict[str, Any]]) -> str:
+    def write(
+        self,
+        tp_id: str,
+        steps: list[dict[str, Any]],
+        *,
+        metadata: dict[str, Any] | None = None,
+    ) -> str:
         bundle = {
             "tp_id": tp_id,
             "timestamp": datetime.utcnow().isoformat(),
             "steps": steps
         }
+        if metadata:
+            bundle.update(metadata)
 
         out_dir = Path("proof")
         out_dir.mkdir(parents=True, exist_ok=True)

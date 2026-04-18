@@ -146,6 +146,29 @@
         ],
         "additionalProperties": false
       }
+    },
+    "supersedes": {
+      "description": "Optional list of Task Packet IDs that this packet supersedes.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "pal_chain": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "steps": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "enabled",
+        "steps"
+      ]
     }
   },
   "required": [

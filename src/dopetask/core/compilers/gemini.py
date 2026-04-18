@@ -30,6 +30,12 @@ class GeminiCompiler(BaseCompiler):
         """
         if not tp.steps:
             raise ValueError("TaskPacket must have at least one step for Gemini profile.")
+        if not getattr(tp, "pal_chain", None) or not tp.pal_chain.enabled:
+            raise ValueError("Fail-Closed: Gemini execution requires a valid and enabled pal_chain block.")
+        if not tp.pal_chain.steps:
+            raise ValueError("Fail-Closed: Gemini execution requires non-empty pal_chain.steps.")
+        if len(tp.pal_chain.steps) < len(tp.steps):
+            raise ValueError(f"Fail-Closed: Each execution step must have a corresponding PAL step mapping (found {len(tp.pal_chain.steps)} PAL steps for {len(tp.steps)} TP steps).")
 
         compiled_steps: list[dict[str, Any]] = []
 
@@ -48,6 +54,7 @@ class GeminiCompiler(BaseCompiler):
                 "commands": step.commands,
                 "expected_files": step.expected_files,
                 "validation": step.validation,
+                "context_files": step.context_files,
             })
 
         return {

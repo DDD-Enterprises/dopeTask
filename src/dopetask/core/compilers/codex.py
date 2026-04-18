@@ -1,4 +1,4 @@
-"""Codex compiler for SMART_IMPLEMENTER profile."""
+"""Codex compiler for step-oriented task packet execution."""
 
 from typing import Any
 
@@ -7,46 +7,37 @@ from dopetask.core.schema import TaskPacket
 
 
 class CodexCompiler(BaseCompiler):
-    """Compiles generic TPs into the SMART_IMPLEMENTER format for Codex.
-
-    This profile batches steps together to provide a larger context block and
-    explicitly demands full file coverage with no TODOs.
-    """
+    """Compile generic task packets into a per-step Codex execution profile."""
 
     def compile(self, tp: TaskPacket) -> dict[str, Any]:
-        """Compile the TaskPacket into the Codex format.
+        """Compile the task packet into the format expected by the Codex adapter."""
+        if not tp.steps:
+            raise ValueError("TaskPacket must have at least one step for Codex profile.")
 
-        Groups all files, requirements, and validation together into a single
-        large task block.
+        compiled_steps: list[dict[str, Any]] = []
 
-        Args:
-            tp: The generic TaskPacket instance.
+        for index, step in enumerate(tp.steps):
+            if not step.validation:
+                raise ValueError(
+                    f"Fail-Closed: Codex profile requires explicit validation. "
+                    f"Step '{step.id}' (index {index}) is missing validation commands."
+                )
 
-        Returns:
-            A dictionary containing the batched implementation request.
-        """
-        all_files = set()
-        all_requirements = []
-        all_validations = []
-
-        for step in tp.steps:
-            all_files.update(step.expected_files)
-            all_requirements.extend(step.requirements)
-            all_validations.extend(step.validation)
+            compiled_steps.append(
+                {
+                    "id": step.id,
+                    "task": step.task,
+                    "requirements": step.requirements,
+                    "commands": step.commands,
+                    "expected_files": step.expected_files,
+                    "validation": step.validation,
+                    "context_files": step.context_files,
+                }
+            )
 
         return {
             "id": tp.id,
+            "project": tp.project,
             "target": tp.target,
-            "target_dir": "src/",  # Simplified, could be derived from files
-            "files": sorted(all_files),
-            "requirements": all_requirements,
-            "validation": all_validations,
-            "constraints": [
-                "deterministic",
-                "fail-closed",
-                "proof bundle generation",
-                "no placeholder code",
-                "no TODOs",
-                "no skipped files"
-            ]
+            "steps": compiled_steps,
         }

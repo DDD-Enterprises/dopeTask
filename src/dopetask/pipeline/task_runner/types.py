@@ -3,8 +3,20 @@
 from __future__ import annotations
 
 import typing
-from dataclasses import dataclass
+from typing import TypedDict
+from dataclasses import dataclass, field
 
+
+class NormalizedOutput(TypedDict):
+    """Standardized adapter execution summary."""
+    files_created: list[str]
+    changed_files: list[str]
+    commands_run: list[str]
+    validation_passed: bool
+
+class ExecutionMetrics(TypedDict, total=False):
+    tokens: int
+    duration_seconds: float
 
 @dataclass
 class ProjectIdentity:
@@ -46,3 +58,18 @@ class RunWorkspace:
 
     root: str
     files: list[dict[str, str]]
+
+
+@dataclass
+class ExecutionResult:
+    """Standardized outcome of a task step execution."""
+
+    step_id: str
+    status: typing.Literal["pending", "running", "succeeded", "failed"]
+    execution_mode: typing.Literal["shell", "agent"]
+    raw_output: str
+    normalized_output: NormalizedOutput
+    metrics: ExecutionMetrics = field(default_factory=dict)
+    error: typing.Optional[str] = None
+
+

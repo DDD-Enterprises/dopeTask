@@ -8,6 +8,7 @@ This document defines deterministic classification rules for contract-to-code au
 - `PARTIAL`: intent present but incomplete enforcement; relies on convention; or only enforced in some modes.
 - `UNKNOWN`: no evidence found; ambiguous; or only implied by docs.
 - `CONFLICT`: code behavior contradicts docs.
+- `SUPERSEDED`: the claim or packet has been superseded by a newer master resolution; authority is redirected to the superseding packet ID.
 
 ## Evidence Rules
 

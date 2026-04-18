@@ -64,7 +64,8 @@ def import_cmd(
 @app.command("exec")
 def exec_cmd(
     tp_file: Path = typer.Argument(..., exists=True, file_okay=True, dir_okay=False, metavar="TP_FILE"),
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or vibe."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    model: str | None = typer.Option(None, "--model", help="Optional explicit model override."),
     force: bool = typer.Option(
         False, "--force", help="Force execution even if branch/worktree already exists (destructive)."
     ),
@@ -72,7 +73,7 @@ def exec_cmd(
 ) -> None:
     """Execute a JSON Task Packet inside a DAG-aware series workflow."""
     try:
-        result = exec_series_packet(tp_file=tp_file, agent=agent, force=force, repo=repo)
+        result = exec_series_packet(tp_file=tp_file, agent=agent, model=model, force=force, repo=repo)
     except Exception as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc

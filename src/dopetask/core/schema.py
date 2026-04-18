@@ -27,6 +27,13 @@ class TPSeries:
 
 
 @dataclass
+class TPPalChain:
+    """PAL Chain metadata."""
+    enabled: bool = False
+    steps: list[Any] = field(default_factory=list)
+
+
+@dataclass
 class TPCommit:
     """Commit metadata for series execution."""
 
@@ -46,6 +53,8 @@ class TaskPacket:
     depends_on: list[str] = field(default_factory=list)
     series: Optional[TPSeries] = None
     commit: Optional[TPCommit] = None
+    supersedes: list[str] = field(default_factory=list)
+    pal_chain: Optional[TPPalChain] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "TaskPacket":
@@ -76,6 +85,14 @@ class TaskPacket:
                     final_packet=bool(raw_series.get("final_packet", False)),
                 )
 
+            raw_pal = data.get("pal_chain")
+            pal_chain = None
+            if raw_pal is not None:
+                pal_chain = TPPalChain(
+                    enabled=bool(raw_pal.get("enabled", False)),
+                    steps=raw_pal.get("steps", []),
+                )
+            
             raw_commit = data.get("commit")
             commit = None
             if raw_commit is not None:
@@ -85,6 +102,7 @@ class TaskPacket:
                     verify=raw_commit.get("verify", []),
                 )
 
+            if data.get('id') and data.get('id') in data.get("supersedes", []): raise ValueError(f"Packet {data.get('id')} cannot supersede itself".replace("data.get(\"id\")", "data.get(\047id\047)"))
             return cls(
                 id=data["id"],
                 target=data.get("target", "Target"),
@@ -94,6 +112,8 @@ class TaskPacket:
                 depends_on=data.get("depends_on", []),
                 series=series,
                 commit=commit,
+                supersedes=data.get("supersedes", []),
+                pal_chain=pal_chain,
             )
         except KeyError as e:
             raise ValueError(f"TaskPacket is missing required field: {e}") from e
@@ -126,6 +146,9 @@ class TaskPacket:
                 "parent_tp_id": self.series.parent_tp_id,
                 "final_packet": self.series.final_packet,
             }
+        if self.supersedes: payload["supersedes"] = self.supersedes
+        if self.pal_chain is not None:
+            payload["pal_chain"] = {"enabled": self.pal_chain.enabled, "steps": self.pal_chain.steps}
         if self.commit is not None:
             payload["commit"] = {
                 "message": self.commit.message,

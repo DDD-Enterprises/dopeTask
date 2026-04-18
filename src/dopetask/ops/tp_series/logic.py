@@ -602,6 +602,7 @@ def exec_series_packet(
     *,
     tp_file: Path,
     agent: str = "gemini",
+    model: Optional[str] = None,
     force: bool = False,
     repo: Optional[Path] = None,
 ) -> SeriesExecResult:
@@ -681,11 +682,12 @@ def exec_series_packet(
                 dependency_records=dependency_records,
             )
             try:
-                bundle_path = execute_task_packet(packet_path, agent=agent, working_dir=worktree_path)
+                bundle_path = execute_task_packet(packet_path, agent=agent, model=model, working_dir=worktree_path)
             finally:
                 proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
 
             _cleanup_generated_files(worktree_path)
+            proof_metadata = _read_proof_metadata(run_dir=run_dir, tp_id=tp.id)
 
             verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
             head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
@@ -700,6 +702,11 @@ def exec_series_packet(
                     "packet_path": str(packet_path),
                     "bundle_path": str(bundle_path),
                     "copied_proof_bundle": str(proof_bundle) if proof_bundle is not None else None,
+                    "agent": agent,
+                    "model": model,
+                    "requested_model": proof_metadata.get("requested_model", model),
+                    "effective_model": proof_metadata.get("effective_model"),
+                    "effective_model_source": proof_metadata.get("effective_model_source"),
                     "verify": verify_results,
                     "committed_files": committed_files,
                     "context": context_payload,
@@ -752,6 +759,18 @@ def exec_series_packet(
             },
         )
         raise
+
+
+def _read_proof_metadata(*, run_dir: Path, tp_id: str) -> dict[str, Any]:
+    raw_proof_path = run_dir / f"{tp_id}_PROOF.json"
+    if not raw_proof_path.exists():
+        return {}
+    payload = _read_json(raw_proof_path)
+    return {
+        "requested_model": payload.get("requested_model"),
+        "effective_model": payload.get("effective_model"),
+        "effective_model_source": payload.get("effective_model_source"),
+    }
 
 
 def discover_next_runnable_tp(*, repo_root: Path) -> Optional[Path]:

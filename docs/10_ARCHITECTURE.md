@@ -4,6 +4,10 @@ Audience: Contributors, Maintainers
 Status: Normative
 Tone: Deterministic. Unapologetic.
 
+This doc covers architecture planes across dopeTask as a whole.
+It does not by itself define the default day-to-day operator workflow.
+`tp series` is the default operator workflow; route/orchestrate remains an active but non-default architecture plane.
+
 ---
 
 ## 1. What dopeTask Is
@@ -29,29 +33,26 @@ If it did not write an artifact, it did not happen.
 
 ---
 
-## 2. The Execution Spine
+## 2. Architecture Planes (Multi-Plane Runtime) 
 
-The lifecycle is simple, linear, and honest.
+dopeTask has multiple active execution planes.
 
-Packet
-↓
-Validation
-↓
-Planning
-↓
-RoutePlan OR Refusal
-↓
-Runner (auto) OR Handoff (manual)
-↓
-Artifacts
-↓
-Exit
+dopeTask supports four distinct execution planes:
+
+1. **Default Operator Plane (Series):** DAG-aware, worktree-isolated automation using `tp series`. This is the primary path for development.
+2. **Reference Architecture Plane (Orchestrate):** Normative v0 implementation of route planning and refusal-with-evidence. Scoped as a reference implementation.
+3. **Specialist/Low-Level Plane (Direct Exec):** Bypasses series logic to execute single packets via `tp exec`. Supports Gemini (transitional) and Codex (implementer).
+4. **Legacy/Manual Plane:** Command-line tools for manual worktree and commit management (`commit-sequence`, `finish`).
+
+The route/orchestrate plane remains active as a deterministic architecture surface.
+It plans one path, refuses with evidence, and supports runner-or-handoff outcomes.
+That plane is real, but it is not the only current execution story.
 
 No side doors.
 No background threads.
 No secret tunnels.
 
-Every branch terminates in written evidence.
+Every active plane must still terminate in written evidence.
 
 ---
 
@@ -223,7 +224,7 @@ Small stays sharp.
 
 ## 11. Kernel vs Ecosystem
 
-dopeTask is the execution spine.
+dopeTask is a deterministic kernel with multiple active surfaces.
 
 Higher systems may:
 
@@ -240,7 +241,7 @@ dopeTask remains:
 - Deterministic per invocation.
 - Artifact-driven.
 - Refusal-first.
-- Single-path.
+- Single-path within a chosen plane.
 
 If a feature requires ambiguity, it does not belong here.
 
@@ -271,4 +272,3 @@ dopeTask is not designed to be helpful.
 It is designed to be correct.
 
 And correctness is hotter than convenience.
-

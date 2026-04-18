@@ -1,6 +1,6 @@
 # Project Doctor
 
-The project doctor inspects a repository and reports integrity status. It does not mutate project state.
+The project doctor is a strict integrity enforcement boundary that ensures the repository remains in a safe state for automated execution. It does not mutate project state.
 
 ## PASS/WARN/FAIL semantics
 
