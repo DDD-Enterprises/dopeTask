@@ -154,7 +154,7 @@ class ProofAggregator:
                 digest = hashlib.sha256(str(path).encode("utf-8")).hexdigest()[:8]
                 entry_name = f"{path.stem}__{digest}{path.suffix}"
             while entry_name in used_names:
-                digest = hashlib.sha256(f"{path}:{entry_name}".encode("utf-8")).hexdigest()[:8]
+                digest = hashlib.sha256(f"{path}:{entry_name}".encode()).hexdigest()[:8]
                 entry_name = f"{path.stem}__{digest}{path.suffix}"
             used_names.add(entry_name)
             entries.append((path, entry_name))

@@ -199,7 +199,7 @@ def assert_repo_branch_identity(repo_identity: RepoIdentity, branch_name: str) -
 def assert_repo_binding(
     repo_identity: RepoIdentity,
     repo_root: Path,
-    repo_binding: typing.Optional["TPRepoBinding"],
+    repo_binding: typing.Optional[TPRepoBinding],
 ) -> None:
     """Hard-fail when a packet repo binding does not match the active repo."""
     if repo_binding is None:
@@ -221,8 +221,6 @@ def assert_repo_binding(
             f"ERROR: Task Packet repo_marker '{repo_binding.repo_marker}' does not exist in repo_root '{repo_root}'.\n"
             "Refusing to run."
         )
-
-
 
 def run_identity_origin_warning(
     repo_identity: RepoIdentity,

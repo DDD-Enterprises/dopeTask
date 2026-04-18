@@ -131,7 +131,7 @@ class TaskPacket:
                     enabled=bool(raw_pal.get("enabled", False)),
                     steps=raw_pal.get("steps", []),
                 )
-            
+
             raw_commit = data.get("commit")
             commit = None
             if raw_commit is not None:
@@ -141,7 +141,13 @@ class TaskPacket:
                     verify=raw_commit.get("verify", []),
                 )
 
-            if data.get('id') and data.get('id') in data.get("supersedes", []): raise ValueError(f"Packet {data.get('id')} cannot supersede itself".replace("data.get(\"id\")", "data.get(\047id\047)"))
+            if data.get("id") and data.get("id") in data.get("supersedes", []):
+                raise ValueError(
+                    f"Packet {data.get('id')} cannot supersede itself".replace(
+                        'data.get("id")',
+                        "data.get('id')",
+                    )
+                )
             return cls(
                 id=data["id"],
                 target=data.get("target", "Target"),
@@ -176,10 +182,10 @@ class TaskPacket:
                     "commands": step.commands,
                     "expected_files": step.expected_files,
                     "validation": step.validation,
-                    "context_files": step.context_files
+                    "context_files": step.context_files,
                 }
                 for step in self.steps
-            ]
+            ],
         }
         if self.repo_binding is not None:
             repo_binding_payload: dict[str, Any] = {
@@ -204,7 +210,8 @@ class TaskPacket:
             if self.execution.branch is not None:
                 execution_payload["branch"] = self.execution.branch
             payload["execution"] = execution_payload
-        if self.supersedes: payload["supersedes"] = self.supersedes
+        if self.supersedes:
+            payload["supersedes"] = self.supersedes
         if self.pal_chain is not None:
             payload["pal_chain"] = {"enabled": self.pal_chain.enabled, "steps": self.pal_chain.steps}
         if self.commit is not None:
