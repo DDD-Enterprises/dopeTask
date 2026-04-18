@@ -33,11 +33,16 @@ If it did not write an artifact, it did not happen.
 
 ---
 
-## 2. Architecture Planes
+## 2. Architecture Planes (Multi-Plane Runtime) 
 
 dopeTask has multiple active execution planes.
 
-The default operator workflow is `tp series`.
+dopeTask supports four distinct execution planes:
+
+1. **Default Operator Plane (Series):** DAG-aware, worktree-isolated automation using `tp series`. This is the primary path for development.
+2. **Reference Architecture Plane (Orchestrate):** Normative v0 implementation of route planning and refusal-with-evidence. Scoped as a reference implementation.
+3. **Specialist/Low-Level Plane (Direct Exec):** Bypasses series logic to execute single packets via `tp exec`. Supports Gemini (transitional) and Codex (implementer).
+4. **Legacy/Manual Plane:** Command-line tools for manual worktree and commit management (`commit-sequence`, `finish`).
 
 The route/orchestrate plane remains active as a deterministic architecture surface.
 It plans one path, refuses with evidence, and supports runner-or-handoff outcomes.

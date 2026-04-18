@@ -15,3 +15,10 @@ These files are preserved for history, audit, or one-off engineering context, bu
 - Do not use these as current product or operator documentation.
 - Keep current user-facing docs in `README.md` and `docs/`.
 - If an archived artifact becomes important again, extract the still-valid content into a canonical doc instead of reviving the archived file in place.
+
+
+## Superseded Proof Bundles (Truth Alignment Lane)
+
+- `TP-PHASE1-CONTRACT-CLEANUP` (Turn 1): Success (Persisted)
+- `TP-CONTRACT-REMEDIATION-001` through `TP-ROUTE-ORCHESTRATE-TRUTH-008`: Superseded (Non-persisting execution)
+- **Master Packet:** `TP-CONSOLIDATED-TRUTH-ALIGNMENT-v2` (Canonical resolution)

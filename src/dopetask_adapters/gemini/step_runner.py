@@ -1,5 +1,6 @@
 import json
 import subprocess
+from pathlib import Path
 from typing import Any
 
 from .prompts import GEMINI_PROMPTS
@@ -19,11 +20,16 @@ class StepRunner:
 
     def run_step(self, step: dict[str, Any]) -> dict[str, Any]:
         prompt = self.compile_step_prompt(step)
-        
+        del prompt
+
+        expected_files = list(step.get("expected_files", []))
+        before = {rel_path: Path(rel_path).exists() for rel_path in expected_files}
+
         result: dict[str, Any] = {
             "step_id": step["id"],
             "files_created": [],
             "commands_run": [],
+            "changed_files": [],
             "validation_passed": False,
             "errors": [],
             "output_log": []  # New field for trace capture
@@ -51,7 +57,11 @@ class StepRunner:
                     )
                     return result
 
-            result["files_created"] = step.get("expected_files", [])
+            result["files_created"] = [
+                rel_path
+                for rel_path in expected_files
+                if Path(rel_path).exists() and not before.get(rel_path, False)
+            ]
 
             val_passed = True
             for val_cmd in step.get("validation", []):

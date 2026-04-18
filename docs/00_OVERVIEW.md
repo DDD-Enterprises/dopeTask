@@ -80,6 +80,8 @@ This overview intentionally excludes the audit artifact set from the main user n
 Known cleanup goals addressed by the current docs structure:
 
 - JSON TP series docs are the default execution path.
+- Low-level `tp exec` remains a separate execution plane and currently supports `gemini` and `codex`.
+- Route/orchestrate remains a separate execution plane and now includes a real `codex_desktop` runner path, but it is still not the default operator workflow.
 - Beginner docs are onboarding/tutorial material, not the canonical contract.
 - Legacy markdown packet and `tp git` docs remain available but are clearly non-default.
 - Integration and upgrade docs are first-class entrypoints for current users.

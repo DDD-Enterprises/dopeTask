@@ -136,8 +136,15 @@ def _series_packet_payload(
     }
 
 
-def _fake_execute_task_packet(tp_file: Path, *, agent: str = "gemini", working_dir: Path | None = None) -> Path:
+def _fake_execute_task_packet(
+    tp_file: Path,
+    *,
+    agent: str = "gemini",
+    model: str | None = None,
+    working_dir: Path | None = None,
+) -> Path:
     assert working_dir is not None
+    del agent, model
     packet = json.loads(Path(tp_file).read_text(encoding="utf-8"))
     for rel_path in packet["commit"]["allowlist"]:
         file_path = working_dir / rel_path
@@ -476,6 +483,36 @@ def test_series_exec_supports_multiple_completed_roots_in_one_series(tmp_path: P
     assert payload["packets"]["TPA"]["branch"] != payload["packets"]["TPB"]["branch"]
     assert not (repo / ".worktrees" / "TPA").exists()
     assert not (repo / ".worktrees" / "TPB").exists()
+
+
+def test_series_exec_forwards_model_override(tmp_path: Path, monkeypatch) -> None:
+    repo = _init_repo_with_origin(tmp_path)
+    packet = _write_packet(
+        tmp_path / "packet.json",
+        tp_id="TPMODEL",
+        target="model test",
+        series_id="SERIES-MODEL",
+        allowlist=["src/model.txt"],
+        depends_on=[],
+        parent_tp_id=None,
+    )
+    captured: dict[str, object] = {}
+
+    def fake_execute(tp_file: Path, *, agent: str = "gemini", model: str | None = None, working_dir: Path | None = None) -> Path:
+        captured["agent"] = agent
+        captured["model"] = model
+        return _fake_execute_task_packet(tp_file, agent=agent, model=model, working_dir=working_dir)
+
+    monkeypatch.setattr("dopetask.ops.tp_series.logic.execute_task_packet", fake_execute)
+    runner = CliRunner()
+    monkeypatch.chdir(repo)
+    result = runner.invoke(
+        cli,
+        ["tp", "series", "exec", str(packet), "--agent", "codex", "--model", "gpt-5.3-codex", "--repo", str(repo)],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert captured == {"agent": "codex", "model": "gpt-5.3-codex"}
 
 
 def test_series_exec_refuses_when_parent_is_not_listed_in_depends_on(tmp_path: Path, monkeypatch) -> None:

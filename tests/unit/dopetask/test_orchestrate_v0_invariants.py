@@ -184,6 +184,83 @@ def test_orchestrate_executes_only_selected_runner(monkeypatch, tmp_path: Path) 
     assert calls == {"codex": 1, "claude": 0, "copilot": 0}
 
 
+def test_orchestrate_codex_runner_writes_stdout_stderr_and_model(monkeypatch, tmp_path: Path) -> None:
+    repo = create_dopetask_repo(tmp_path / "repo")
+    write_availability(
+        repo,
+        policy_overrides={"min_total_score": 1, "escalation_ladder": ["gpt-5.3-codex"]},
+        models={
+            "gpt-5.3-codex": {
+                "strengths": ["code_edit", "tests"],
+                "cost_tier": "high",
+                "context": "large",
+            }
+        },
+        runners={
+            "codex_desktop": {"available": True, "strengths": ["code_edit", "tests"]},
+            "claude_code": {"available": False, "strengths": ["code_edit"]},
+            "copilot_cli": {"available": False, "strengths": ["quick_commands"]},
+        },
+    )
+    packet = _write_packet(
+        repo,
+        {
+            "task_id": "codex-runner",
+            "execution_mode": "auto",
+            "steps": ["alpha"],
+        },
+    )
+
+    def fake_subprocess_run(argv, *args, **kwargs):
+        if argv[:3] == ["git", "-C", str(repo)]:
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        output_index = argv.index("-o") + 1
+        Path(argv[output_index]).write_text("done\n", encoding="utf-8")
+        return subprocess.CompletedProcess(argv, 0, "codex stdout\n", "codex stderr\n")
+
+    monkeypatch.setattr("dopetask.runners.codex_cli.subprocess.run", fake_subprocess_run)
+
+    outcome = orchestrate(str(packet))
+    assert outcome["status"] == "ok"
+
+    run_dir = Path(outcome["run_dir"])
+    report = _read_json(run_dir / "RUN_REPORT.json")
+    assert report["runner_id"] == "codex_desktop"
+    assert report["model_id"] == "gpt-5.3-codex"
+    assert (run_dir / "STDOUT.log").read_text(encoding="utf-8") == "codex stdout\n"
+    assert (run_dir / "STDERR.log").read_text(encoding="utf-8") == "codex stderr\n"
+
+
+def test_orchestrate_codex_runner_fails_when_output_missing(monkeypatch, tmp_path: Path) -> None:
+    repo = create_dopetask_repo(tmp_path / "repo")
+    write_availability(
+        repo,
+        policy_overrides={"min_total_score": 1, "escalation_ladder": ["gpt-5.3-codex"]},
+        models={"gpt-5.3-codex": {"strengths": ["code_edit"], "cost_tier": "high", "context": "large"}},
+        runners={"codex_desktop": {"available": True, "strengths": ["code_edit"]}},
+    )
+    packet = _write_packet(
+        repo,
+        {
+            "task_id": "codex-output-missing",
+            "execution_mode": "auto",
+            "steps": ["alpha"],
+        },
+    )
+
+    def fake_subprocess_run(argv, *args, **kwargs):
+        if argv[:3] == ["git", "-C", str(repo)]:
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    monkeypatch.setattr("dopetask.runners.codex_cli.subprocess.run", fake_subprocess_run)
+
+    outcome = orchestrate(str(packet))
+    assert outcome["status"] == "error"
+    report = _read_json(Path(outcome["run_dir"]) / "RUN_REPORT.json")
+    assert report["reason_code"] == "RUNNER_OUTPUT_MISSING"
+
+
 def test_refusal_route_plan_preserves_ladder_and_step_order(tmp_path: Path) -> None:
     repo = create_dopetask_repo(tmp_path / "repo")
     custom_ladder = ["sonnet-4.6", "gpt-5.3-codex", "haiku-4.5"]

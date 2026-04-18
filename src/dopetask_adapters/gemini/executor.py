@@ -13,8 +13,16 @@ from .prompts import GEMINI_PROMPTS
 class GeminiAdapter:
     """Gemini-specific execution adapter."""
 
-    def __init__(self, model: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        model: Optional[str] = None,
+        *,
+        requested_model: Optional[str] = None,
+        effective_model_source: str = "agent_default",
+    ) -> None:
         self.model = model
+        self.requested_model = requested_model
+        self.effective_model_source = effective_model_source
         self.runner = StepRunner(model=model)
         self.validator = Validator()
         self.writer = ProofWriter()
@@ -56,7 +64,8 @@ class GeminiAdapter:
             normalized = {
                 "files_created": result_dict.get("files_created", []),
                 "commands_run": result_dict.get("commands_run", []),
-                "validation_passed": result_dict.get("validation_passed", False)
+                "validation_passed": result_dict.get("validation_passed", False),
+                "changed_files": result_dict.get("changed_files", [])
             }
             
             exec_result = ExecutionResult(
@@ -74,6 +83,15 @@ class GeminiAdapter:
                 break
 
         # Write proof artifact for backward compatibility/legacy engine logic
-        proof_path = self.writer.write(tp["id"], raw_results)
+        proof_path = self.writer.write(
+            tp["id"],
+            raw_results,
+            metadata={
+                "agent": "gemini",
+                "requested_model": self.requested_model,
+                "effective_model": self.model,
+                "effective_model_source": self.effective_model_source,
+            },
+        )
         
         return execution_results, proof_path

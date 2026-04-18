@@ -8,7 +8,7 @@ Other active planes still exist in dopeTask, but this guide is specifically abou
 
 The series workflow is designed for high-trust, deterministic execution of multi-step engineering tasks. Each step is represented by a JSON Task Packet (TP) and executes in an isolated git worktree.
 
-Use this as the canonical workflow reference. If you are upgrading from older `tp exec` or `commit-sequence` habits, read `24_UPGRADE_GUIDE.md` alongside this guide. If you intentionally need the older manual path, see `20_WORKTREES_COMMIT_SEQUENCING.md`.
+Use this as the canonical and default operator workflow reference. If you are upgrading from older `tp exec` or `commit-sequence` habits, read `24_UPGRADE_GUIDE.md` alongside this guide. If you intentionally need the older manual path, see `20_WORKTREES_COMMIT_SEQUENCING.md`.
 
 Before you start a fresh supervisor session, generate or apply the current prompt using `26_SUPERVISOR_PROMPTS.md`.
 
@@ -24,6 +24,7 @@ The Supervisor (AI or human) decomposes a high-level objective into atomic Task 
 Invoke the kernel to execute a specific packet:
 ```bash
 dopetask tp series exec path/to/packet.json --agent gemini
+dopetask tp series exec path/to/packet.json --agent codex --model gpt-5.3-codex
 ```
 Prerequisite: the repository must have an initial commit on `main`. `origin/main` is used when available, but a local-only `main` branch is sufficient for execution.
 **Kernel Actions**:
@@ -33,6 +34,8 @@ Prerequisite: the repository must have an initial commit on `main`. `origin/main
 4. **Verification**: Runs the `validation` commands.
 5. **Commit**: Stages and commits changes matching the `allowlist`.
 6. **Cleanup**: Deterministically removes the worktree.
+
+Use `--model` when you need to override the route-derived model for the selected agent. Precedence is explicit override first, route-derived model second, agent default last.
 
 ### 3. Monitoring (`tp series status`)
 Track the progress of a series and its dependency graph:

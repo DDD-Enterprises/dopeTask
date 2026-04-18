@@ -4474,7 +4474,8 @@ cli.add_typer(case_app, name="case")
 
 @cli.command(name="execute")
 def execute_cmd(
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or vibe."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    model: typing.Optional[str] = typer.Option(None, "--model", help="Optional explicit model override."),
     repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
 ) -> None:
     """Automatically discover, import, and execute the next runnable Task Packet."""
@@ -4506,6 +4507,7 @@ def execute_cmd(
         result = exec_series_packet(
             tp_file=import_result.packet_path,
             agent=agent,
+            model=model,
             repo=repo_root
         )
         typer.echo(f"Execution successful: {result.tp_id}")

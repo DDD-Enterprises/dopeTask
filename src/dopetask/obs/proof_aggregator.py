@@ -4,6 +4,7 @@ import hashlib
 import json
 import logging
 import zipfile
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -34,6 +35,7 @@ class ProofAggregator:
         """Creates a zip archive of the provided files and returns metadata."""
         archive_name = f"{self.tp_id}_PROOF_ARCHIVE.zip"
         archive_path = self.output_dir / archive_name
+        archive_entries = self._archive_entries(files_to_include)
 
         manifest_data: dict[str, Any] = {
             "tp_id": self.tp_id,
@@ -43,11 +45,12 @@ class ProofAggregator:
         }
 
         with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for file_path in files_to_include:
+            for file_path, archive_entry_name in archive_entries:
                 if file_path.exists():
-                    zipf.write(file_path, file_path.name)
+                    zipf.write(file_path, archive_entry_name)
                     manifest_data["included_files"].append({
-                        "filename": file_path.name,
+                        "filename": archive_entry_name,
+                        "source_path": str(file_path.resolve()),
                         "sha256": self._calculate_sha256(file_path),
                         "description": f"Artifact generated during {self.tp_id} execution."
                     })
@@ -73,6 +76,7 @@ class ProofAggregator:
     def aggregate(self, execution_result: dict[str, Any], artifact_files: list[Path]) -> Path:
         """Translates execution results into a standardized Proof Bundle JSON."""
         steps = execution_result.get("steps", [])
+        archive_entries = self._archive_entries(artifact_files)
 
         passed_checks = [s["step_id"] for s in steps if s["validation_passed"]]
         failed_checks = [s["step_id"] for s in steps if not s["validation_passed"]]
@@ -115,7 +119,7 @@ class ProofAggregator:
             },
             "artifacts": {
                 "primary": [f"{self.tp_id}_PROOF_BUNDLE.json"],
-                "supporting": [f.name for f in artifact_files],
+                "supporting": [entry_name for _, entry_name in archive_entries],
                 "archive": archive_metadata
             },
             "manifest": {
@@ -129,3 +133,29 @@ class ProofAggregator:
             json.dump(bundle, f, indent=2)
 
         return bundle_path
+
+    def _archive_entries(self, files_to_include: list[Path]) -> list[tuple[Path, str]]:
+        """Return deterministic, collision-safe archive entry names."""
+        existing_files: list[Path] = []
+        seen_sources: set[Path] = set()
+        for file_path in files_to_include:
+            resolved = file_path.resolve()
+            if not resolved.exists() or resolved in seen_sources:
+                continue
+            seen_sources.add(resolved)
+            existing_files.append(resolved)
+
+        counts = Counter(path.name for path in existing_files)
+        used_names: set[str] = set()
+        entries: list[tuple[Path, str]] = []
+        for path in existing_files:
+            entry_name = path.name
+            if counts[path.name] > 1:
+                digest = hashlib.sha256(str(path).encode("utf-8")).hexdigest()[:8]
+                entry_name = f"{path.stem}__{digest}{path.suffix}"
+            while entry_name in used_names:
+                digest = hashlib.sha256(f"{path}:{entry_name}".encode("utf-8")).hexdigest()[:8]
+                entry_name = f"{path.stem}__{digest}{path.suffix}"
+            used_names.add(entry_name)
+            entries.append((path, entry_name))
+        return entries

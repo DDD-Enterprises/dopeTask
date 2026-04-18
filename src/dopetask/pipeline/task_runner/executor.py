@@ -16,7 +16,7 @@ class Adapter(Protocol):
 
 
 class TaskExecutor:
-    """Kernel component responsible for task execution and validation."""
+    """Kernel component responsible for task execution and result-shape validation."""
 
     def __init__(self, adapter: Adapter) -> None:
         self.adapter = adapter
@@ -38,10 +38,5 @@ class TaskExecutor:
         for result in results:
             if not isinstance(result, ExecutionResult):
                 raise TypeError(f"Invalid adapter output: expected ExecutionResult, got {type(result)}")
-                
-            # Fail-fast: Stop execution if a step failed
-            if result.status == "failed":
-                # Note: In Phase 2, the kernel will manage artifact collection here.
-                raise RuntimeError(f"Step {result.step_id} failed: {result.error}")
-                
+
         return results, legacy_proof_path

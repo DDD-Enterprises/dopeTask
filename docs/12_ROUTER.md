@@ -1,3 +1,5 @@
+> **ARCHITECTURE ROLE:** The router belongs to the Reference Architecture Plane. It provides normative deterministic planning logic but is not the default path for automated series execution.
+
 # Router
 
 dopeTask Router v1 selects runner/model pairs deterministically and writes route artifacts.

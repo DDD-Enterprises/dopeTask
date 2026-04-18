@@ -1,3 +1,5 @@
+> **ADVISORY: Transitional Architecture Intent.** This document describes the target core abstraction. Note that in the current runtime, worktree lifecycle management is implemented in the `ops` layer (`tp series`) rather than the kernel/adapter boundary.
+
 # Architecture Spec: Supervisor, Executor, and Adapter Contract
 
 ## 1. Purpose and Scope
