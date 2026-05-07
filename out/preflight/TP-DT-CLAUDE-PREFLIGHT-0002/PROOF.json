@@ -1,4 +1,8 @@
 {
+  "ancestor_check": {
+    "commit": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+    "is_ancestor_of_head": true
+  },
   "artifacts": [
     "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json",
     "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_NO_WRITE.json",
@@ -9,7 +13,7 @@
   ],
   "blocking_failures": [],
   "final_branch": "main",
-  "final_head": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+  "final_head": "78205d4280ced75f5842ab555f6d420229195c03",
   "forbidden_scope_verified": {
     "adapter_implementation": false,
     "bare_flag_used": false,
@@ -18,18 +22,10 @@
     "proof_dir_writes": false,
     "runner_or_orchestrator_changes": false
   },
-  "git_status_after": "",
+  "git_status_after": " M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/AUTH_RECHECK.json\n M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json\n M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/POSITIONAL_WRITE_NO_ALLOWEDTOOLS.json\n M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/PROOF.json\n M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_NO_WRITE.json\n M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_WRITE_WITH_ALLOWEDTOOLS.json\n",
   "git_status_before": "",
   "initial_branch": "main",
-  "initial_head": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
-  "json_parse_validation": {
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/AUTH_RECHECK.json": true,
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json": true,
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/CONTRACT_DELTA.json": true,
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/POSITIONAL_WRITE_NO_ALLOWEDTOOLS.json": true,
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_NO_WRITE.json": true,
-    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_WRITE_WITH_ALLOWEDTOOLS.json": true
-  },
+  "initial_head": "78205d4280ced75f5842ab555f6d420229195c03",
   "pass_criteria": {
     "auth_mode_recorded": true,
     "corrected_command_shape_recorded": true,
