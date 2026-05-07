@@ -1,0 +1,157 @@
+{
+  "tp_id": "TP-DT-DAS-INVESTIGATE-0001",
+  "generated_at": "2026-05-06",
+  "repos_inspected": {
+    "primary": "/Users/hue/code/dopeTask",
+    "secondary": "/Users/hue/code/dope-agent-system"
+  },
+  "files": [
+    {
+      "path": "/Users/hue/code/dope-agent-system/README.md",
+      "why": "Primary project overview. Establishes dope-agent-system role as templates/contracts/reference only. Documents each TP that shaped the architecture (TP-0011, TP-0012, TP-DA-0002a).",
+      "claims_supported": ["Q1: dope-agent-system responsibility", "Q6: assumption of dopeTask as runtime"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/CLAUDE.md",
+      "why": "Claude Code guidance for the repo. Confirms split architecture, REFERENCE-only posture, and directory role table.",
+      "claims_supported": ["Q1: dope-agent-system responsibility", "Q3: authority boundaries"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/docs/DOPETASK_INTEGRATION_CONTRACT.md",
+      "why": "Explicit boundary contract between the two repos. States dopeTask wins on all conflicts. Lists what dope-agent-system may and must-not maintain.",
+      "claims_supported": ["Q2: overlap map", "Q3: authority boundaries", "Q5: non-delegable responsibilities", "Q6: assumptions"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/docs/AGENT_SYSTEM_OVERVIEW.md",
+      "why": "Describes generic core, orchestrator contract (REFERENCE only), project adapter requirements, thread model, and source bundle export.",
+      "claims_supported": ["Q1: responsibility", "Q4: integration inputs", "Q6: assumptions"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/PROJECT_PROFILE.json",
+      "why": "Live adapter for dope-agent-system repo. Shows schema, threading mode, tool families, proof required fields, safety defaults.",
+      "claims_supported": ["Q4: candidate integration inputs"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/AUTHORITY_ORDER.md",
+      "why": "Explicit authority decision hierarchy. Runtime repo state > accepted TPs > official tool facts > active task packet > docs.",
+      "claims_supported": ["Q3: authority boundaries", "Q6: assumptions about dopeTask"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/PROOF_CONTRACT.md",
+      "why": "Proof required fields for dope-agent-system TPs. Richer than dopeTask's minimal proof contract (adds backfill, commit hash semantics).",
+      "claims_supported": ["Q4: candidate integration inputs", "Q2: overlap"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/HANDOFF_FORMATS.md",
+      "why": "Handoff protocol shapes and allowed destinations. Key for PAL/clink transport design.",
+      "claims_supported": ["Q4: candidate integration inputs", "Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/SAFETY_BOUNDARIES.md",
+      "why": "Full default-deny list. Critical for understanding what any integration must stay clear of.",
+      "claims_supported": ["Q3: authority boundaries", "Q5: non-delegable responsibilities"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/VALIDATION_COMMANDS.md",
+      "why": "Canonical validation commands. Shows current validation baseline and proof check patterns.",
+      "claims_supported": ["Q4: candidate integration inputs"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/.agent-project/THREAD_PROTOCOL.md",
+      "why": "Threading model. Describes single_thread_role_blocks mode and role sequences.",
+      "claims_supported": ["Q4: candidate integration inputs", "Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/DOPETASK_VERSION_PIN.lock",
+      "why": "Pins dopeTask version that reference materials were reviewed against (0.5.7). Confirms REFERENCE_ONLY posture.",
+      "claims_supported": ["Q6: assumptions about dopeTask", "Q3: authority boundaries"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/schemas/dopeTask_schema_references.json",
+      "why": "Points to authoritative schema paths in dopeTask. Lists removed local schema files. Confirms no live schemas in dope-agent-system.",
+      "claims_supported": ["Q2: overlap map", "Q5: non-delegable responsibilities"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/docs/TOOL_ROUTING_MATRIX.md",
+      "why": "Tool routing decisions. Shows where routing authority lives (dopeTask) and what roles use which tools.",
+      "claims_supported": ["Q2: overlap map", "Q3: authority boundaries"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/proof/tp-agent-system-0011/OWNERSHIP_MATRIX.json",
+      "why": "Definitive boundary audit output. 17 capabilities mapped to dopeTask or dope-agent-system with HIGH confidence evidence paths.",
+      "claims_supported": ["Q2: overlap map", "Q3: authority boundaries", "Q5: non-delegable"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/proof/tp-agent-system-0011/RECOMMENDATION.md",
+      "why": "Formal recommendation for Option C (split architecture). Describes what stays in each repo.",
+      "claims_supported": ["Q3: authority boundaries", "Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/docs/LEDGER_RECORD_CONTRACT.md",
+      "why": "REFERENCE-only ledger contract. Confirms dopeTask owns live ledger. Local validator was removed.",
+      "claims_supported": ["Q2: overlap map", "Q5: non-delegable responsibilities"]
+    },
+    {
+      "path": "/Users/hue/code/dope-agent-system/docs/PROOF_BUNDLE_CONTRACT.md",
+      "why": "REFERENCE-only proof contract. Confirms dopeTask owns live proof aggregation.",
+      "claims_supported": ["Q2: overlap map", "Q5: non-delegable responsibilities"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/src/dopetask/runners/claude_code.py",
+      "why": "ClaudeCodeAdapter implementation. Currently returns RUNNER_NOT_IMPLEMENTED — primary gap for interactive executor design.",
+      "claims_supported": ["Q7: integration shapes", "Q4: candidate integration surfaces"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/src/dopetask/runners/codex_cli.py",
+      "why": "CodexCliAdapter — fully implemented. Pattern for how to implement ClaudeCodeAdapter (subprocess codex exec).",
+      "claims_supported": ["Q7: integration shapes — follow codex pattern"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/src/dopetask/runners/__init__.py",
+      "why": "Runner registry. Shows all registered runners: claude_code, codex_desktop, copilot_cli, google_jules.",
+      "claims_supported": ["Q4: candidate integration surfaces"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/src/dopetask/runners/base.py",
+      "why": "RunnerAdapter Protocol. Three methods: prepare, run, normalize. Defines the integration contract.",
+      "claims_supported": ["Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/src/dopetask/pipeline/task_runner/executor.py",
+      "why": "TaskExecutor kernel. Enforces ExecutionResult contract, validates adapter output.",
+      "claims_supported": ["Q5: non-delegable — kernel validates all adapter output"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/architecture/dopetask-supervisor-executor-adapter-spec.md",
+      "why": "Transitional architecture spec. Atomic Finality principle, untrusted adapters, fail-closed, worktree lifecycle.",
+      "claims_supported": ["Q3: authority boundaries", "Q5: non-delegable responsibilities", "Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/guides/dopetask-pal-integration-playbook.md",
+      "why": "PAL integration playbook. Defines PAL as thinking layer, dopeTask as execution layer. Documents clink's role.",
+      "claims_supported": ["Q7: integration shapes"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/plans/dopetask-multi-mode-execution-plan.md",
+      "why": "Multi-mode execution plan. Phase 1 (contract, in progress), Phase 3 (shell + multi-provider). Roadmap context.",
+      "claims_supported": ["Q7: integration shapes", "Q4: candidate integration surfaces"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/guides/PAL_CHAINING_DOCTRINE.md",
+      "why": "Canonical PAL tool chaining doctrine. Defines role of clink, analyze, planner, consensus, etc.",
+      "claims_supported": ["Q7: integration shapes for PAL/clink transport"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/integrations/dopetask/ADAPTER_SCHEMA.md",
+      "why": "Dopemux adapter envelope schema. Shows how external consumers normalize dopeTask proof artifacts.",
+      "claims_supported": ["Q4: candidate integration inputs"]
+    },
+    {
+      "path": "/Users/hue/code/dopeTask/docs/22_WORKFLOW_GUIDE.md",
+      "why": "Canonical workflow guide for tp series exec. Doctor check → worktree isolation → task execution → verification → commit → cleanup.",
+      "claims_supported": ["Q5: non-delegable responsibilities"]
+    }
+  ],
+  "total_files_inspected": 29,
+  "repos_clean_after_inspection": true
+}
