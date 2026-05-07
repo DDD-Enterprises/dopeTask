@@ -1,0 +1,189 @@
+{
+  "id": "TP-DT-CLAUDE-ADAPTER-0001",
+  "project": "dopetask",
+  "target": "Implement claude_code support in the tp-exec/tp-series execution plane using the verified Claude stdin subprocess contract.",
+  "invariants": [
+    "dopeTask remains runtime authority",
+    "Claude adapter is an untrusted shim normalized into ExecutionResult",
+    "No --bare mode",
+    "No dope-agent-system runtime dependency",
+    "No route/orchestrate runner changes",
+    "No hidden production mutation outside commit allowlist"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-CLAUDE-ADAPTER",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/claude-adapter-0001"
+  },
+  "commit": {
+    "message": "feat(tp-exec): add claude_code adapter",
+    "allowlist": [
+      "task-packets/TP-DT-CLAUDE-ADAPTER-0001.json",
+      "dopetask_schemas/task_packet.schema.json",
+      "dopetask_schemas/task_packet.strict.schema.json",
+      "src/dopetask/core/tp_parser.py",
+      "src/dopetask/core/compilers/claude_code.py",
+      "src/dopetask/ops/tp_exec/engine.py",
+      "src/dopetask/ops/tp_exec/cli.py",
+      "src/dopetask/ops/tp_series/cli.py",
+      "src/dopetask_adapters/claude_code/**",
+      "tests/unit/dopetask/test_tp_exec_claude_code.py",
+      "tests/unit/tp_series/test_schema.py",
+      "tests/unit/tp_series/test_cli.py",
+      "out/implementation/TP-DT-CLAUDE-ADAPTER-0001/PROOF.json"
+    ],
+    "verify": [
+      "python -m compileall -q src tests",
+      "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py",
+      "pytest -q tests/unit/tp_series/test_schema.py",
+      "pytest -q tests/unit/tp_series/test_cli.py",
+      "git diff --check"
+    ]
+  },
+  "pr": {
+    "title": "Implement claude_code adapter for tp-series execution",
+    "body": "Adds claude_code support to the tp-exec/tp-series execution path using the verified Claude stdin subprocess contract. Does not touch route/orchestrate runner plane.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_schema_compiler",
+      "task": "Add claude_code to TaskPacket schema enums and TPNormalizer compiler registry.",
+      "requirements": [
+        "Update both normal and strict task packet schema execution.agent enums to include claude_code.",
+        "Create ClaudeCodeCompiler mirroring CodexCompiler behavior: require at least one step and require validation per step.",
+        "Register claude_code in TPNormalizer.COMPILERS.",
+        "Do not require pal_chain for claude_code."
+      ],
+      "expected_files": [
+        "dopetask_schemas/task_packet.schema.json",
+        "dopetask_schemas/task_packet.strict.schema.json",
+        "src/dopetask/core/compilers/claude_code.py",
+        "src/dopetask/core/tp_parser.py"
+      ],
+      "validation": [
+        "python -m compileall -q src/dopetask/core src/dopetask/schemas",
+        "python - <<'PY'\nfrom dopetask.core.tp_parser import TPNormalizer\nassert 'claude_code' in TPNormalizer.COMPILERS\nprint('claude_code compiler registered')\nPY"
+      ],
+      "context_files": [
+        "src/dopetask/core/compilers/codex.py",
+        "src/dopetask/core/tp_parser.py",
+        "dopetask_schemas/task_packet.schema.json",
+        "dopetask_schemas/task_packet.strict.schema.json"
+      ]
+    },
+    {
+      "id": "step_2_executor",
+      "task": "Implement ClaudeCodeExecutor using the verified stdin subprocess command shape.",
+      "requirements": [
+        "Create src/dopetask_adapters/claude_code package.",
+        "ClaudeCodeExecutor must implement run_tp(tp) -> tuple[list[ExecutionResult], str].",
+        "Mirror CodexExecutor structure where useful.",
+        "Use subprocess.run(..., input=prompt, text=True, capture_output=True, check=False).",
+        "Use cwd via current process cwd, matching tp_exec _pushd worktree behavior.",
+        "Do not use -C because Claude CLI does not support Codex-style -C.",
+        "Do not use -o because Claude CLI emits JSON to stdout.",
+        "Write raw Claude stdout to proof/<tp_id>_<step_id>_CLAUDE_OUTPUT.json.",
+        "Parse stdout as JSON when returncode is 0.",
+        "Fail closed if stdout is empty, invalid JSON, returncode nonzero, or parsed JSON has is_error true.",
+        "Record command, returncode, stdout, stderr, output_path, prompt_delivery, permission_mode, allowed_tools, parsed_json_success, and type=execution in output_log.",
+        "Run local step.commands after Claude execution, same pattern as CodexExecutor.",
+        "Run local step.validation after commands, same pattern as CodexExecutor.",
+        "Compute files_created from expected_files materialization.",
+        "Compute changed_files from git status before/after.",
+        "Return ExecutionResult objects with execution_mode='agent'.",
+        "Write legacy raw proof path through ProofWriter.",
+        "Proof metadata must include agent='claude_code', requested_model, effective_model, effective_model_source, permission_mode, allowed_tools, prompt_delivery='stdin', auth_mode='subscription_or_oauth_likely', bare_mode_used=false, claude_version if available.",
+        "Include a guard that refuses if '--bare' appears in the command list. Error code/message should include RUNNER_BARE_MODE_REFUSED.",
+        "No config surface for bare mode in this TP."
+      ],
+      "expected_files": [
+        "src/dopetask_adapters/claude_code/__init__.py",
+        "src/dopetask_adapters/claude_code/executor.py",
+        "src/dopetask_adapters/claude_code/prompts.py",
+        "src/dopetask_adapters/claude_code/proof_writer.py"
+      ],
+      "validation": [
+        "python -m compileall -q src/dopetask_adapters/claude_code",
+        "python - <<'PY'\nfrom dopetask_adapters.claude_code.executor import ClaudeCodeExecutor\ncmd = ClaudeCodeExecutor()._build_command()\nassert cmd[:2] == ['claude', '-p']\nassert '--bare' not in cmd\nassert '--output-format' in cmd and 'json' in cmd\nassert '--permission-mode' in cmd and 'bypassPermissions' in cmd\nprint('claude command shape ok')\nPY"
+      ],
+      "context_files": [
+        "src/dopetask_adapters/codex/executor.py",
+        "src/dopetask_adapters/codex/prompts.py",
+        "src/dopetask_adapters/codex/proof_writer.py",
+        "src/dopetask_adapters/gemini/proof_writer.py",
+        "src/dopetask/pipeline/task_runner/types.py",
+        "src/dopetask/pipeline/task_runner/executor.py"
+      ]
+    },
+    {
+      "id": "step_3_engine_cli_tests",
+      "task": "Wire claude_code into tp_exec engine and add tests.",
+      "requirements": [
+        "Import ClaudeCodeExecutor in src/dopetask/ops/tp_exec/engine.py.",
+        "Add an elif agent == 'claude_code' dispatch branch using the same constructor metadata arguments as CodexExecutor and GeminiAdapter.",
+        "Update tp exec and tp series CLI help text to mention claude_code.",
+        "Add unit tests for schema acceptance, compiler registration, command shape, stdin prompt delivery, raw stdout artifact writing, nonzero return handling, invalid JSON handling, ExecutionResult normalization, proof metadata, and engine dispatch.",
+        "Use monkeypatch/mocks for subprocess tests. Do not require live Claude in unit tests.",
+        "Do not touch route/orchestrate runner code."
+      ],
+      "expected_files": [
+        "src/dopetask/ops/tp_exec/engine.py",
+        "src/dopetask/ops/tp_exec/cli.py",
+        "src/dopetask/ops/tp_series/cli.py",
+        "tests/unit/dopetask/test_tp_exec_claude_code.py"
+      ],
+      "validation": [
+        "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py",
+        "pytest -q tests/unit/tp_series/test_schema.py",
+        "pytest -q tests/unit/tp_series/test_cli.py"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_exec/engine.py",
+        "src/dopetask/ops/tp_exec/cli.py",
+        "src/dopetask/ops/tp_series/cli.py",
+        "tests/unit/dopetask/test_tp_exec_codex.py",
+        "tests/unit/tp_series/test_schema.py",
+        "tests/unit/tp_series/test_cli.py"
+      ]
+    },
+    {
+      "id": "step_4_validation_proof_commit",
+      "task": "Run validation, optional isolated live smoke, write proof, and commit if clean.",
+      "requirements": [
+        "Run focused tests first, then broader validation if focused tests pass.",
+        "Perform one isolated live smoke of ClaudeCodeExecutor in a temp git repo if Claude is available and auth remains healthy. The live smoke must not mutate /Users/hue/code/dopeTask. If skipped, record why.",
+        "The live smoke should instantiate ClaudeCodeExecutor directly in a temp git repo and execute one TP dict that creates SMOKE_IMPL.txt with exact content CLAUDE_ADAPTER_VERIFIED, then validates it.",
+        "Write exactly one implementation proof JSON to out/implementation/TP-DT-CLAUDE-ADAPTER-0001/PROOF.json.",
+        "Commit only if validations pass and changed files are within allowlist.",
+        "Do not commit if source/test validation fails."
+      ],
+      "expected_files": [
+        "out/implementation/TP-DT-CLAUDE-ADAPTER-0001/PROOF.json",
+        "task-packets/TP-DT-CLAUDE-ADAPTER-0001.json"
+      ],
+      "validation": [
+        "python -m compileall -q src tests",
+        "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py tests/unit/tp_series/test_schema.py tests/unit/tp_series/test_cli.py",
+        "git diff --check"
+      ],
+      "context_files": [
+        "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/CONTRACT_DELTA.json",
+        "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/PROOF.json",
+        "out/assembly/TP-DT-CLAUDE-ADAPTER-ASSEMBLY-0001/PREFLIGHT_SUMMARY.json",
+        "out/assembly/TP-DT-CLAUDE-ADAPTER-ASSEMBLY-0001/ASSEMBLY_PROOF.json"
+      ]
+    }
+  ]
+}

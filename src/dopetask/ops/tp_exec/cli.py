@@ -28,7 +28,7 @@ def register(tp_app: typer.Typer) -> None:
         agent: str = typer.Option(
             "gemini",
             "--agent",
-            help="Agent profile: gemini or codex.",
+            help="Agent profile: gemini, codex, or claude_code.",
         ),
         model: str | None = typer.Option(
             None,

@@ -64,7 +64,7 @@ def import_cmd(
 @app.command("exec")
 def exec_cmd(
     tp_file: Path = typer.Argument(..., exists=True, file_okay=True, dir_okay=False, metavar="TP_FILE"),
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or claude_code."),
     model: str | None = typer.Option(None, "--model", help="Optional explicit model override."),
     force: bool = typer.Option(
         False, "--force", help="Force execution even if branch/worktree already exists (destructive)."
