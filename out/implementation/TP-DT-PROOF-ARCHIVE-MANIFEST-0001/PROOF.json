@@ -5,7 +5,7 @@
   "initial_branch": "main",
   "initial_head": "dc2b95da82a6b91f314c52970e4457dd69253e26",
   "final_branch": "codex/proof-archive-manifest-0001",
-  "final_head": "dc2b95da82a6b91f314c52970e4457dd69253e26",
+  "final_head": "dcbca3c59d2c39cc47d5239c210d45846574c7dd",
   "root_cause": "ProofAggregator.create_archive currently emits included_files[*].source_path as provenance metadata, and the checked-in proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip manifest contains that field on every included file, but proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json omitted source_path while keeping additionalProperties=false.",
   "chosen_fix": "Updated proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json to allow included_files[*].source_path as an explicit string property while preserving additionalProperties=false. Added a focused contract test that validates a ProofAggregator-generated archive manifest against the standard schema.",
   "runtime_generator_emits_source_path": true,
@@ -94,9 +94,13 @@
     "bare_mode_used": false
   },
   "commit": {
-    "created": false,
-    "sha": null,
+    "created": true,
+    "sha": "dcbca3c59d2c39cc47d5239c210d45846574c7dd",
     "message": "fix(proof): reconcile archive manifest schema"
   },
+  "proof_backfilled": true,
+  "git_status_final": "clean",
+  "audit_submission_head": "VERIFY_WITH_GIT_REV_PARSE_HEAD_AT_AUDIT",
+  "commit_hash_semantics": "commit.sha and final_head record the implementation commit. A committed proof file cannot contain the hash of the same commit that writes it. audit_submission_head requires audit to run git rev-parse HEAD.",
   "blocking_failures": []
 }
