@@ -1,0 +1,24 @@
+{
+  "anthropic_api_key_present": false,
+  "auth_mode_conclusion": "subscription_or_oauth_likely",
+  "auth_status": {
+    "argv": [
+      "claude",
+      "auth",
+      "status"
+    ],
+    "command": "claude auth status",
+    "duration_ms": 180,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\n  \"loggedIn\": true,\n  \"authMethod\": \"claude.ai\",\n  \"apiProvider\": \"firstParty\",\n  \"email\": \"houston@krohman.org\",\n  \"orgId\": \"9df78530-35b0-4c64-9124-97c8d7582979\",\n  \"orgName\": \"houston@krohman.org's Organization\",\n  \"subscriptionType\": \"max\"\n}\n",
+    "subprocess_stdin": "DEVNULL",
+    "timed_out": false
+  },
+  "auth_status_command_attempted": true,
+  "auth_status_unsupported": false,
+  "bare_flag_used": false,
+  "normal_claude_calls_worked_without_bare": false,
+  "stronger_auth_evidence_observed": true,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0001"
+}

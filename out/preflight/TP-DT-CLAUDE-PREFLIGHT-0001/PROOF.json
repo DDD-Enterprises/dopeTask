@@ -1,0 +1,48 @@
+{
+  "artifacts": [
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0001/SMOKE_NO_WRITE.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0001/SMOKE_WRITE.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0001/AUTH_CHECK.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0001/MODEL_FLAG.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0001/CONTRACT.json"
+  ],
+  "blocking_failures": [
+    "write_smoke_nonzero",
+    "write_stdout_not_parseable_json",
+    "write_smoke_file_missing_or_wrong_content"
+  ],
+  "final_branch": "main",
+  "final_head": "421fd905a1ca4df475151340871bcaa1544aefd9",
+  "forbidden_scope_verified": {
+    "adapter_implementation": false,
+    "bare_flag_used": false,
+    "dope_agent_system_writes": false,
+    "production_source_changes": false,
+    "proof_dir_writes": false,
+    "runner_or_orchestrator_changes": false
+  },
+  "force_added_ignored_out_preflight": true,
+  "git_status_after": "",
+  "git_status_before": "",
+  "initial_branch": "main",
+  "initial_head": "421fd905a1ca4df475151340871bcaa1544aefd9",
+  "pass_criteria": {
+    "auth_mode_recorded": true,
+    "command_shape_recorded": true,
+    "json_parseable": false,
+    "no_bare_mode": true,
+    "no_repo_mutation_outside_allowed_output": true,
+    "temp_dir_write_succeeds": false
+  },
+  "repo": "/Users/hue/code/dopeTask",
+  "status": "FAIL",
+  "tests_run": [
+    "claude --version",
+    "no-write smoke",
+    "isolated temp-dir write smoke",
+    "auth mode check",
+    "model flag check",
+    "json parse validation for all artifacts"
+  ],
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0001"
+}

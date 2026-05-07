@@ -1,0 +1,103 @@
+{
+  "attempts": [
+    {
+      "argv": [
+        "claude",
+        "-p",
+        "--permission-mode",
+        "plan",
+        "--output-format",
+        "json",
+        "--no-session-persistence",
+        "--model",
+        "sonnet",
+        "Reply exactly: MODEL_TEST_OK"
+      ],
+      "command": "claude -p \\\n  --permission-mode plan \\\n  --output-format json \\\n  --no-session-persistence \\\n  --model sonnet \\\n  \"Reply exactly: MODEL_TEST_OK\"",
+      "duration_ms": 9120,
+      "model": "sonnet",
+      "parse_error": null,
+      "parsed_json": {
+        "api_error_status": null,
+        "duration_api_ms": 3337,
+        "duration_ms": 2563,
+        "fast_mode_state": "off",
+        "is_error": false,
+        "modelUsage": {
+          "claude-haiku-4-5-20251001": {
+            "cacheCreationInputTokens": 0,
+            "cacheReadInputTokens": 0,
+            "contextWindow": 200000,
+            "costUSD": 0.000406,
+            "inputTokens": 346,
+            "maxOutputTokens": 32000,
+            "outputTokens": 12,
+            "webSearchRequests": 0
+          },
+          "claude-sonnet-4-6": {
+            "cacheCreationInputTokens": 43391,
+            "cacheReadInputTokens": 12570,
+            "contextWindow": 1000000,
+            "costUSD": 0.16661625,
+            "inputTokens": 3,
+            "maxOutputTokens": 32000,
+            "outputTokens": 8,
+            "webSearchRequests": 0
+          }
+        },
+        "num_turns": 1,
+        "permission_denials": [],
+        "result": "MODEL_TEST_OK",
+        "session_id": "c90f8b60-879d-4053-ac39-52d4ef2e1790",
+        "stop_reason": "end_turn",
+        "subtype": "success",
+        "terminal_reason": "completed",
+        "total_cost_usd": 0.16702224999999998,
+        "type": "result",
+        "usage": {
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 43391,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "cache_creation_input_tokens": 43391,
+          "cache_read_input_tokens": 12570,
+          "inference_geo": "",
+          "input_tokens": 3,
+          "iterations": [
+            {
+              "cache_creation": {
+                "ephemeral_1h_input_tokens": 43391,
+                "ephemeral_5m_input_tokens": 0
+              },
+              "cache_creation_input_tokens": 43391,
+              "cache_read_input_tokens": 12570,
+              "input_tokens": 3,
+              "output_tokens": 8,
+              "type": "message"
+            }
+          ],
+          "output_tokens": 8,
+          "server_tool_use": {
+            "web_fetch_requests": 0,
+            "web_search_requests": 0
+          },
+          "service_tier": "standard",
+          "speed": "standard"
+        },
+        "uuid": "446b90bd-a4b7-42db-bd6c-e75e7499a77f"
+      },
+      "parsed_json_success": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"api_error_status\":null,\"duration_ms\":2563,\"duration_api_ms\":3337,\"num_turns\":1,\"result\":\"MODEL_TEST_OK\",\"stop_reason\":\"end_turn\",\"session_id\":\"c90f8b60-879d-4053-ac39-52d4ef2e1790\",\"total_cost_usd\":0.16702224999999998,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":43391,\"cache_read_input_tokens\":12570,\"output_tokens\":8,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":43391,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[{\"input_tokens\":3,\"output_tokens\":8,\"cache_read_input_tokens\":12570,\"cache_creation_input_tokens\":43391,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":43391},\"type\":\"message\"}],\"speed\":\"standard\"},\"modelUsage\":{\"claude-haiku-4-5-20251001\":{\"inputTokens\":346,\"outputTokens\":12,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.000406,\"contextWindow\":200000,\"maxOutputTokens\":32000},\"claude-sonnet-4-6\":{\"inputTokens\":3,\"outputTokens\":8,\"cacheReadInputTokens\":12570,\"cacheCreationInputTokens\":43391,\"webSearchRequests\":0,\"costUSD\":0.16661625,\"contextWindow\":1000000,\"maxOutputTokens\":32000}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"uuid\":\"446b90bd-a4b7-42db-bd6c-e75e7499a77f\"}\n",
+      "subprocess_stdin": "DEVNULL",
+      "timed_out": false
+    }
+  ],
+  "help_record": null,
+  "model_flag_tested": true,
+  "parsed_json_success": true,
+  "retry_model": null,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0001",
+  "unknown_model_failure_detected": false
+}
