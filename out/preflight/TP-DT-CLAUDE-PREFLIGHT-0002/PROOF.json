@@ -1,0 +1,54 @@
+{
+  "artifacts": [
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_NO_WRITE.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_WRITE_WITH_ALLOWEDTOOLS.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/POSITIONAL_WRITE_NO_ALLOWEDTOOLS.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/AUTH_RECHECK.json",
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/CONTRACT_DELTA.json"
+  ],
+  "blocking_failures": [],
+  "final_branch": "main",
+  "final_head": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+  "forbidden_scope_verified": {
+    "adapter_implementation": false,
+    "bare_flag_used": false,
+    "dope_agent_system_writes": false,
+    "production_source_changes": false,
+    "proof_dir_writes": false,
+    "runner_or_orchestrator_changes": false
+  },
+  "git_status_after": "",
+  "git_status_before": "",
+  "initial_branch": "main",
+  "initial_head": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+  "json_parse_validation": {
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/AUTH_RECHECK.json": true,
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json": true,
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/CONTRACT_DELTA.json": true,
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/POSITIONAL_WRITE_NO_ALLOWEDTOOLS.json": true,
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_NO_WRITE.json": true,
+    "out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/STDIN_WRITE_WITH_ALLOWEDTOOLS.json": true
+  },
+  "pass_criteria": {
+    "auth_mode_recorded": true,
+    "corrected_command_shape_recorded": true,
+    "no_bare_mode": true,
+    "no_repo_mutation_outside_allowed_output": true,
+    "permission_mode_verified": true,
+    "stdin_write_json_parseable": true,
+    "stdin_write_returncode_zero": true,
+    "temp_dir_write_succeeds": true
+  },
+  "repo": "/Users/hue/code/dopeTask",
+  "status": "PASS",
+  "tests_run": [
+    "baseline review of TP-DT-CLAUDE-PREFLIGHT-0001 artifacts",
+    "stdin no-write smoke",
+    "stdin write smoke with --allowedTools",
+    "positional write smoke without --allowedTools",
+    "auth recheck",
+    "json parse validation for all artifacts"
+  ],
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002"
+}
