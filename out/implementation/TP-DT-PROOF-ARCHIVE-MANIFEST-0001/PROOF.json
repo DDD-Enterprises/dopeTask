@@ -1,0 +1,102 @@
+{
+  "tp_id": "TP-DT-PROOF-ARCHIVE-MANIFEST-0001",
+  "status": "PASS",
+  "repo": "/Users/hue/code/dopeTask",
+  "initial_branch": "main",
+  "initial_head": "dc2b95da82a6b91f314c52970e4457dd69253e26",
+  "final_branch": "codex/proof-archive-manifest-0001",
+  "final_head": "dc2b95da82a6b91f314c52970e4457dd69253e26",
+  "root_cause": "ProofAggregator.create_archive currently emits included_files[*].source_path as provenance metadata, and the checked-in proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip manifest contains that field on every included file, but proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json omitted source_path while keeping additionalProperties=false.",
+  "chosen_fix": "Updated proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json to allow included_files[*].source_path as an explicit string property while preserving additionalProperties=false. Added a focused contract test that validates a ProofAggregator-generated archive manifest against the standard schema.",
+  "runtime_generator_emits_source_path": true,
+  "checked_in_archive_contains_source_path": true,
+  "files_changed": [
+    "task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json",
+    "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+    "tests/unit/obs/test_proof_contract_assets.py",
+    "out/implementation/TP-DT-PROOF-ARCHIVE-MANIFEST-0001/PROOF.json"
+  ],
+  "tests_run": [
+    {
+      "command": "pytest -q tests/unit/obs/test_proof_contract_assets.py",
+      "returncode": 1,
+      "stdout_tail": "FAILED tests/unit/obs/test_proof_contract_assets.py::test_checked_in_archive_manifests_match_standard_schema",
+      "stderr_tail": "jsonschema.exceptions.ValidationError: Additional properties are not allowed ('source_path' was unexpected) for proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip against proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json"
+    },
+    {
+      "command": "python - <<'PY' ... inspect proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip PROOF_ARCHIVE_MANIFEST.json ... PY",
+      "returncode": 0,
+      "stdout_tail": "included_count=3; source_path_count=3; extra_keys_beyond_schema_expected=['source_path']",
+      "stderr_tail": ""
+    },
+    {
+      "command": "python -m json.tool proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json >/dev/null",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "command": "python -m json.tool task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json >/dev/null",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "command": "python -m compileall -q src tests",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest -q tests/unit/obs/test_proof_contract_assets.py",
+      "returncode": 0,
+      "stdout_tail": "5 passed; coverage summary printed Total coverage: 0.70%",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest -q tests/unit/obs/test_proof_aggregator.py",
+      "returncode": 0,
+      "stdout_tail": "3 passed; coverage summary printed Total coverage: 0.70%",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest -q",
+      "returncode": 0,
+      "stdout_tail": "all tests passed; Required test coverage of 1% reached. Total coverage: 59.51%",
+      "stderr_tail": ""
+    },
+    {
+      "command": "git diff --check",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "command": "python - <<'PY' ... validate task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json against dopetask_schemas/task_packet.schema.json ... PY",
+      "returncode": 0,
+      "stdout_tail": "task packet matches runtime package schema",
+      "stderr_tail": ""
+    }
+  ],
+  "allowlist_check": {
+    "changed_files": [
+      "task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json",
+      "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+      "tests/unit/obs/test_proof_contract_assets.py",
+      "out/implementation/TP-DT-PROOF-ARCHIVE-MANIFEST-0001/PROOF.json"
+    ],
+    "outside_allowlist": []
+  },
+  "forbidden_scope_verified": {
+    "claude_adapter_modified": false,
+    "route_orchestrate_modified": false,
+    "dope_agent_system_modified": false,
+    "bare_mode_used": false
+  },
+  "commit": {
+    "created": false,
+    "sha": null,
+    "message": "fix(proof): reconcile archive manifest schema"
+  },
+  "blocking_failures": []
+}
