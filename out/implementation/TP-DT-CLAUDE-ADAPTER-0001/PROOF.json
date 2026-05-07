@@ -18,12 +18,14 @@
     ],
     "outside_allowlist": []
   },
+  "audit_submission_head": "VERIFY_WITH_GIT_REV_PARSE_HEAD_AT_AUDIT",
   "blocking_failures": [],
   "commit": {
-    "created": false,
+    "created": true,
     "message": "feat(tp-exec): add claude_code adapter",
-    "sha": null
+    "sha": "76867c92bd2794a3e8c41a6569c4ababe3876158"
   },
+  "commit_hash_semantics": "implementation_commit and final_head record the implementation commit. A committed proof file cannot contain the hash of the same commit that writes it. audit_submission_head requires the post-implementation audit to run git rev-parse HEAD.",
   "contract": {
     "agent": "claude_code",
     "allowed_tools": "Bash,Write,Edit,Read",
@@ -36,7 +38,7 @@
     "uses_o_flag": false
   },
   "final_branch": "codex/claude-adapter-0001",
-  "final_head": "f2844e2d7b7de3db0a0a7d9c6735b6f0cdc4ec27",
+  "final_head": "76867c92bd2794a3e8c41a6569c4ababe3876158",
   "forbidden_scope_verified": {
     "bare_mode_added": false,
     "dope_agent_system_modified": false,
@@ -44,6 +46,7 @@
     "pal_transport_added": false,
     "runners_claude_code_modified": false
   },
+  "git_status_final": "clean",
   "implemented_files": [
     "out/implementation/TP-DT-CLAUDE-ADAPTER-0001/PROOF.json",
     "src/dopetask/core/compilers/claude_code.py",
@@ -54,6 +57,7 @@
     "task-packets/TP-DT-CLAUDE-ADAPTER-0001.json",
     "tests/unit/dopetask/test_tp_exec_claude_code.py"
   ],
+  "implementation_commit": "76867c92bd2794a3e8c41a6569c4ababe3876158",
   "initial_branch": "main",
   "initial_head": "f2844e2d7b7de3db0a0a7d9c6735b6f0cdc4ec27",
   "live_smoke": {
@@ -83,6 +87,7 @@
   "non_blocking_observations": [
     "pytest -q failed on a checked-in proof archive manifest schema mismatch: source_path is present in proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip manifest but proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json disallows additional properties. This is outside the TP allowlist and unrelated to the claude_code adapter path."
   ],
+  "proof_backfilled": true,
   "proof_commit_sha_note": "This proof is generated before the requested commit; the final response records the actual commit SHA after commit creation.",
   "repo": "/Users/hue/code/dopeTask",
   "source_assembly_id": "TP-DT-CLAUDE-ADAPTER-ASSEMBLY-0001",
