@@ -5,7 +5,7 @@
   "initial_branch": "main",
   "initial_head": "96865b97e6894c980117be6027d51983e98ff819",
   "final_branch": "codex/claude-routing-docs-0001",
-  "final_head": "96865b97e6894c980117be6027d51983e98ff819",
+  "final_head": "a6a75663c3cd9c84ff3211e9c3488052faabd603",
   "source_readiness_commit": "96865b97e6894c980117be6027d51983e98ff819",
   "source_readiness_id": "TP-DT-CLAUDE-ROUTING-READINESS-0001",
   "readiness_summary": {
@@ -176,11 +176,13 @@
     "bare_mode_used": false
   },
   "commit": {
-    "created": false,
-    "sha": null,
+    "created": true,
+    "sha": "a6a75663c3cd9c84ff3211e9c3488052faabd603",
     "message": "docs(router): update claude_code routing state"
   },
-  "proof_backfilled": false,
-  "git_status_final": "PENDING_COMMIT",
+  "proof_backfilled": true,
+  "git_status_final": "clean",
+  "audit_submission_head": "VERIFY_WITH_GIT_REV_PARSE_HEAD_AT_AUDIT",
+  "commit_hash_semantics": "commit.sha and final_head record the implementation commit. A committed proof file cannot contain the hash of the same commit that writes it. audit_submission_head requires audit to run git rev-parse HEAD.",
   "blocking_failures": []
 }
