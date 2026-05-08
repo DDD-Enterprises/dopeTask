@@ -1,0 +1,182 @@
+{
+  "id": "TP-DT-UI-STATUS-0001",
+  "project": "dopetask",
+  "target": "Add a read-only UI status collector, artifact durability classifier, ui_status JSON Schema, and minimal dopetask ui status --json CLI surface for later report and cockpit consumers.",
+  "invariants": [
+    "dopeTask remains runtime authority.",
+    "dope-agent-system remains asset/template/reference authority only; this packet performs no dope-agent-system writes.",
+    "PAL/clink remains planning/context only and is not execution transport.",
+    "This packet is status collector foundation only.",
+    "Dependency observed: TP-DT-UI-WORKSPACE-0001 at commit 715be219f79b06ba01abb479a98b987f031c7b1d.",
+    "Do not implement dopetask report, dopetask cockpit, Asset Library UI, DAS file listing or preview, mutating launchers, or audit panes.",
+    "Do not add textual, dependencies, pyproject.toml changes, uv.lock changes, runner implementation changes, adapter behavior changes, or routing scoring changes.",
+    "Do not call dopetask doctor, dopetask route plan, tp series exec, tp exec, or any task execution command.",
+    "Do not write SERIES_STATE.json, EXEC.json, EXEC_ERROR.json, SERIES_CONTEXT.json, ROUTE_PLAN.json, proof bundles, or out/tp_series artifacts.",
+    "Default status collection must be read-only and idempotent.",
+    "The only runtime output this packet may write is optional status JSON to an explicit --out path and, only when explicitly requested, runner health refresh output from the accepted runner-health module."
+  ],
+  "depends_on": [
+    "TP-DT-UI-WORKSPACE-0001"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask.core",
+    "repo_marker": ".dopetaskroot",
+    "origin_hint": "local:/Users/hue/code/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-UI-CONTRACTS",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-UI-WORKSPACE-0001",
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "main"
+  },
+  "commit": {
+    "message": "feat(ui): add read-only status collector",
+    "allowlist": [
+      "src/dopetask/ui/status.py",
+      "src/dopetask/ui/durability.py",
+      "src/dopetask/ui/__init__.py",
+      "src/dopetask/cli.py",
+      "dopetask_schemas/ui_status.schema.json",
+      "tests/ui/test_status.py",
+      "task-packets/TP-DT-UI-STATUS-0001.json",
+      "proof/TP-DT-UI-STATUS-0001/PROOF.json",
+      "proof/TP-DT-UI-STATUS-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "verify": [
+      "python3 -m json.tool dopetask_schemas/ui_status.schema.json",
+      "python3 -m json.tool task-packets/TP-DT-UI-STATUS-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-STATUS-0001/PROOF.json",
+      "python3 -m pytest tests/ui/test_status.py -v",
+      "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "python3 -m pytest tests/test_workspace.py -v",
+      "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+      "python3 -m compileall -q src tests",
+      "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "python3 -m dopetask ui status --json --out /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+      "python3 -m json.tool /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+      "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import Draft202012Validator\nschema = json.loads(Path('dopetask_schemas/ui_status.schema.json').read_text())\npayload = json.loads(Path('/tmp/dopetask_ui_status_tp_dt_ui_status_0001.json').read_text())\nDraft202012Validator.check_schema(schema)\nerrors = sorted(Draft202012Validator(schema).iter_errors(payload), key=lambda e: list(e.path))\nif errors:\n    for error in errors:\n        print(error.message)\n    raise SystemExit(1)\nprint('ui-status-artifact-schema-valid')\nPY",
+      "git diff --check",
+      "git status --short",
+      "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true"
+    ]
+  },
+  "pr": {
+    "title": "Add read-only UI status collector",
+    "body": "Adds the shared UI status data layer, artifact durability classification, schema, and minimal JSON CLI surface.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_inspect_authority",
+      "task": "Inspect accepted dependency proofs, Opus design artifacts, runtime artifact schemas, runner-health module, workspace resolver, and existing UI CLI registration before editing.",
+      "requirements": [
+        "Treat runtime artifact schemas as structure authority.",
+        "Treat SERIES_STATE.json packet.status as current packet state authority.",
+        "Treat EXEC_ERROR.json as historical error evidence, not current state by itself."
+      ],
+      "commands": [],
+      "expected_files": [],
+      "validation": [
+        "git rev-parse HEAD",
+        "python3 -m json.tool proof/TP-DT-UI-WORKSPACE-0001/PROOF.json"
+      ],
+      "context_files": [
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md",
+        "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+        "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+        "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+        "proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+        "dopetask_schemas/series_state.schema.json",
+        "dopetask_schemas/exec_record.schema.json",
+        "dopetask_schemas/exec_error.schema.json",
+        "dopetask_schemas/series_context.schema.json",
+        "dopetask_schemas/runner_health.schema.json",
+        "dopetask_schemas/workspace.schema.json",
+        "src/dopetask/ui/runner_health.py",
+        "src/dopetask/workspace.py",
+        "src/dopetask/cli.py"
+      ]
+    },
+    {
+      "id": "step_2_collector_schema_cli",
+      "task": "Create the status collector, durability classifier, ui_status schema, and minimal dopetask ui status JSON CLI surface.",
+      "requirements": [
+        "Collector reads cached artifacts only.",
+        "Collector validates artifacts before structured consumption.",
+        "A bad artifact must produce an error marker without blocking other artifacts.",
+        "Durability classification must use git ls-files and git check-ignore.",
+        "CLI --out must refuse proof/ and resolved dope-agent-system paths."
+      ],
+      "commands": [],
+      "expected_files": [
+        "src/dopetask/ui/status.py",
+        "src/dopetask/ui/durability.py",
+        "dopetask_schemas/ui_status.schema.json",
+        "src/dopetask/cli.py"
+      ],
+      "validation": [
+        "python3 -m json.tool dopetask_schemas/ui_status.schema.json",
+        "python3 -m dopetask ui status --json | python3 -m json.tool"
+      ],
+      "context_files": [
+        "src/dopetask/ui/runner_health.py",
+        "src/dopetask/workspace.py",
+        "dopetask_schemas/series_state.schema.json",
+        "dopetask_schemas/exec_record.schema.json",
+        "dopetask_schemas/exec_error.schema.json",
+        "dopetask_schemas/series_context.schema.json"
+      ]
+    },
+    {
+      "id": "step_3_tests_proof_commit",
+      "task": "Add focused status tests, create proof and implementer report artifacts, run validation commands, and commit only allowlisted files if clean.",
+      "requirements": [
+        "Tests must prove default collection writes no files.",
+        "Tests must prove auth_mode defaults to unknown and EXEC_ERROR.json alone is not current failure state.",
+        "Tests must prove tracked, ignored, and missing durability classifications.",
+        "Proof must record validation exit codes and self-referential commit hash caveat."
+      ],
+      "commands": [
+        "python3 -m json.tool dopetask_schemas/ui_status.schema.json",
+        "python3 -m json.tool task-packets/TP-DT-UI-STATUS-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-STATUS-0001/PROOF.json",
+        "python3 -m pytest tests/ui/test_status.py -v",
+        "python3 -m pytest tests/ui/test_runner_health.py -v",
+        "python3 -m pytest tests/test_workspace.py -v",
+        "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+        "python3 -m compileall -q src tests",
+        "python3 -m dopetask ui status --json | python3 -m json.tool",
+        "python3 -m dopetask ui status --json --out /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+        "python3 -m json.tool /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+        "git diff --check",
+        "git status --short"
+      ],
+      "expected_files": [
+        "tests/ui/test_status.py",
+        "task-packets/TP-DT-UI-STATUS-0001.json",
+        "proof/TP-DT-UI-STATUS-0001/PROOF.json",
+        "proof/TP-DT-UI-STATUS-0001/IMPLEMENTER_REPORT.md"
+      ],
+      "validation": [
+        "python3 -m pytest tests/ui/test_status.py -v",
+        "python3 -m compileall -q src tests",
+        "git diff --check",
+        "git status --short"
+      ],
+      "context_files": [
+        "tests/ui/test_status.py"
+      ]
+    }
+  ]
+}

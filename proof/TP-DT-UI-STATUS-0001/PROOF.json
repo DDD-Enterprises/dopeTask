@@ -1,0 +1,225 @@
+{
+  "tp_id": "TP-DT-UI-STATUS-0001",
+  "objective": "Add a read-only UI status collector, artifact durability classifier, ui_status JSON Schema, and minimal dopetask ui status --json CLI surface for later report and cockpit consumers.",
+  "dependency_commits_observed": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+      "commit": "2fff7d921058666358c11f931b18fdc5ab3972bc",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-WORKSPACE-0001",
+      "commit": "715be219f79b06ba01abb479a98b987f031c7b1d",
+      "proof_json_present": true,
+      "observed_as_starting_head": true
+    }
+  ],
+  "files_created": [
+    "src/dopetask/ui/status.py",
+    "src/dopetask/ui/durability.py",
+    "dopetask_schemas/ui_status.schema.json",
+    "tests/ui/test_status.py",
+    "task-packets/TP-DT-UI-STATUS-0001.json",
+    "proof/TP-DT-UI-STATUS-0001/PROOF.json",
+    "proof/TP-DT-UI-STATUS-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/cli.py"
+  ],
+  "schema_created": "dopetask_schemas/ui_status.schema.json",
+  "cli_surface_added": [
+    "dopetask ui status --json",
+    "dopetask ui status --json --out <path>",
+    "dopetask ui status --json --refresh-runners",
+    "dopetask ui status --json --das-path <path>"
+  ],
+  "collector_api": [
+    "collect_status(repo_root, refresh_runner_health=False, das_path=None)",
+    "status_output_path_for_repo(repo_root)"
+  ],
+  "durability_api": [
+    "ArtifactDurability",
+    "PathKind",
+    "classify_artifact_path(repo_root, path)"
+  ],
+  "runtime_outputs_written": [
+    {
+      "path": "/tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+      "reason": "Explicit validation command used --out.",
+      "tracked": false
+    },
+    {
+      "path": "out/dopetask_ui/RUNNER_HEALTH.json",
+      "reason": "Only written inside tmp_path during --refresh-runners test; existing repository runtime output was not staged.",
+      "tracked": false
+    }
+  ],
+  "tests_created_or_modified": [
+    "tests/ui/test_status.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/ui/runner_health.py",
+    "src/dopetask/ui/__init__.py",
+    "src/dopetask/workspace.py",
+    "src/dopetask/cli.py",
+    "dopetask_schemas/series_state.schema.json",
+    "dopetask_schemas/exec_record.schema.json",
+    "dopetask_schemas/exec_error.schema.json",
+    "dopetask_schemas/series_context.schema.json",
+    "dopetask_schemas/route_plan.schema.json",
+    "dopetask_schemas/runner_health.schema.json",
+    "dopetask_schemas/workspace.schema.json",
+    "tests/schemas/test_runtime_artifact_schemas.py",
+    "tests/ui/test_runner_health.py",
+    "tests/test_workspace.py",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+    "proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool dopetask_schemas/ui_status.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-STATUS-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-STATUS-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_status.py -v",
+      "exit_code": 0,
+      "summary": "20 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "exit_code": 0,
+      "summary": "13 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/test_workspace.py -v",
+      "exit_code": 0,
+      "summary": "16 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui status --json --out /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import Draft202012Validator\nschema = json.loads(Path('dopetask_schemas/ui_status.schema.json').read_text())\npayload = json.loads(Path('/tmp/dopetask_ui_status_tp_dt_ui_status_0001.json').read_text())\nDraft202012Validator.check_schema(schema)\nerrors = sorted(Draft202012Validator(schema).iter_errors(payload), key=lambda e: list(e.path))\nif errors:\n    for error in errors:\n        print(error.message)\n    raise SystemExit(1)\nprint('ui-status-artifact-schema-valid')\nPY",
+      "exit_code": 0,
+      "summary": "ui-status-artifact-schema-valid"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M src/dopetask/cli.py\n?? dopetask_schemas/ui_status.schema.json\n?? src/dopetask/ui/durability.py\n?? src/dopetask/ui/status.py\n?? task-packets/TP-DT-UI-STATUS-0001.json\n?? tests/ui/test_status.py",
+      "note": "proof/TP-DT-UI-STATUS-0001 is ignored by proof/* and must be force-added."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "ui_status_schema_validation_result": {
+    "status": "passed",
+    "schema": "dopetask_schemas/ui_status.schema.json",
+    "evidence": "json.tool passed, Draft202012Validator.check_schema passed in tests, CLI output validates against the schema, and explicit artifact validation printed ui-status-artifact-schema-valid.",
+    "top_level_additional_properties": false
+  },
+  "status_cli_validation_result": {
+    "status": "passed",
+    "commands": [
+      "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "python3 -m dopetask ui status --json --out /tmp/dopetask_ui_status_tp_dt_ui_status_0001.json"
+    ],
+    "output_schema_valid": true
+  },
+  "durability_classification_summary": {
+    "tracked_fixture": "dopetask_schemas/workspace.schema.json classified as tracked-in-git",
+    "ignored_out_artifact": "out/dopetask_ui/test_status_ignored.tmp classified as local-only-gitignored during test then removed",
+    "missing_fixture": "tmp_path missing file classified as missing",
+    "implementation": "Uses git ls-files --error-unmatch and git check-ignore -v before untracked classification."
+  },
+  "git_status_before": {
+    "branch": "main",
+    "head": "715be219f79b06ba01abb479a98b987f031c7b1d",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "715be219f79b06ba01abb479a98b987f031c7b1d",
+    "short": " M src/dopetask/cli.py\n?? dopetask_schemas/ui_status.schema.json\n?? src/dopetask/ui/durability.py\n?? src/dopetask/ui/status.py\n?? task-packets/TP-DT-UI-STATUS-0001.json\n?? tests/ui/test_status.py",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-STATUS-0001/PROOF.json",
+      "proof/TP-DT-UI-STATUS-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "ignored_runtime_outputs": [
+      "out/dopetask_ui/RUNNER_HEALTH.json"
+    ],
+    "explicit_tmp_output": "/tmp/dopetask_ui_status_tp_dt_ui_status_0001.json"
+  },
+  "no_report_command": true,
+  "no_cockpit": true,
+  "no_asset_library": true,
+  "no_mutating_launchers": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_textual_added": true,
+  "auth_mode_defaults_unknown": true,
+  "exec_error_not_current_state_without_series_state": true,
+  "commit_ready": true,
+  "commit_message": "feat(ui): add read-only status collector",
+  "commit_hash": "self_referential_unavailable",
+  "self_referential_commit_hash_caveat": "This proof is generated before the source commit. A Git commit cannot contain its own final SHA in a tracked proof file without changing that SHA. The final commit hash and post-commit status are verified after commit and reported in the final response.",
+  "blockers": []
+}

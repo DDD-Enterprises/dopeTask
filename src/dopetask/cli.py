@@ -89,6 +89,8 @@ from dopetask.ui import (
     worship as worship_impl,
 )
 from dopetask.ui.runner_health import collect_runner_health
+from dopetask.ui.status import collect_status
+from dopetask.workspace import WorkspaceConfigError, resolve_dope_agent_system_path
 
 # Import pipeline modules (from migrated dopetask code)
 try:
@@ -576,6 +578,81 @@ def ui_runners(
     _ = json_output
     payload = collect_runner_health(Path.cwd(), refresh=refresh)
     typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+
+
+@ui_app.command("status")
+def ui_status(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit machine-readable JSON. This is the only supported output.",
+    ),
+    out: typing.Optional[Path] = typer.Option(
+        None,
+        "--out",
+        help="Write JSON to an explicit output path.",
+    ),
+    refresh_runners: bool = typer.Option(
+        False,
+        "--refresh-runners",
+        help="Refresh out/dopetask_ui/RUNNER_HEALTH.json before collecting status.",
+    ),
+    das_path: typing.Optional[Path] = typer.Option(
+        None,
+        "--das-path",
+        help="Explicit dope-agent-system path for resolver boundary checks.",
+    ),
+) -> None:
+    """Emit read-only UI status JSON."""
+
+    if not json_output:
+        typer.echo("Error: dopetask ui status currently requires --json", err=True)
+        raise typer.Exit(2)
+
+    repo_root = Path.cwd()
+    payload = collect_status(repo_root, refresh_runner_health=refresh_runners, das_path=das_path)
+    rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if out is not None:
+        _write_ui_status_output(repo_root, out, rendered, das_path=das_path)
+    typer.echo(rendered, nl=False)
+
+
+def _write_ui_status_output(
+    repo_root: Path,
+    out: Path,
+    rendered: str,
+    *,
+    das_path: typing.Optional[Path],
+) -> None:
+    resolved_repo_root = repo_root.resolve()
+    output_path = out.expanduser()
+    if not output_path.is_absolute():
+        output_path = resolved_repo_root / output_path
+    output_path = output_path.resolve()
+
+    proof_root = resolved_repo_root / "proof"
+    if _is_relative_to(output_path, proof_root):
+        typer.echo("Error: --out under proof/ is refused for UI status", err=True)
+        raise typer.Exit(2)
+
+    try:
+        resolved_das_path = resolve_dope_agent_system_path(resolved_repo_root, explicit_path=das_path)
+    except WorkspaceConfigError:
+        resolved_das_path = None
+    if resolved_das_path is not None and _is_relative_to(output_path, resolved_das_path):
+        typer.echo("Error: --out under resolved dope-agent-system path is refused", err=True)
+        raise typer.Exit(2)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(rendered, encoding="utf-8")
+
+
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+    except ValueError:
+        return False
+    return True
 
 
 def _check_repo_guard(bypass: bool, rescue_patch: typing.Optional[str] = None) -> Path:

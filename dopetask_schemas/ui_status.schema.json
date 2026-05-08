@@ -1,0 +1,436 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/ui_status.schema.json",
+  "title": "dopeTask UI Status",
+  "description": "Read-only status collector output for later report and cockpit surfaces.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "repo_root",
+    "dopetask_version",
+    "das_path",
+    "das_configured",
+    "version_drift",
+    "git",
+    "runner_health",
+    "series",
+    "doctor_report_cached",
+    "doctor_report_path",
+    "doctor_report_durability",
+    "doctor_report_status",
+    "route_plan_cached",
+    "route_plan_path",
+    "route_plan_durability",
+    "errors",
+    "warnings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repo_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dopetask_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "das_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "das_configured": {
+      "type": "boolean"
+    },
+    "version_drift": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "const": "unknown"
+        }
+      ]
+    },
+    "git": {
+      "$ref": "#/$defs/git"
+    },
+    "runner_health": {
+      "$ref": "#/$defs/runner_health_status"
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/series_summary"
+      }
+    },
+    "doctor_report_cached": {
+      "type": "boolean"
+    },
+    "doctor_report_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "doctor_report_durability": {
+      "$ref": "#/$defs/durability"
+    },
+    "doctor_report_status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "unknown"
+      ]
+    },
+    "route_plan_cached": {
+      "type": "boolean"
+    },
+    "route_plan_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "route_plan_durability": {
+      "$ref": "#/$defs/durability"
+    },
+    "errors": {
+      "$ref": "#/$defs/error_array"
+    },
+    "warnings": {
+      "$ref": "#/$defs/error_array"
+    }
+  },
+  "$defs": {
+    "nullable_string": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "error_marker": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "path",
+        "message"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "error_array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/error_marker"
+      }
+    },
+    "durability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "durability",
+        "path_kind",
+        "exists"
+      ],
+      "properties": {
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "durability": {
+          "type": "string",
+          "enum": [
+            "tracked-in-git",
+            "local-only-gitignored",
+            "untracked-not-ignored",
+            "missing"
+          ]
+        },
+        "path_kind": {
+          "type": "string",
+          "enum": [
+            "repo-relative",
+            "absolute-local",
+            "temp-or-foreign"
+          ]
+        },
+        "exists": {
+          "type": "boolean"
+        }
+      }
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branch",
+        "head_sha",
+        "clean",
+        "dirty_files",
+        "worktrees",
+        "stash_count"
+      ],
+      "properties": {
+        "branch": {
+          "type": "string"
+        },
+        "head_sha": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "clean": {
+          "type": "boolean"
+        },
+        "dirty_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "worktrees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "stash_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "runner_health_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present",
+        "path",
+        "durability",
+        "payload",
+        "summary",
+        "schema_valid",
+        "schema_errors"
+      ],
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        },
+        "durability": {
+          "$ref": "#/$defs/durability"
+        },
+        "payload": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "schema_valid": {
+          "type": "boolean"
+        },
+        "schema_errors": {
+          "$ref": "#/$defs/error_array"
+        }
+      }
+    },
+    "series_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "state_path",
+        "durability",
+        "schema_valid",
+        "schema_errors",
+        "status_counts",
+        "last_updated",
+        "pr_url",
+        "pr",
+        "packets",
+        "errors"
+      ],
+      "properties": {
+        "series_id": {
+          "type": "string"
+        },
+        "state_path": {
+          "type": "string"
+        },
+        "durability": {
+          "$ref": "#/$defs/durability"
+        },
+        "schema_valid": {
+          "type": "boolean"
+        },
+        "schema_errors": {
+          "$ref": "#/$defs/error_array"
+        },
+        "status_counts": {
+          "$ref": "#/$defs/status_counts"
+        },
+        "last_updated": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "pr_url": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "pr": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "packets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/packet_summary"
+          }
+        },
+        "errors": {
+          "$ref": "#/$defs/error_array"
+        }
+      }
+    },
+    "status_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completed",
+        "failed",
+        "running",
+        "pending"
+      ],
+      "properties": {
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "running": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pending": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "packet_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tp_id",
+        "status",
+        "branch",
+        "head_sha",
+        "agent",
+        "model",
+        "requested_model",
+        "effective_model",
+        "effective_model_source",
+        "auth_mode",
+        "bare_mode_used",
+        "proof_bundle_path",
+        "proof_bundle_status",
+        "durability",
+        "exec_error_present",
+        "exec_error_is_current_state",
+        "errors"
+      ],
+      "properties": {
+        "tp_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "branch": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "head_sha": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "agent": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "model": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "requested_model": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "effective_model": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "effective_model_source": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "auth_mode": {
+          "type": "string"
+        },
+        "bare_mode_used": {
+          "type": [
+            "boolean",
+            "string",
+            "null"
+          ]
+        },
+        "proof_bundle_path": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "proof_bundle_status": {
+          "type": "string"
+        },
+        "durability": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/durability"
+          }
+        },
+        "exec_error_present": {
+          "type": "boolean"
+        },
+        "exec_error_is_current_state": {
+          "type": "boolean"
+        },
+        "errors": {
+          "$ref": "#/$defs/error_array"
+        }
+      }
+    }
+  }
+}
