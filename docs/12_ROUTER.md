@@ -18,7 +18,7 @@ flowchart TD
   C --> D["Plan steps (order-preserving)"]
   D --> E{"Refuse?"}
   E -- "yes" --> F["Write ROUTE_PLAN.json/.md (status=refused)"]
-  E -- "no" --> G["Write ROUTE_PLAN.json/.md (status=planned)"]
+  E -- "no" --> G["Write ROUTE_PLAN.json/.md (status=ok)"]
   G --> H["Emit HANDOFF.md when needed"]
 ```
 
@@ -39,6 +39,27 @@ dopetask route explain --repo-root . --packet PACKET.md --step run-task
 `dopetask route init` writes:
 
 - `.dopetask/runtime/availability.yaml`
+
+## claude_code routing state
+
+`claude_code` is present in the router availability template and in generated `.dopetask/runtime/availability.yaml`.
+TP-DT-CLAUDE-ROUTING-READINESS-0001 produced a route plan with `status: ok`; that plan selected `claude_code` with `sonnet-4.6` for `run-task`, and the handoff/report output included Claude Code handoff text.
+
+This does not make route/orchestrate the default execution path.
+The implemented Claude Code execution path for MVP0 is the TP series and low-level executor plane:
+
+```bash
+dopetask tp series exec --agent claude_code <packet.json>
+```
+
+That path flows through `tp_series -> tp_exec/engine.py -> dopetask_adapters/claude_code/ClaudeCodeExecutor`.
+
+Boundaries:
+
+- `src/dopetask/runners/claude_code.py` and `orchestrator/kernel.py` remain separate route/orchestrate runner surfaces and are deferred.
+- `dope-agent-system` remains a template/reference asset plane. It is not runtime authority and is not integrated into MVP0 execution.
+- PAL/clink remains planning/context only, not execution transport.
+- `--bare` is not a default mode and must not be introduced as an implicit fallback.
 
 ## Deterministic artifacts
 

@@ -4474,7 +4474,7 @@ cli.add_typer(case_app, name="case")
 
 @cli.command(name="execute")
 def execute_cmd(
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or claude_code."),
     model: typing.Optional[str] = typer.Option(None, "--model", help="Optional explicit model override."),
     repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
 ) -> None:

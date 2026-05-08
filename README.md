@@ -14,7 +14,7 @@ It validates a Task Packet, executes one allowed path or refuses with evidence, 
 ## Default workflow
 
 1. Author JSON Task Packets that conform to the task packet schema.
-2. Execute each ready packet with `dopetask tp series exec <packet.json> --agent gemini`.
+2. Execute each ready packet with `dopetask tp series exec <packet.json> --agent gemini`, `--agent codex`, or `--agent claude_code`.
 3. Inspect progress with `dopetask tp series status <series-id>`.
 4. Finalize the completed series into one PR with `dopetask tp series finalize <series-id> --title "..."`.
 

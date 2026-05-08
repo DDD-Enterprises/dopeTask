@@ -7,7 +7,7 @@
 
 ## Inputs Needed for Interactive Executor Transport
 
-The primary interactive executor gap is `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py`, which currently returns `RUNNER_NOT_IMPLEMENTED`. Before implementing, the following must be known:
+The remaining interactive executor gap is `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py`, the separate route/orchestrate runner plane. TP series Claude Code execution is already implemented through `dopetask_adapters/claude_code`; before implementing the route/orchestrate runner, the following must be known:
 
 | Input | Question | Source |
 |-------|----------|--------|
@@ -84,9 +84,9 @@ dopeTask's router (`router/planner.py`, `router/scoring.py`, `router/availabilit
 
 | Input | Question | Current State |
 |-------|----------|---------------|
-| **Claude model selection** | Which models does `--agent claude_code` route to? | `ClaudeCodeAdapter.prepare()` reads model from route_plan but run() is a stub |
-| **Availability check** | Is there an `availability_path_for_repo` for claude_code? | Unknown — router reads from availability path; Claude's path is unverified |
-| **Route scoring** | What score does claude_code get vs codex_desktop? | Not yet defined in scoring.py |
+| **Claude model selection** | Which models does `--agent claude_code` route to? | The TP series/low-level executor resolves a route-derived model when available; TP-DT-CLAUDE-ROUTING-READINESS-0001 selected `sonnet-4.6` for `run-task`. Route/orchestrate runner execution remains separate. |
+| **Availability check** | Is there an `availability_path_for_repo` for claude_code? | Yes. The router uses `.dopetask/runtime/availability.yaml`; readiness verified `claude_code` in the availability template and generated availability file. |
+| **Route scoring** | What score does claude_code get vs codex_desktop? | Readiness route planning selected `claude_code` for `run-task` with `sonnet-4.6`; exact scores remain route-plan artifact data, not dope-agent-system authority. |
 | **dope-agent-system tool_families** | Do `tool_families.claude_code.enabled` flags in PROJECT_PROFILE.json affect routing? | No integration exists today |
 
 **Minimum viable input**: Verify whether `docs/12_ROUTER.md` describes how to add a new runner to the routing table.
@@ -95,20 +95,20 @@ dopeTask's router (`router/planner.py`, `router/scoring.py`, `router/availabilit
 
 ## Inputs Needed for Ledger / Supervisor Compatibility
 
-The dopeTask supervisor CLAUDE.md mentions `dopetask tp series exec <packet.json> --agent gemini`. For Claude:
+The TP series Claude Code MVP0 entrypoint is `dopetask tp series exec --agent claude_code <packet.json>`. For Claude:
 
 | Input | Question | Current State |
 |-------|----------|---------------|
-| **`--agent` flag value** | Is it `--agent claude_code` or `--agent claude`? | Registered as `claude_code` in RUNNER_ADAPTERS |
-| **Ledger update** | Does `tp series exec --agent claude_code` currently write to SERIES_STATE.json despite stub? | Unknown — stub returns refused; kernel may write EXEC_ERROR.json |
-| **Series integration** | Is `claude_code` a valid value for `SERIES_STATE.json`'s `assigned_agent` field? | Unknown |
-| **Supervisor prompts** | Does `docs/26_SUPERVISOR_PROMPTS.md` need updating to include claude_code as a valid agent? | Unknown |
+| **`--agent` flag value** | Is it `--agent claude_code` or `--agent claude`? | The TP exec/series agent slug is `claude_code`; the route/orchestrate runner registry uses the same slug for its separate deferred plane. |
+| **Ledger update** | Does `tp series exec --agent claude_code` currently write to SERIES_STATE.json? | Valid TP series entrypoint; this design note does not re-exercise Claude execution. |
+| **Series integration** | Is `claude_code` a valid selected agent for TP series execution? | Yes for MVP0 through `dopetask_adapters/claude_code`. |
+| **Supervisor prompts** | Does `docs/26_SUPERVISOR_PROMPTS.md` need updating to include claude_code as a valid agent? | Updated to include `claude_code` while preserving route/orchestrate as a separate plane. |
 
 ---
 
 ## Minimum Viable Integration Proposal
 
-**MVP**: Implement `ClaudeCodeAdapter.run()` following the Codex subprocess pattern.
+**Route/orchestrate follow-up**: Implement `ClaudeCodeAdapter.run()` following the Codex subprocess pattern. This is separate from the completed TP series Claude Code MVP0 path.
 
 Steps:
 1. Verify `claude` CLI flags (requires empirical test, out of scope for this investigation)
@@ -121,7 +121,7 @@ Steps:
 3. Add a unit test analogous to `CodexCliAdapter` tests
 4. Update `docs/22_WORKFLOW_GUIDE.md` to include `--agent claude_code` examples
 
-dope-agent-system integration at MVP level: **None required**. The runner can be implemented without adapter profile consumption or skill installation. Skill injection (Model A or B) is Phase 2.
+dope-agent-system integration at MVP level: **None required**. The TP series MVP0 path does not consume dope-agent-system adapter profiles or skill installation. Any future route/orchestrate runner integration can remain separate from dope-agent-system template assets unless a later TP explicitly changes that boundary.
 
 ---
 

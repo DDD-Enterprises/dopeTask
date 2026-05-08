@@ -118,7 +118,7 @@
 
 [CODE] A third seam is runtime exposure mismatch. `src/dopetask/ops/tp_series/cli.py` defines an `import` subcommand, and `src/dopetask/cli.py` defines a top-level `execute` command, but runtime help currently does not expose those surfaces. `python -m dopetask tp series import --help` and `python -m dopetask execute --help` both fail, so any architecture prose that treats them as live operator entrypoints is ahead of runtime reality.
 
-[CODE] A fourth seam is low-level agent support. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, and the parser/normalizer includes compilers for those profiles, but `ops/tp_exec/engine.py` only constructs `GeminiAdapter` and raises for other agents. The low-level execution plane is therefore multi-profile in compilation but Gemini-only in actual runtime execution.
+[CODE] A fourth seam is low-level agent support. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `claude_code`, and `ops/tp_exec/engine.py` dispatches those profiles to `GeminiAdapter`, `CodexExecutor`, and `ClaudeCodeExecutor`. The parser/normalizer still includes `vibe` compilation scaffolding, but the low-level engine does not construct a Vibe executor. Route/orchestrate runner support through `src/dopetask/runners/claude_code.py` remains a separate deferred plane.
 
 [CODE] A fifth seam is docs/schema duplication. Some docs still refer to repo-local schema copies such as `docs/schemas/task_packet.schema.json`, while runtime validation uses the package-data registry. This is a documentation and packaging boundary, not a runtime fallback ladder.
 

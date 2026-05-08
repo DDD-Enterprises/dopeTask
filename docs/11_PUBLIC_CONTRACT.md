@@ -31,7 +31,7 @@ Console output is informational. Artifacts are the record.
 
 Agent/runtime parity is not universal across planes:
 
-- `tp exec` currently supports `gemini` and `codex`
+- `tp exec` currently supports `gemini`, `codex`, and `claude_code`
 - route/orchestrate remains a separate runner plane with its own contracts
 
 ## Determinism rules

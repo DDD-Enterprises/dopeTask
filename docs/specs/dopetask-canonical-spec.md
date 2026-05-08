@@ -45,7 +45,7 @@
 ### 1. Low-Level JSON Packet Execution (`tp exec`)
 
 - [CODE] `tp exec` parses JSON, compiles the requested profile, and sends the compiled packet through `execute_task_packet()` (`src/dopetask/ops/tp_exec/cli.py`, `src/dopetask/ops/tp_exec/engine.py`).
-- [CODE] In the current runtime, only the `gemini` profile is implemented in `execute_task_packet()`; other advertised agent names raise `ValueError` (`src/dopetask/ops/tp_exec/engine.py`).
+- [CODE] In the current runtime, `execute_task_packet()` implements `gemini`, `codex`, and `claude_code` dispatch through `GeminiAdapter`, `CodexExecutor`, and `ClaudeCodeExecutor`; unknown or non-executor profiles still raise `ValueError` (`src/dopetask/ops/tp_exec/engine.py`).
 - [CODE] The current Gemini adapter is shell-command-driven, not provider-session-driven: it compiles prompt text, but `StepRunner.run_step()` executes `commands` and `validation` locally via `subprocess.run(shell=True)` (`src/dopetask_adapters/gemini/executor.py`, `src/dopetask_adapters/gemini/step_runner.py`).
 - [CODE] `TaskExecutor` currently validates the adapter return type and raises immediately on failed `ExecutionResult` items; it does not manage full state transitions described in the architecture plan (`src/dopetask/pipeline/task_runner/executor.py`, `src/dopetask/pipeline/task_runner/types.py`).
 - [CODE] The low-level proof path is raw proof + trace via `ProofWriter`, then canonical bundle/archive aggregation via `ProofAggregator` (`src/dopetask_adapters/gemini/proof_writer.py`, `src/dopetask/obs/proof_aggregator.py`).
@@ -131,4 +131,3 @@
 - [INFERRED] Separate documentation for the three live execution families: `tp series`, `tp exec`, and `route/orchestrate`. The current docs often describe one while the runtime still exposes all three.
 - [INFERRED] Document the present `gemini` runtime honestly as a transitional/local shell executor unless and until a real provider session is wired into the execution path.
 - [INFERRED] Tighten architecture docs so they describe current executor responsibilities precisely, then layer future-state plans in a separate roadmap document rather than in the current-state spec.
-

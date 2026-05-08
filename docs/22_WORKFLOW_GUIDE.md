@@ -19,7 +19,7 @@ If the repo is bound for identity-checked work, default to the strict repo-aware
 The Supervisor (AI or human) decomposes a high-level objective into atomic Task Packets.
 - **Key Metadata**: `series.id`, `depends_on`, `commit.allowlist`, `repo_binding`, `execution`.
 - **Validation**: Every packet MUST have empirical verification commands.
-- **Packet handoff**: Save the JSON Task Packet to a file before execution, then run `dopetask tp series exec path/to/packet.json --agent gemini`.
+- **Packet handoff**: Save the JSON Task Packet to a file before execution, then run `dopetask tp series exec path/to/packet.json --agent gemini`, `--agent codex`, or `--agent claude_code`.
 If a packet declares `repo_binding.require_identity_match = true`, the kernel refuses to mutate anything unless the active repo identity matches that binding.
 
 ### 2. Execution (`tp series exec`)
@@ -27,6 +27,7 @@ Invoke the kernel to execute a specific packet:
 ```bash
 dopetask tp series exec path/to/packet.json --agent gemini
 dopetask tp series exec path/to/packet.json --agent codex --model gpt-5.3-codex
+dopetask tp series exec path/to/packet.json --agent claude_code --model sonnet-4.6
 ```
 Prerequisite: the repository must have an initial commit on `main`. `origin/main` is used when available, but a local-only `main` branch is sufficient for execution.
 **Kernel Actions**:

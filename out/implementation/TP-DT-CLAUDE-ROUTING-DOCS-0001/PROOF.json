@@ -1,0 +1,186 @@
+{
+  "tp_id": "TP-DT-CLAUDE-ROUTING-DOCS-0001",
+  "status": "PASS",
+  "repo": "/Users/hue/code/dopeTask",
+  "initial_branch": "main",
+  "initial_head": "96865b97e6894c980117be6027d51983e98ff819",
+  "final_branch": "codex/claude-routing-docs-0001",
+  "final_head": "96865b97e6894c980117be6027d51983e98ff819",
+  "source_readiness_commit": "96865b97e6894c980117be6027d51983e98ff819",
+  "source_readiness_id": "TP-DT-CLAUDE-ROUTING-READINESS-0001",
+  "readiness_summary": {
+    "claude_code_in_availability_template": true,
+    "claude_code_in_generated_availability_yaml": true,
+    "route_plan_status": "ok",
+    "route_plan_selected_claude_code": true,
+    "route_plan_selected_model": "sonnet-4.6",
+    "handoff_mentions_claude_code": true,
+    "recommended_next_action": "routing_docs_tp_needed"
+  },
+  "stale_docs_found": [
+    {
+      "path": "docs/00_OVERVIEW.md",
+      "line": 83,
+      "classification": "docs-only",
+      "snippet": "- Low-level `tp exec` remains a separate execution plane and currently supports `gemini` and `codex`."
+    },
+    {
+      "path": "docs/11_PUBLIC_CONTRACT.md",
+      "line": 34,
+      "classification": "docs-only",
+      "snippet": "- `tp exec` currently supports `gemini` and `codex`"
+    },
+    {
+      "path": "docs/23_INTEGRATION_GUIDE.md",
+      "line": 41,
+      "classification": "docs-only",
+      "snippet": "Its runtime-supported execution surface now includes both `gemini` and `codex`."
+    },
+    {
+      "path": "docs/26_SUPERVISOR_PROMPTS.md",
+      "line": 13,
+      "classification": "docs-only",
+      "snippet": "Runtime note: the low-level `tp exec` plane currently supports `gemini` and `codex`."
+    },
+    {
+      "path": "docs/design/dopetask-agent-system-combined-ui-design-inputs.md",
+      "line": 192,
+      "classification": "docs-only",
+      "snippet": "Gap: `--agent claude_code` raises ValueError in engine.py -- this is the first implementation target."
+    },
+    {
+      "path": "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+      "line": 88,
+      "classification": "docs-only",
+      "snippet": "Availability check for claude_code was unknown."
+    },
+    {
+      "path": "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+      "line": 89,
+      "classification": "docs-only",
+      "snippet": "Route scoring for claude_code was described as not yet defined."
+    },
+    {
+      "path": "docs/specs/dopetask-architecture-canonical-spec.md",
+      "line": 121,
+      "classification": "docs-only",
+      "snippet": "`tp exec --help` was described as advertising gemini/codex/vibe while runtime was described as Gemini-only."
+    },
+    {
+      "path": "docs/specs/dopetask-canonical-spec.md",
+      "line": 48,
+      "classification": "docs-only",
+      "snippet": "Only the `gemini` profile was described as implemented in execute_task_packet()."
+    },
+    {
+      "path": "docs/specs/dopetask-docs-canonical-spec.md",
+      "line": 62,
+      "classification": "docs-only",
+      "snippet": "Runtime support was described as gemini-only despite broader product claims."
+    },
+    {
+      "path": "src/dopetask/cli.py",
+      "line": 4477,
+      "classification": "help-text-only",
+      "snippet": "Agent profile: gemini or codex."
+    }
+  ],
+  "files_changed": [
+    "README.md",
+    "docs/00_OVERVIEW.md",
+    "docs/11_PUBLIC_CONTRACT.md",
+    "docs/12_ROUTER.md",
+    "docs/22_WORKFLOW_GUIDE.md",
+    "docs/23_INTEGRATION_GUIDE.md",
+    "docs/26_SUPERVISOR_PROMPTS.md",
+    "docs/design/dopetask-agent-system-combined-ui-design-inputs.md",
+    "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+    "docs/specs/dopetask-architecture-canonical-spec.md",
+    "docs/specs/dopetask-canonical-spec.md",
+    "docs/specs/dopetask-docs-canonical-spec.md",
+    "src/dopetask/cli.py",
+    "task-packets/TP-DT-CLAUDE-ROUTING-DOCS-0001.json",
+    "out/implementation/TP-DT-CLAUDE-ROUTING-DOCS-0001/PROOF.json"
+  ],
+  "help_text_changed": true,
+  "behavior_changed": false,
+  "tests_run": [
+    {
+      "command": "python - <<'PY'\nfrom pathlib import Path\nbase = Path('out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001')\nassert base.exists(), f'missing readiness artifacts: {base}'\nprint('routing readiness artifacts present')\nPY",
+      "returncode": 0,
+      "stdout_tail": "routing readiness artifacts present",
+      "stderr_tail": ""
+    },
+    {
+      "command": "rg -n \"claude_code|Claude Code|gemini or codex|not yet fully implemented|route/orchestrate|runners/claude_code|dope-agent-system\" README.md docs src/dopetask/ops src/dopetask/cli.py || true",
+      "returncode": 0,
+      "stdout_tail": "Search rerun after edits. Output contains expected current claude_code/router boundary mentions and the generic unknown-agent ValueError branch in src/dopetask/ops/tp_exec/engine.py; no docs-only stale gemini/codex-only findings remain.",
+      "stderr_tail": ""
+    },
+    {
+      "command": "python -m compileall -q src tests",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest -q tests/unit/tp_series/test_cli.py --no-cov",
+      "returncode": 0,
+      "stdout_tail": "................... [100%]",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py --no-cov",
+      "returncode": 0,
+      "stdout_tail": "............... [100%]",
+      "stderr_tail": ""
+    },
+    {
+      "command": "pytest --no-cov",
+      "returncode": 0,
+      "stdout_tail": "372 passed, 24 warnings in 30.92s",
+      "stderr_tail": ""
+    },
+    {
+      "command": "git diff --check",
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  ],
+  "allowlist_check": {
+    "changed_files": [
+      "README.md",
+      "docs/00_OVERVIEW.md",
+      "docs/11_PUBLIC_CONTRACT.md",
+      "docs/12_ROUTER.md",
+      "docs/22_WORKFLOW_GUIDE.md",
+      "docs/23_INTEGRATION_GUIDE.md",
+      "docs/26_SUPERVISOR_PROMPTS.md",
+      "docs/design/dopetask-agent-system-combined-ui-design-inputs.md",
+      "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+      "docs/specs/dopetask-architecture-canonical-spec.md",
+      "docs/specs/dopetask-canonical-spec.md",
+      "docs/specs/dopetask-docs-canonical-spec.md",
+      "src/dopetask/cli.py",
+      "task-packets/TP-DT-CLAUDE-ROUTING-DOCS-0001.json",
+      "out/implementation/TP-DT-CLAUDE-ROUTING-DOCS-0001/PROOF.json"
+    ],
+    "outside_allowlist": []
+  },
+  "forbidden_scope_verified": {
+    "claude_adapter_modified": false,
+    "route_orchestrate_runner_modified": false,
+    "dope_agent_system_modified": false,
+    "runtime_behavior_changed": false,
+    "bare_mode_used": false
+  },
+  "commit": {
+    "created": false,
+    "sha": null,
+    "message": "docs(router): update claude_code routing state"
+  },
+  "proof_backfilled": false,
+  "git_status_final": "PENDING_COMMIT",
+  "blocking_failures": []
+}

@@ -189,7 +189,7 @@ Commands already working:
 - `dopetask route plan`
 - `dopetask doctor`
 
-Gap: `--agent claude_code` raises ValueError in engine.py — this is the first implementation target.
+Current state: `--agent claude_code` is implemented for the TP series/low-level executor path through `dopetask_adapters/claude_code`. The remaining Claude Code gap is the separate route/orchestrate runner plane, not the TP series MVP0 path.
 
 ### 5.2 TUI / Cockpit (Tier 1 — First Viable Slice)
 A `dopetask cockpit` or `dopetask tui` command that renders:
