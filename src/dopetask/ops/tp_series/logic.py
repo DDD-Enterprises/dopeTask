@@ -27,6 +27,16 @@ STATE_FILENAME = "SERIES_STATE.json"
 PR_FILENAME = "SERIES_PR.json"
 CONTEXT_FILENAME = "SERIES_CONTEXT.json"
 
+RUNTIME_METADATA_KEYS = (
+    "auth_mode",
+    "bare_mode_used",
+    "permission_mode",
+    "allowed_tools",
+    "requested_model",
+    "effective_model",
+    "effective_model_source",
+)
+
 
 @dataclass(frozen=True)
 class SeriesExecResult:
@@ -719,6 +729,7 @@ def exec_series_packet(
 
             _cleanup_generated_files(worktree_path, tp_id=tp.id)
             proof_metadata = _read_proof_metadata(run_dir=run_dir, tp_id=tp.id)
+            runtime_metadata = _exec_runtime_metadata(proof_metadata)
 
             verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
             head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
@@ -738,6 +749,10 @@ def exec_series_packet(
                     "requested_model": proof_metadata.get("requested_model", model),
                     "effective_model": proof_metadata.get("effective_model"),
                     "effective_model_source": proof_metadata.get("effective_model_source"),
+                    "auth_mode": runtime_metadata["auth_mode"],
+                    "bare_mode_used": runtime_metadata["bare_mode_used"],
+                    "permission_mode": runtime_metadata["permission_mode"],
+                    "allowed_tools": runtime_metadata["allowed_tools"],
                     "verify": verify_results,
                     "committed_files": committed_files,
                     "context": context_payload,
@@ -797,10 +812,20 @@ def _read_proof_metadata(*, run_dir: Path, tp_id: str) -> dict[str, Any]:
     if not raw_proof_path.exists():
         return {}
     payload = _read_json(raw_proof_path)
+    return {key: payload.get(key) for key in RUNTIME_METADATA_KEYS if key in payload}
+
+
+def _exec_runtime_metadata(proof_metadata: dict[str, Any]) -> dict[str, Any]:
+    """Return explicit, non-inferred runtime metadata for EXEC.json."""
+    auth_mode = proof_metadata.get("auth_mode")
+    if auth_mode is None:
+        auth_mode = "unknown"
+
     return {
-        "requested_model": payload.get("requested_model"),
-        "effective_model": payload.get("effective_model"),
-        "effective_model_source": payload.get("effective_model_source"),
+        "auth_mode": auth_mode,
+        "bare_mode_used": proof_metadata.get("bare_mode_used"),
+        "permission_mode": proof_metadata.get("permission_mode"),
+        "allowed_tools": proof_metadata.get("allowed_tools"),
     }
 
 
