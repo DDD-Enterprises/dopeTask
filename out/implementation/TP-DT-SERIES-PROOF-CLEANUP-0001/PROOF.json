@@ -17,13 +17,15 @@
     ],
     "outside_allowlist": []
   },
+  "audit_submission_head": "VERIFY_WITH_GIT_REV_PARSE_HEAD_AT_AUDIT",
   "blocking_failures": [],
   "chosen_fix": "Scope proof artifact copy and cleanup to current TP-prefixed proof files only.",
   "commit": {
-    "created": false,
+    "created": true,
     "message": "fix(tp-series): preserve tracked proof archives during cleanup",
-    "sha": null
+    "sha": "df304d72b2df18a45b2c2db48e4b20e3457539fb"
   },
+  "commit_hash_semantics": "commit.sha and final_head record the implementation commit. A committed proof file cannot contain the hash of the same commit that writes it. audit_submission_head requires audit to run git rev-parse HEAD.",
   "e2e_verification": {
     "committed_files": [
       "scratch/claude_series_e2e/SMOKE.md"
@@ -54,7 +56,7 @@
     "tests/unit/tp_series/test_proof_artifact_cleanup.py"
   ],
   "final_branch": "codex/series-proof-cleanup-0001",
-  "final_head": "217d353233e735389111c20df92f8dbaf8ea584e",
+  "final_head": "df304d72b2df18a45b2c2db48e4b20e3457539fb",
   "forbidden_scope_verified": {
     "bare_mode_used": false,
     "claude_adapter_modified": false,
@@ -62,8 +64,10 @@
     "historical_proof_archives_rewritten": false,
     "route_orchestrate_modified": false
   },
+  "git_status_final": "clean",
   "initial_branch": "main",
   "initial_head": "217d353233e735389111c20df92f8dbaf8ea584e",
+  "proof_backfilled": true,
   "repo": "/Users/hue/code/dopeTask",
   "root_cause": "tp-series proof cleanup removed the entire worktree proof directory, causing tracked historical proof files to appear deleted and fail allowlist enforcement.",
   "status": "PASS",
