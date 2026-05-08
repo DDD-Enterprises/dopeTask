@@ -1,0 +1,565 @@
+{
+  "docs_correctly_mention_claude_code_or_router_surfaces": [
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 83,
+          "snippet": "For workspace-aware tools such as Claude Code, Codex CLI, Gemini CLI, or Copilot CLI, apply the prompt directly into the repo instruction files:"
+        }
+      ],
+      "path": "docs/01_SETUP.md"
+    },
+    {
+      "mention_count": 2,
+      "mentions": [
+        {
+          "line": 43,
+          "snippet": "2. **Reference Architecture Plane (Orchestrate):** Normative v0 implementation of route planning and refusal-with-evidence. Scoped as a reference implementation."
+        },
+        {
+          "line": 107,
+          "snippet": "The planner produces a deterministic route plan."
+        }
+      ],
+      "path": "docs/10_ARCHITECTURE.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 16,
+          "snippet": "- Route availability config for route/orchestrate surfaces: `.dopetask/runtime/availability.yaml`"
+        }
+      ],
+      "path": "docs/11_PUBLIC_CONTRACT.md"
+    },
+    {
+      "mention_count": 4,
+      "mentions": [
+        {
+          "line": 17,
+          "snippet": "B --> C[\"Load availability.yaml\"]"
+        },
+        {
+          "line": 25,
+          "snippet": "This flow covers route planning only."
+        },
+        {
+          "line": 32,
+          "snippet": "dopetask route plan --repo-root . --packet PACKET.md"
+        },
+        {
+          "line": 41,
+          "snippet": "- `.dopetask/runtime/availability.yaml`"
+        }
+      ],
+      "path": "docs/12_ROUTER.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 55,
+          "snippet": "They provide route planning and runner-based execution behavior, not the default integration path for new work."
+        }
+      ],
+      "path": "docs/23_INTEGRATION_GUIDE.md"
+    },
+    {
+      "mention_count": 5,
+      "mentions": [
+        {
+          "line": 8,
+          "snippet": "- apply the generated prompt into workspace instruction files for Claude Code, Codex CLI, Gemini CLI, or Copilot CLI"
+        },
+        {
+          "line": 29,
+          "snippet": "| Claude Code | `2.1.87` | Checked from the `@anthropic-ai/claude-code` npm registry package. |"
+        },
+        {
+          "line": 115,
+          "snippet": "Use this for tools that read repo instruction files automatically, such as Claude Code, Codex CLI, Gemini CLI, Copilot CLI, Cursor, and Vibe."
+        },
+        {
+          "line": 153,
+          "snippet": "- `CLAUDE.md` plus `.claude/rules/` and `.claude/skills/` for Claude Code"
+        },
+        {
+          "line": 164,
+          "snippet": "- Claude Code: `claude-sonnet-4-6`"
+        }
+      ],
+      "path": "docs/26_SUPERVISOR_PROMPTS.md"
+    },
+    {
+      "mention_count": 7,
+      "mentions": [
+        {
+          "line": 64,
+          "snippet": "| C-0035 | PARTIAL | No direct coupling from ops export to route planner was found, but no explicit guard/test proves complete isolation. |"
+        },
+        {
+          "line": 72,
+          "snippet": "- `src/dopetask/orchestrator/kernel.py:105` builds route plan from packet."
+        },
+        {
+          "line": 103,
+          "snippet": "- `tests/unit/dopetask/test_router_plan_determinism.py:15` byte-identical route plan JSON."
+        },
+        {
+          "line": 250,
+          "snippet": "- `src/dopetask/router/availability.py:96` canonical `.dopetask/runtime/availability.yaml` path."
+        },
+        {
+          "line": 311,
+          "snippet": "- `src/dopetask/cli.py:2180` route plan generic error path exits 1."
+        },
+        {
+          "line": 352,
+          "snippet": "- `src/dopetask/cli.py:2169` route plan command writes artifacts."
+        },
+        {
+          "line": 425,
+          "snippet": "- Router planner consumes `.dopetask/runtime/availability.yaml` and packet hints (`src/dopetask/router/planner.py:85`, `src/dopetask/router/planner.py:98`)."
+        }
+      ],
+      "path": "docs/93_CONTRACT_AUDIT_REPORT.md"
+    },
+    {
+      "mention_count": 2,
+      "mentions": [
+        {
+          "line": 13,
+          "snippet": "1. **Missing Configuration:** The required `.dopetask/runtime/availability.yaml` file is missing. The router refuses to plan without this authoritative source of runner/model availability."
+        },
+        {
+          "line": 19,
+          "snippet": "- Deterministic route planning logic."
+        }
+      ],
+      "path": "docs/ORCHESTRATOR_STATUS.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 85,
+          "snippet": "**Authority-boundary risk:** HIGH. The main risk: developers see `das/claude/skills/` and `src/dopetask/runners/claude_code.py` in the same IDE and assume they are architecturally equal. The asset/runtime boundary must be enforced via documentation and linting, not physical separation. Humans and LLMs routinely ignore this."
+        }
+      ],
+      "path": "docs/architecture/dopetask-agent-system-repo-strategy.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 22,
+          "snippet": "4. Add tests proving metrics do not alter artifact hashes for deterministic route planning."
+        }
+      ],
+      "path": "docs/archive/root_artifacts/TASK_PACKET_TP_0017_LOCAL_METRICS.md"
+    },
+    {
+      "mention_count": 2,
+      "mentions": [
+        {
+          "line": 89,
+          "snippet": "The implementer is the coding agent, such as Codex, Gemini CLI, Claude Code, or Copilot CLI."
+        },
+        {
+          "line": 147,
+          "snippet": "- Claude Code"
+        }
+      ],
+      "path": "docs/beginner/00A_HOW_DOPETASK_WORKS.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 64,
+          "snippet": "If you are using a workspace-aware coding tool like **Claude Code**, **Codex CLI**, **Gemini CLI**, or **Copilot CLI**, you usually do not need to paste the prompt manually every time."
+        }
+      ],
+      "path": "docs/beginner/03_WEB_LLM_SETUP.md"
+    },
+    {
+      "mention_count": 12,
+      "mentions": [
+        {
+          "line": 52,
+          "snippet": "- Configures availability.yaml with runner/model selections"
+        },
+        {
+          "line": 77,
+          "snippet": "1. UI shows `availability.yaml` runner/model matrix"
+        },
+        {
+          "line": 84,
+          "snippet": "1. Shows current `availability.yaml` content"
+        },
+        {
+          "line": 115,
+          "snippet": "1. Show current `.dopetask/runtime/availability.yaml`"
+        },
+        {
+          "line": 169,
+          "snippet": "| **Runners / Models** | availability.yaml, runner binary health, routing decisions, scoring | dopeTask router |"
+        },
+        {
+          "line": 170,
+          "snippet": "| **Project Adapters** | .dopetask/runtime/availability.yaml, doctor check output | dopeTask doctor |"
+        },
+        {
+          "line": 189,
+          "snippet": "- `dopetask route plan`"
+        },
+        {
+          "line": 192,
+          "snippet": "Gap: `--agent claude_code` raises ValueError in engine.py \u2014 this is the first implementation target."
+        },
+        {
+          "line": 247,
+          "snippet": "The UI shows a warning whenever `--bare` would be used: \"Bare mode uses ANTHROPIC_API_KEY, not your subscription. API credits will be billed.\" The flag must be explicitly set in `availability.yaml` or via CLI flag, never automatically defaulted."
+        },
+        {
+          "line": 267,
+          "snippet": "- `availability.yaml`: runners, models, policy"
+        },
+        {
+          "line": 311,
+          "snippet": "| TP-002 | running | claude_code | sonnet-4.6 | tp/002-tests | \u2014 | \u2014 |"
+        },
+        {
+          "line": 317,
+          "snippet": "claude_code: binary=yes | status=implemented"
+        }
+      ],
+      "path": "docs/design/dopetask-agent-system-combined-ui-design-inputs.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 41,
+          "snippet": "| ClaudeCode runner implementation | dopeTask (stub) | dopeTask | `src/dopetask/runners/claude_code.py` | Interactive executor not functional | **Primary integration gap.** Next TP must implement this runner. |"
+        }
+      ],
+      "path": "docs/integrations/dope-agent-system-dopetask-boundary-map.md"
+    },
+    {
+      "mention_count": 13,
+      "mentions": [
+        {
+          "line": 10,
+          "snippet": "The primary interactive executor gap is `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py`, which currently returns `RUNNER_NOT_IMPLEMENTED`. Before implementing, the following must be known:"
+        },
+        {
+          "line": 17,
+          "snippet": "| **Prompt construction** | Should the adapter prompt include: packet path, step description, model, allowlist, validation commands? What format does Claude Code expect for task-level instructions? | Test run in worktree |"
+        },
+        {
+          "line": 39,
+          "snippet": "| **Bounded prompt handoff** | If PAL Link means: PAL generates a bounded prompt \u2192 delegates to Claude Code CLI \u2192 Claude Code acts as implementer \u2192 returns proof, this would be an extension of the ClaudeCode runner design. | Need to decide if this is Model A, B, or C from the investigation. |"
+        },
+        {
+          "line": 56,
+          "snippet": "| **Tool family enablement** | Does `tool_families.claude_code.enabled` influence which runner dopeTask picks? | Currently: routing is via `--agent` flag and router scoring. Integration point unclear. |"
+        },
+        {
+          "line": 87,
+          "snippet": "| **Claude model selection** | Which models does `--agent claude_code` route to? | `ClaudeCodeAdapter.prepare()` reads model from route_plan but run() is a stub |"
+        },
+        {
+          "line": 88,
+          "snippet": "| **Availability check** | Is there an `availability_path_for_repo` for claude_code? | Unknown \u2014 router reads from availability path; Claude's path is unverified |"
+        },
+        {
+          "line": 89,
+          "snippet": "| **Route scoring** | What score does claude_code get vs codex_desktop? | Not yet defined in scoring.py |"
+        },
+        {
+          "line": 90,
+          "snippet": "| **dope-agent-system tool_families** | Do `tool_families.claude_code.enabled` flags in PROJECT_PROFILE.json affect routing? | No integration exists today |"
+        },
+        {
+          "line": 102,
+          "snippet": "| **`--agent` flag value** | Is it `--agent claude_code` or `--agent claude`? | Registered as `claude_code` in RUNNER_ADAPTERS |"
+        },
+        {
+          "line": 103,
+          "snippet": "| **Ledger update** | Does `tp series exec --agent claude_code` currently write to SERIES_STATE.json despite stub? | Unknown \u2014 stub returns refused; kernel may write EXEC_ERROR.json |"
+        },
+        {
+          "line": 104,
+          "snippet": "| **Series integration** | Is `claude_code` a valid value for `SERIES_STATE.json`'s `assigned_agent` field? | Unknown |"
+        },
+        {
+          "line": 105,
+          "snippet": "| **Supervisor prompts** | Does `docs/26_SUPERVISOR_PROMPTS.md` need updating to include claude_code as a valid agent? | Unknown |"
+        },
+        {
+          "line": 122,
+          "snippet": "4. Update `docs/22_WORKFLOW_GUIDE.md` to include `--agent claude_code` examples"
+        }
+      ],
+      "path": "docs/integrations/dope-agent-system-dopetask-design-inputs.md"
+    },
+    {
+      "mention_count": 12,
+      "mentions": [
+        {
+          "line": 14,
+          "snippet": "The integration pressure point is **not** a boundary confusion problem \u2014 it is a **missing runner implementation**: `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py` returns `RUNNER_NOT_IMPLEMENTED`. The symbiosis design question is: how do dope-agent-system's skill/prompt/adapter assets flow into dopeTask's ClaudeCode runner to make it operational?"
+        },
+        {
+          "line": 34,
+          "snippet": "- Canonical source for generic skill templates (Claude Code, Codex, Gemini CLI, GitHub Copilot CLI)"
+        },
+        {
+          "line": 57,
+          "snippet": "Evidence from `src/dopetask/runners/claude_code.py`, `runners/__init__.py`, and `docs/plans/dopetask-multi-mode-execution-plan.md`:"
+        },
+        {
+          "line": 59,
+          "snippet": "1. **`ClaudeCodeAdapter` is a stub.** `run()` returns `{\"status\": \"refused\", \"reason_code\": \"RUNNER_NOT_IMPLEMENTED\"}`. It is registered in `RUNNER_ADAPTERS[\"claude_code\"]` but not implemented."
+        },
+        {
+          "line": 61,
+          "snippet": "2. **Multi-mode execution plan is in Phase 1.** Phase 1 establishes the `ExecutionResult` contract and `TaskExecutor`. Phase 3 adds multi-mode support (shell + agent steps). The claude_code runner would be implemented in Phase 2\u20133."
+        },
+        {
+          "line": 63,
+          "snippet": "3. **Codex runner IS implemented** (`subprocess codex exec --skip-git-repo-check`). This is the pattern to follow for Claude Code."
+        },
+        {
+          "line": 79,
+          "snippet": "| ClaudeCode runner is a stub | runners/claude_code.py, runners/__init__.py | HIGH (direct code read) |"
+        },
+        {
+          "line": 145,
+          "snippet": "| `claude/skills/` | Claude Code skill source | Skills to install before running ClaudeCode runner |"
+        },
+        {
+          "line": 146,
+          "snippet": "| `claude/agents/` | Claude Code subagents | Subagents available to Claude Code when acting as implementer |"
+        },
+        {
+          "line": 214,
+          "snippet": "**Cons**: Path coupling \u2014 dopeTask's adapter must know where dope-agent-system lives (env var or config). Claude Code's `--system-prompt` flag and its interaction with project CLAUDE.md must be verified."
+        },
+        {
+          "line": 216,
+          "snippet": "**Risk**: Path coupling is fragile if repos move. Claude Code CLI flags need empirical verification."
+        },
+        {
+          "line": 224,
+          "snippet": "**Shape**: dopeTask's project adapter loader reads a consuming project's `.agent-project/PROJECT_PROFILE.json` (bootstrapped from dope-agent-system's templates) before deciding how to invoke Claude Code. The profile's `default_implementer`, `threading.mode`, and `tool_families` fields influence routing."
+        }
+      ],
+      "path": "docs/investigations/dope-agent-system-symbiosis-investigation.md"
+    },
+    {
+      "mention_count": 4,
+      "mentions": [
+        {
+          "line": 25,
+          "snippet": "[CODE] **Routing plane.** `src/dopetask/router/availability.py`, `src/dopetask/router/scoring.py`, `src/dopetask/router/planner.py`, `src/dopetask/router/types.py`, `src/dopetask/router/reporting.py`, and `src/dopetask/router/handoff.py` define deterministic route planning. This plane owns availability loading from `.dopetask/runtime/availability.yaml`, deterministic candidate scoring, refusal reasons, route plan serialization, and standalone routing/handoff artifacts under `out/dopetask_route/`."
+        },
+        {
+          "line": 27,
+          "snippet": "[CODE] **Orchestration plane.** `src/dopetask/orchestrator/kernel.py` consumes JSON packets, builds route plans, resolves one runnable step, dispatches through `RUNNER_ADAPTERS`, and writes run-local artifacts through `src/dopetask/artifacts/writer.py`. This plane is separate from TP series and does not own git worktree lifecycle."
+        },
+        {
+          "line": 107,
+          "snippet": "[CODE] Router config is repo-local and explicit. `availability_path_for_repo(repo_root)` resolves to `.dopetask/runtime/availability.yaml`, `route init` writes the deterministic template, and router loading refuses missing or malformed config instead of guessing availability."
+        },
+        {
+          "line": 113,
+          "snippet": "[DOCS/PLANS] The terse kernel docs describe a single spine of packet -> validation -> planning -> route plan/refusal -> runner/handoff -> artifacts. That captures the ethos, but it collapses several active subsystems that now exist in parallel."
+        }
+      ],
+      "path": "docs/specs/dopetask-architecture-canonical-spec.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 88,
+          "snippet": "| `src/dopetask/runners/claude_code.py` | runner-plane | .py | authoritative | CODE | Claude Code runner adapter (v0 deterministic refusal stub). | runner-registry; orchestrator-runner | no |"
+        }
+      ],
+      "path": "docs/specs/dopetask-architecture-source-index.md"
+    },
+    {
+      "mention_count": 4,
+      "mentions": [
+        {
+          "line": 62,
+          "snippet": "- [CODE] Router v1 is still a live, public subsystem. It loads `.dopetask/runtime/availability.yaml`, scores runner/model candidates for a deterministic set of lifecycle steps, and writes `out/dopetask_route/ROUTE_PLAN.json`, `ROUTE_PLAN.md`, and optionally `HANDOFF.md` (`src/dopetask/router/types.py`, `src/dopetask/router/availability.py`, `src/dopetask/router/planner.py`, `src/dopetask/router/reporting.py`)."
+        },
+        {
+          "line": 64,
+          "snippet": "- [CODE] The separate `orchestrate` command executes `orchestrator v0`: it reads a packet JSON, builds a route plan, selects a single runner or emits a manual handoff, and writes deterministic run artifacts through `src/dopetask/artifacts/writer.py` (`src/dopetask/orchestrator/kernel.py`, `src/dopetask/artifacts/writer.py`)."
+        },
+        {
+          "line": 74,
+          "snippet": "- [CODE] Two execution abstractions coexist. The low-level `tp exec` path uses `src/dopetask_adapters/gemini/*`; the route/orchestrate family uses runner adapters under `src/dopetask/runners/*` (`claude_code`, `codex_cli`, `copilot_cli`, `google_jules`)."
+        },
+        {
+          "line": 75,
+          "snippet": "- [CODE] Router availability defaults enumerate model names such as `gpt-5.4`, `gpt-5.3-codex`, `sonnet-4.6`, and `haiku-4.5`, plus runner availability for `claude_code`, `codex_desktop`, `copilot_cli`, and `google_jules` (`src/dopetask/router/availability.py`, `src/dopetask/router/types.py`)."
+        }
+      ],
+      "path": "docs/specs/dopetask-canonical-spec.md"
+    },
+    {
+      "mention_count": 3,
+      "mentions": [
+        {
+          "line": 50,
+          "snippet": "[DOCS/PLANS] `docs/11_PUBLIC_CONTRACT.md` and `docs/12_ROUTER.md` still foreground route plan artifacts and route availability config as the public contract surface, while `docs/22_WORKFLOW_GUIDE.md` and `docs/24_UPGRADE_GUIDE.md` frame TP series state and proof bundles as the present default operator path."
+        },
+        {
+          "line": 52,
+          "snippet": "[INFERRED] The workflow docs no longer describe one single public surface. They describe at least three: JSON TP series, route planning/handoff, and legacy/manual git/worktree flows. The docs bundle should therefore preserve those as separate planes rather than implying one has fully replaced the others."
+        },
+        {
+          "line": 60,
+          "snippet": "[DOCS/PLANS] The onboarding narrative also pitches broad agent portability. `docs/beginner/00A_HOW_DOPETASK_WORKS.md` names Codex, Gemini CLI, Claude Code, and Copilot CLI as implementer examples, while `docs/26_SUPERVISOR_PROMPTS.md` covers supervisor prompt application across ChatGPT, Claude, Codex CLI, Gemini CLI, Copilot CLI, Cursor, and Vibe."
+        }
+      ],
+      "path": "docs/specs/dopetask-docs-canonical-spec.md"
+    },
+    {
+      "mention_count": 1,
+      "mentions": [
+        {
+          "line": 15,
+          "snippet": "| `docs/12_ROUTER.md` | router-docs | `.md` | authoritative | DOCS/PLANS | Documents Router v1 flow, route artifacts, and availability config. | route planning; `availability.yaml`; handoff artifacts | yes |"
+        }
+      ],
+      "path": "docs/specs/dopetask-docs-source-index.md"
+    },
+    {
+      "mention_count": 6,
+      "mentions": [
+        {
+          "line": 45,
+          "snippet": "| .github/workflows/claude-code-review.yml | .github:workflows | .yml | supporting | CODE | name: Claude Code Review | git-worktree | no |"
+        },
+        {
+          "line": 46,
+          "snippet": "| .github/workflows/claude.yml | .github:workflows | .yml | supporting | CODE | name: Claude Code | git-worktree | no |"
+        },
+        {
+          "line": 680,
+          "snippet": "| src/dopetask/runners/claude_code.py | src:dopetask:runners | .py | authoritative | CODE | Claude Code runner adapter (v0 deterministic refusal stub). | adapters-runners | no |"
+        },
+        {
+          "line": 767,
+          "snippet": "| tests/unit/dopetask/test_metrics_artifact_invariance.py | tests:unit:dopetask | .py | test-evidence | CODE | Invariants: metrics toggles must not mutate route planning artifacts. | proof-artifacts | no |"
+        },
+        {
+          "line": 788,
+          "snippet": "| tests/unit/dopetask/test_router_plan_determinism.py | tests:unit:dopetask | .py | test-evidence | CODE | Determinism coverage for dopeTask route planning. | route-planning | no |"
+        },
+        {
+          "line": 789,
+          "snippet": "| tests/unit/dopetask/test_router_refusal.py | tests:unit:dopetask | .py | test-evidence | CODE | Refusal contract tests for dopeTask route planning. | route-planning | no |"
+        }
+      ],
+      "path": "docs/specs/dopetask-source-index.md"
+    }
+  ],
+  "docs_update_required": true,
+  "notes": [
+    "docs/12_ROUTER.md has current route command syntax and availability.yaml artifact references but does not enumerate runner names.",
+    "docs/22_WORKFLOW_GUIDE.md examples mention gemini and codex but do not show claude_code; this is an omission rather than an explicit only-gemini/codex claim.",
+    "Several generated/spec/design docs still describe pre-Claude-adapter low-level execution state and should be synchronized if they are treated as current docs rather than historical snapshots."
+  ],
+  "reviewed_scope": [
+    "README.md",
+    "docs/**/*.md",
+    "src via rg command for comparison"
+  ],
+  "rg_command": {
+    "argv": [
+      "rg",
+      "-n",
+      "claude_code|gemini or codex|route plan|availability.yaml|Claude Code|codex_desktop|runners|currently supports|ValueError|only the `gemini` profile|advertises `gemini`, `codex`, and `vibe`",
+      "README.md",
+      "docs",
+      "src"
+    ],
+    "command": "rg -n \"claude_code|gemini or codex|route plan|availability.yaml|Claude Code|codex_desktop|runners|currently supports|ValueError|only the `gemini` profile|advertises `gemini`, `codex`, and `vibe`\" README.md docs src",
+    "cwd": "/Users/hue/code/dopeTask",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "README.md:12:- Single-path execution: no hidden retries, no silent fallback runners, no background mutation.\nsrc/dopetask/router/reporting.py:14:    \"\"\"Convert route plan dataclass to deterministic JSON payload.\"\"\"\nsrc/dopetask/router/reporting.py:58:    \"\"\"Load route plan dataclass from deterministic JSON payload.\"\"\"\nsrc/dopetask/router/reporting.py:122:    \"\"\"Render deterministic human-readable route plan summary.\"\"\"\nsrc/dopetask/router/availability.py:55:    \"runners\": {\nsrc/dopetask/router/availability.py:56:        \"claude_code\": {\nsrc/dopetask/router/availability.py:60:        \"codex_desktop\": {\nsrc/dopetask/router/availability.py:89:class AvailabilityError(ValueError):\nsrc/dopetask/router/availability.py:101:    return repo_root.resolve() / \".dopetask\" / \"runtime\" / \"availability.yaml\"\nsrc/dopetask/router/availability.py:129:            f\"availability.yaml parse error: {exc}\",\nsrc/dopetask/router/availability.py:134:            \"availability.yaml parse error: expected mapping at top level\",\nsrc/dopetask/router/availability.py:139:    runners_raw = raw.get(\"runners\")\nsrc/dopetask/router/availability.py:143:        raise AvailabilityError(\"availability.yaml missing required non-empty `models` mapping\")\nsrc/dopetask/router/availability.py:144:    if not isinstance(runners_raw, dict) or not runners_raw:\nsrc/dopetask/router/availability.py:145:        raise AvailabilityError(\"availability.yaml missing required non-empty `runners` mapping\")\nsrc/dopetask/router/availability.py:147:        raise AvailabilityError(\"availability.yaml missing required `policy` mapping\")\nsrc/dopetask/router/availability.py:172:    runners: dict[str, RunnerSpec] = {}\nsrc/dopetask/router/availability.py:173:    for runner_name in sorted(runners_raw):\nsrc/dopetask/router/availability.py:174:        entry = runners_raw[runner_name]\nsrc/dopetask/router/availability.py:178:        strengths = _normalize_string_list(entry.get(\"strengths\"), f\"runners.{runner_name}.strengths\")\nsrc/dopetask/router/availability.py:179:        runners[runner_name] = RunnerSpec(\nsrc/dopetask/router/availability.py:186:    return AvailabilityConfig(models=models, runners=runners, policy=policy, path=path)\nsrc/dopetask/router/types.py:18:DEFAULT_AVAILABILITY_RELATIVE_PATH = Path(\".dopetask/runtime/availability.yaml\")\nsrc/dopetask/router/types.py:25:RUNNER_NAMES: tuple[str, ...] = (\"claude_code\", \"codex_desktop\", \"copilot_cli\", \"google_jules\")\nsrc/dopetask/router/types.py:64:    runners: dict[str, RunnerSpec]\nsrc/dopetask/router/types.py:113:            raise ValueError(\"reason_code must be provided when not None\")\nsrc/dopetask/router/types.py:115:            raise ValueError(\"message must be provided\")\nsrc/dopetask/router/types.py:132:    \"\"\"Full deterministic route plan.\"\"\"\nsrc/dopetask_adapters/claude_code/executor.py:1:\"\"\"Claude Code-backed task packet executor.\"\"\"\nsrc/dopetask_adapters/claude_code/executor.py:13:from dopetask_adapters.claude_code.prompts import build_step_prompt\nsrc/dopetask_adapters/claude_code/executor.py:14:from dopetask_adapters.claude_code.proof_writer import ProofWriter\nsrc/dopetask_adapters/claude_code/executor.py:76:            raise RuntimeError(\"RUNNER_BARE_MODE_REFUSED: Claude Code adapter never permits --bare mode.\")\nsrc/dopetask_adapters/claude_code/executor.py:205:                f\"Claude Code execution failed ({completed.returncode}): {shlex.join(command)}\\n\"\nsrc/dopetask_adapters/claude_code/executor.py:219:            self._append_runner_error(result, code, \"Claude Code returned success without stdout JSON.\")\nsrc/dopetask_adapters/claude_code/executor.py:229:            self._append_runner_error(result, \"RUNNER_OUTPUT_EMPTY\", \"Claude Code stdout JSON was empty.\")\nsrc/dopetask_adapters/claude_code/executor.py:241:            self._append_runner_error(result, \"RUNNER_PARSE_FAILED\", f\"Claude Code stdout was not valid JSON: {exc}\")\nsrc/dopetask_adapters/claude_code/executor.py:252:            self._append_runner_error(result, \"RUNNER_EXEC_FAILED\", \"Claude Code JSON reported is_error=true.\")\nsrc/dopetask_adapters/claude_code/executor.py:330:                \"agent\": \"claude_code\",\ndocs/00_OVERVIEW.md:83:- Low-level `tp exec` remains a separate execution plane and currently supports `gemini` and `codex`.\ndocs/00_OVERVIEW.md:84:- Route/orchestrate remains a separate execution plane and now includes a real `codex_desktop` runner path, but it is still not the default operator workflow.\ndocs/93_CONTRACT_AUDIT_REPORT.md:64:| C-0035 | PARTIAL | No direct coupling from ops export to route planner was found, but no explicit guard/test proves complete isolation. |\ndocs/93_CONTRACT_AUDIT_REPORT.md:72:  - `src/dopetask/orchestrator/kernel.py:105` builds route plan from packet.\ndocs/93_CONTRACT_AUDIT_REPORT.md:103:  - `tests/unit/dopetask/test_router_plan_determinism.py:15` byte-identical route plan JSON.\ndocs/93_CONTRACT_AUDIT_REPORT.md:110:- claim_text: \"Single-path: no hidden retries, no fallback runners, no background execution.\"\ndocs/93_CONTRACT_AUDIT_REPORT.md:250:  - `src/dopetask/router/availability.py:96` canonical `.dopetask/runtime/availability.yaml` path.\ndocs/93_CONTRACT_AUDIT_REPORT.md:311:  - `src/dopetask/cli.py:2180` route plan generic error path exits 1.\ndocs/93_CONTRACT_AUDIT_REPORT.md:318:- claim_text: \"Implicit retries and fallback runners\"\ndocs/93_CONTRACT_AUDIT_REPORT.md:352:  - `src/dopetask/cli.py:2169` route plan command writes artifacts.\ndocs/93_CONTRACT_AUDIT_REPORT.md:425:  - Router planner consumes `.dopetask/runtime/availability.yaml` and packet hints (`src/dopetask/router/planner.py:85`, `src/dopetask/router/planner.py:98`).\nsrc/dopetask_adapters/claude_code/prompts.py:1:\"\"\"Prompt helpers for Claude Code task packet execution.\"\"\"\nsrc/dopetask_adapters/claude_code/prompts.py:9:    \"\"\"Render a deterministic per-step Claude Code execution prompt.\"\"\"\nsrc/dopetask_adapters/claude_code/prompts.py:16:    return f\"\"\"You are executing one deterministic dopeTask Task Packet step through Claude Code.\nsrc/dopetask_adapters/claude_code/prompts.py:36:Local shell commands that dopeTask will execute after Claude Code returns:\nsrc/dopetask_adapters/claude_code/__init__.py:1:\"\"\"Claude Code adapter for task packet execution.\"\"\"\nsrc/dopetask_adapters/claude_code/__init__.py:3:from dopetask_adapters.claude_code.executor import ClaudeCodeExecutor\nsrc/dopetask_adapters/claude_code/proof_writer.py:1:\"\"\"Proof writer for Claude Code task packet execution.\"\"\"\ndocs/llm/SUPERVISOR_SYSTEM_PROMPT.md:163:      \"task\": \"Modify src/math.py to raise ValueError on zero division.\",\ndocs/llm/SUPERVISOR_SYSTEM_PROMPT.md:164:      \"validation\": [\"grep 'raise ValueError' src/math.py\"],\nsrc/dopetask/router/scoring.py:18:    runner_names = sorted(availability.runners)\nsrc/dopetask/router/scoring.py:21:        runner = availability.runners[runner_name]\ndocs/10_ARCHITECTURE.md:43:2. **Reference Architecture Plane (Orchestrate):** Normative v0 implementation of route planning and refusal-with-evidence. Scoped as a reference implementation.\ndocs/10_ARCHITECTURE.md:107:The planner produces a deterministic route plan.\ndocs/10_ARCHITECTURE.md:217:- Execute multiple runners.\nsrc/dopetask/router/handoff.py:38:            \"### Claude Code prompt\",\nsrc/dopetask/router/handoff.py:65:        if step.runner == \"codex_desktop\":\nsrc/dopetask/router/handoff.py:76:        elif step.runner == \"claude_code\":\nsrc/dopetask/router/handoff.py:79:                    \"### Claude Code prompt\",\nsrc/dopetask/router/handoff.py:119:        \"Do not run external runners. Produce deterministic artifacts only.\"\ndocs/01_SETUP.md:83:For workspace-aware tools such as Claude Code, Codex CLI, Gemini CLI, or Copilot CLI, apply the prompt directly into the repo instruction files:\ndocs/architecture/dopetask-agent-system-repo-strategy.md:50:**Plan-backed session impact:** No impact. Both repos are used locally; billing is determined by how runners are invoked, not by repo structure.\ndocs/architecture/dopetask-agent-system-repo-strategy.md:85:**Authority-boundary risk:** HIGH. The main risk: developers see `das/claude/skills/` and `src/dopetask/runners/claude_code.py` in the same IDE and assume they are architecturally equal. The asset/runtime boundary must be enforced via documentation and linting, not physical separation. Humans and LLMs routinely ignore this.\ndocs/26_SUPERVISOR_PROMPTS.md:8:- apply the generated prompt into workspace instruction files for Claude Code, Codex CLI, Gemini CLI, or Copilot CLI\ndocs/26_SUPERVISOR_PROMPTS.md:13:Runtime note: the low-level `tp exec` plane currently supports `gemini` and `codex`. Route/orchestrate remains a separate runner plane; do not assume parity between those surfaces.\ndocs/26_SUPERVISOR_PROMPTS.md:29:| Claude Code | `2.1.87` | Checked from the `@anthropic-ai/claude-code` npm registry package. |\ndocs/26_SUPERVISOR_PROMPTS.md:115:Use this for tools that read repo instruction files automatically, such as Claude Code, Codex CLI, Gemini CLI, Copilot CLI, Cursor, and Vibe.\ndocs/26_SUPERVISOR_PROMPTS.md:153:- `CLAUDE.md` plus `.claude/rules/` and `.claude/skills/` for Claude Code\ndocs/26_SUPERVISOR_PROMPTS.md:164:- Claude Code: `claude-sonnet-4-6`\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:52:- Configures availability.yaml with runner/model selections\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:77:1. UI shows `availability.yaml` runner/model matrix\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:84:1. Shows current `availability.yaml` content\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:85:2. Shows which runners have working binaries (doctor-level check: `which claude`, `which codex`, etc.)\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:115:1. Show current `.dopetask/runtime/availability.yaml`\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:169:| **Runners / Models** | availability.yaml, runner binary health, routing decisions, scoring | dopeTask router |\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:170:| **Project Adapters** | .dopetask/runtime/availability.yaml, doctor check output | dopeTask doctor |\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:189:- `dopetask route plan`\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:192:Gap: `--agent claude_code` raises ValueError in engine.py \u2014 this is the first implementation target.\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:247:The UI shows a warning whenever `--bare` would be used: \"Bare mode uses ANTHROPIC_API_KEY, not your subscription. API credits will be billed.\" The flag must be explicitly set in `availability.yaml` or via CLI flag, never automatically defaulted.\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:267:- `availability.yaml`: runners, models, policy\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:311:| TP-002 | running | claude_code | sonnet-4.6 | tp/002-tests | \u2014 | \u2014 |\ndocs/design/dopetask-agent-system-combined-ui-design-inputs.md:317:claude_code: binary=yes | status=implemented\ndocs/beginner/03_WEB_LLM_SETUP.md:64:If you are using a workspace-aware coding tool like **Claude Code**, **Codex CLI**, **Gemini CLI**, or **Copilot CLI**, you usually do not need to paste the prompt manually every time.\ndocs/plans/dopetask-multi-mode-execution-plan.md:6:- Support local shell runners and multi-provider agents (Gemini, Claude).\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:14:The integration pressure point is **not** a boundary confusion problem \u2014 it is a **missing runner implementation**: `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py` returns `RUNNER_NOT_IMPLEMENTED`. The symbiosis design question is: how do dope-agent-system's skill/prompt/adapter assets flow into dopeTask's ClaudeCode runner to make it operational?\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:34:- Canonical source for generic skill templates (Claude Code, Codex, Gemini CLI, GitHub Copilot CLI)\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:57:Evidence from `src/dopetask/runners/claude_code.py`, `runners/__init__.py`, and `docs/plans/dopetask-multi-mode-execution-plan.md`:\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:59:1. **`ClaudeCodeAdapter` is a stub.** `run()` returns `{\"status\": \"refused\", \"reason_code\": \"RUNNER_NOT_IMPLEMENTED\"}`. It is registered in `RUNNER_ADAPTERS[\"claude_code\"]` but not implemented.\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:61:2. **Multi-mode execution plan is in Phase 1.** Phase 1 establishes the `ExecutionResult` contract and `TaskExecutor`. Phase 3 adds multi-mode support (shell + agent steps). The claude_code runner would be implemented in Phase 2\u20133.\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:63:3. **Codex runner IS implemented** (`subprocess codex exec --skip-git-repo-check`). This is the pattern to follow for Claude Code.\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:79:| ClaudeCode runner is a stub | runners/claude_code.py, runners/__init__.py | HIGH (direct code read) |\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:80:| Codex runner is implemented | runners/codex_cli.py | HIGH (direct code read) |\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:82:| RunnerAdapter protocol | runners/base.py, executor.py, supervisor-executor-adapter-spec.md | HIGH |\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:145:| `claude/skills/` | Claude Code skill source | Skills to install before running ClaudeCode runner |\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:146:| `claude/agents/` | Claude Code subagents | Subagents available to Claude Code when acting as implementer |\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:214:**Cons**: Path coupling \u2014 dopeTask's adapter must know where dope-agent-system lives (env var or config). Claude Code's `--system-prompt` flag and its interaction with project CLAUDE.md must be verified.\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:216:**Risk**: Path coupling is fragile if repos move. Claude Code CLI flags need empirical verification.\ndocs/investigations/dope-agent-system-symbiosis-investigation.md:224:**Shape**: dopeTask's project adapter loader reads a consuming project's `.agent-project/PROJECT_PROFILE.json` (bootstrapped from dope-agent-system's templates) before deciding how to invoke Claude Code. The profile's `default_implementer`, `threading.mode`, and `tool_families` fields influence routing.\ndocs/integrations/dope-agent-system-dopetask-boundary-map.md:5:**Source:** OWNERSHIP_MATRIX.json (TP-AGENT-SYSTEM-0011), DOPETASK_INTEGRATION_CONTRACT.md, runners/*, orchestrator/kernel.py\ndocs/integrations/dope-agent-system-dopetask-boundary-map.md:41:| ClaudeCode runner implementation | dopeTask (stub) | dopeTask | `src/dopetask/runners/claude_code.py` | Interactive executor not functional | **Primary integration gap.** Next TP must implement this runner. |\ndocs/integrations/dope-agent-system-dopetask-boundary-map.md:60:                         dope-agent-system (skill/prompt templates consumed by runners)\ndocs/archive/root_artifacts/TASK_PACKET_TP_0017_LOCAL_METRICS.md:22:4. Add tests proving metrics do not alter artifact hashes for deterministic route planning.\ndocs/11_PUBLIC_CONTRACT.md:16:- Route availability config for route/orchestrate surfaces: `.dopetask/runtime/availability.yaml`\ndocs/11_PUBLIC_CONTRACT.md:34:- `tp exec` currently supports `gemini` and `codex`\ndocs/11_PUBLIC_CONTRACT.md:55:- Implicit retries and fallback runners\ndocs/beginner/00A_HOW_DOPETASK_WORKS.md:89:The implementer is the coding agent, such as Codex, Gemini CLI, Claude Code, or Copilot CLI.\ndocs/beginner/00A_HOW_DOPETASK_WORKS.md:147:- Claude Code\nsrc/dopetask/orchestrator/handoff.py:76:        \"codex_desktop\": \"codex-cli\",\nsrc/dopetask/orchestrator/handoff.py:77:        \"claude_code\": \"claude-code\",\ndocs/specs/dopetask-docs-canonical-spec.md:50:[DOCS/PLANS] `docs/11_PUBLIC_CONTRACT.md` and `docs/12_ROUTER.md` still foreground route plan artifacts and route availability config as the public contract surface, while `docs/22_WORKFLOW_GUIDE.md` and `docs/24_UPGRADE_GUIDE.md` frame TP series state and proof bundles as the present default operator path.\ndocs/specs/dopetask-docs-canonical-spec.md:52:[INFERRED] The workflow docs no longer describe one single public surface. They describe at least three: JSON TP series, route planning/handoff, and legacy/manual git/worktree flows. The docs bundle should therefore preserve those as separate planes rather than implying one has fully replaced the others.\ndocs/specs/dopetask-docs-canonical-spec.md:60:[DOCS/PLANS] The onboarding narrative also pitches broad agent portability. `docs/beginner/00A_HOW_DOPETASK_WORKS.md` names Codex, Gemini CLI, Claude Code, and Copilot CLI as implementer examples, while `docs/26_SUPERVISOR_PROMPTS.md` covers supervisor prompt application across ChatGPT, Claude, Codex CLI, Gemini CLI, Copilot CLI, Cursor, and Vibe.\ndocs/specs/dopetask-docs-canonical-spec.md:62:[CODE] Runtime execution support is not symmetrical with that product story. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, but `src/dopetask/ops/tp_exec/engine.py` only constructs a `GeminiAdapter` and raises `ValueError` for other agents. `src/dopetask_adapters/gemini/step_runner.py` executes declared shell commands with `subprocess.run(shell=True)` rather than a provider-native multi-agent orchestration layer.\ndocs/12_ROUTER.md:17:  B --> C[\"Load availability.yaml\"]\ndocs/12_ROUTER.md:25:This flow covers route planning only.\ndocs/12_ROUTER.md:32:dopetask route plan --repo-root . --packet PACKET.md\ndocs/12_ROUTER.md:41:- `.dopetask/runtime/availability.yaml`\ndocs/23_INTEGRATION_GUIDE.md:42:It is still a different plane from the default `tp series` workflow and from route/orchestrate runners.\ndocs/23_INTEGRATION_GUIDE.md:55:They provide route planning and runner-based execution behavior, not the default integration path for new work.\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:10:The primary interactive executor gap is `ClaudeCodeAdapter` in `src/dopetask/runners/claude_code.py`, which currently returns `RUNNER_NOT_IMPLEMENTED`. Before implementing, the following must be known:\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:17:| **Prompt construction** | Should the adapter prompt include: packet path, step description, model, allowlist, validation commands? What format does Claude Code expect for task-level instructions? | Test run in worktree |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:39:| **Bounded prompt handoff** | If PAL Link means: PAL generates a bounded prompt \u2192 delegates to Claude Code CLI \u2192 Claude Code acts as implementer \u2192 returns proof, this would be an extension of the ClaudeCode runner design. | Need to decide if this is Model A, B, or C from the investigation. |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:56:| **Tool family enablement** | Does `tool_families.claude_code.enabled` influence which runner dopeTask picks? | Currently: routing is via `--agent` flag and router scoring. Integration point unclear. |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:87:| **Claude model selection** | Which models does `--agent claude_code` route to? | `ClaudeCodeAdapter.prepare()` reads model from route_plan but run() is a stub |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:88:| **Availability check** | Is there an `availability_path_for_repo` for claude_code? | Unknown \u2014 router reads from availability path; Claude's path is unverified |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:89:| **Route scoring** | What score does claude_code get vs codex_desktop? | Not yet defined in scoring.py |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:90:| **dope-agent-system tool_families** | Do `tool_families.claude_code.enabled` flags in PROJECT_PROFILE.json affect routing? | No integration exists today |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:102:| **`--agent` flag value** | Is it `--agent claude_code` or `--agent claude`? | Registered as `claude_code` in RUNNER_ADAPTERS |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:103:| **Ledger update** | Does `tp series exec --agent claude_code` currently write to SERIES_STATE.json despite stub? | Unknown \u2014 stub returns refused; kernel may write EXEC_ERROR.json |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:104:| **Series integration** | Is `claude_code` a valid value for `SERIES_STATE.json`'s `assigned_agent` field? | Unknown |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:105:| **Supervisor prompts** | Does `docs/26_SUPERVISOR_PROMPTS.md` need updating to include claude_code as a valid agent? | Unknown |\ndocs/integrations/dope-agent-system-dopetask-design-inputs.md:122:4. Update `docs/22_WORKFLOW_GUIDE.md` to include `--agent claude_code` examples\ndocs/specs/dopetask-architecture-source-index.md:4:[CODE] Scope includes architecture docs/plans plus routing, orchestration, series, low-level execution, manual git, artifacts, manifests, project rails, runners, schemas, and adapter surfaces.\ndocs/specs/dopetask-architecture-source-index.md:51:| `src/dopetask/ops/tp_git/exec.py` | manual-git-plane | .py | authoritative | CODE | Command runners for TP git workflows. | manual-git; dirty-main-guard; branch-isolation | no |\ndocs/specs/dopetask-architecture-source-index.md:86:| `src/dopetask/runners/__init__.py` | runner-plane | .py | supporting | CODE | Runner adapters for dopeTask orchestrator. | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-architecture-source-index.md:87:| `src/dopetask/runners/base.py` | runner-plane | .py | authoritative | CODE | Runner adapter protocol for orchestrator execution. | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-architecture-source-index.md:88:| `src/dopetask/runners/claude_code.py` | runner-plane | .py | authoritative | CODE | Claude Code runner adapter (v0 deterministic refusal stub). | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-architecture-source-index.md:89:| `src/dopetask/runners/codex_cli.py` | runner-plane | .py | authoritative | CODE | Codex Desktop runner adapter (v0 deterministic refusal stub). | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-architecture-source-index.md:90:| `src/dopetask/runners/copilot_cli.py` | runner-plane | .py | authoritative | CODE | Copilot CLI runner adapter (v0 deterministic refusal stub). | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-architecture-source-index.md:91:| `src/dopetask/runners/google_jules.py` | runner-plane | .py | authoritative | CODE | Google Jules runner adapter (v0 deterministic refusal stub). | runner-registry; orchestrator-runner | no |\ndocs/specs/dopetask-source-index.md:45:| .github/workflows/claude-code-review.yml | .github:workflows | .yml | supporting | CODE | name: Claude Code Review | git-worktree | no |\ndocs/specs/dopetask-source-index.md:46:| .github/workflows/claude.yml | .github:workflows | .yml | supporting | CODE | name: Claude Code | git-worktree | no |\ndocs/specs/dopetask-source-index.md:613:| src/dopetask/ops/tp_git/exec.py | src:dopetask:ops | .py | authoritative | CODE | Command runners for TP git workflows. | git-worktree, bootstrap-prompts | no |\ndocs/specs/dopetask-source-index.md:678:| src/dopetask/runners/__init__.py | src:dopetask:runners | .py | authoritative | CODE | Runner adapters for dopeTask orchestrator. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:679:| src/dopetask/runners/base.py | src:dopetask:runners | .py | authoritative | CODE | Runner adapter protocol for orchestrator execution. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:680:| src/dopetask/runners/claude_code.py | src:dopetask:runners | .py | authoritative | CODE | Claude Code runner adapter (v0 deterministic refusal stub). | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:681:| src/dopetask/runners/codex_cli.py | src:dopetask:runners | .py | authoritative | CODE | Codex Desktop runner adapter (v0 deterministic refusal stub). | cli-surface, adapters-runners | no |\ndocs/specs/dopetask-source-index.md:682:| src/dopetask/runners/copilot_cli.py | src:dopetask:runners | .py | authoritative | CODE | Copilot CLI runner adapter (v0 deterministic refusal stub). | cli-surface, adapters-runners | no |\ndocs/specs/dopetask-source-index.md:683:| src/dopetask/runners/google_jules.py | src:dopetask:runners | .py | authoritative | CODE | Google Jules runner adapter (v0 deterministic refusal stub). | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:701:| src/dopetask_adapters/__init__.py | src:dopetask_adapters:__init__.py | .py | authoritative | CODE | dopeTask adapters for integrating with external systems. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:702:| src/dopetask_adapters/base.py | src:dopetask_adapters:base.py | .py | authoritative | CODE | Base adapter interface for dopeTask integration adapters. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:703:| src/dopetask_adapters/dopemux.py | src:dopetask_adapters:dopemux.py | .py | authoritative | CODE | Dopemux adapter for dopeTask integration. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:704:| src/dopetask_adapters/gemini/__init__.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Gemini CLI execution adapter components. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:705:| src/dopetask_adapters/gemini/executor.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Python module for executor. | adapters-runners | D012, D013 |\ndocs/specs/dopetask-source-index.md:706:| src/dopetask_adapters/gemini/prompts.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Multi-turn execution prompts for Gemini, Codex, and Vibe adapters. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:707:| src/dopetask_adapters/gemini/proof_writer.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Python module for proof writer. | proof-artifacts, adapters-runners | no |\ndocs/specs/dopetask-source-index.md:708:| src/dopetask_adapters/gemini/schema.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Python module for schema. | schema-contracts, adapters-runners | no |\ndocs/specs/dopetask-source-index.md:709:| src/dopetask_adapters/gemini/step_runner.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Python module for step runner. | adapters-runners | D013 |\ndocs/specs/dopetask-source-index.md:710:| src/dopetask_adapters/gemini/validator.py | src:dopetask_adapters:gemini | .py | authoritative | CODE | Python module for validator. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:711:| src/dopetask_adapters/types.py | src:dopetask_adapters:types.py | .py | authoritative | CODE | Type definitions for dopeTask adapters. | adapters-runners | no |\ndocs/specs/dopetask-source-index.md:767:| tests/unit/dopetask/test_metrics_artifact_invariance.py | tests:unit:dopetask | .py | test-evidence | CODE | Invariants: metrics toggles must not mutate route planning artifacts. | proof-artifacts | no |\ndocs/specs/dopetask-source-index.md:788:| tests/unit/dopetask/test_router_plan_determinism.py | tests:unit:dopetask | .py | test-evidence | CODE | Determinism coverage for dopeTask route planning. | route-planning | no |\ndocs/specs/dopetask-source-index.md:789:| tests/unit/dopetask/test_router_refusal.py | tests:unit:dopetask | .py | test-evidence | CODE | Refusal contract tests for dopeTask route planning. | route-planning | no |\ndocs/specs/dopetask-docs-source-index.md:15:| `docs/12_ROUTER.md` | router-docs | `.md` | authoritative | DOCS/PLANS | Documents Router v1 flow, route artifacts, and availability config. | route planning; `availability.yaml`; handoff artifacts | yes |\ndocs/specs/dopetask-canonical-spec.md:48:- [CODE] In the current runtime, only the `gemini` profile is implemented in `execute_task_packet()`; other advertised agent names raise `ValueError` (`src/dopetask/ops/tp_exec/engine.py`).\ndocs/specs/dopetask-canonical-spec.md:62:- [CODE] Router v1 is still a live, public subsystem. It loads `.dopetask/runtime/availability.yaml`, scores runner/model candidates for a deterministic set of lifecycle steps, and writes `out/dopetask_route/ROUTE_PLAN.json`, `ROUTE_PLAN.md`, and optionally `HANDOFF.md` (`src/dopetask/router/types.py`, `src/dopetask/router/availability.py`, `src/dopetask/router/planner.py`, `src/dopetask/router/reporting.py`).\ndocs/specs/dopetask-canonical-spec.md:64:- [CODE] The separate `orchestrate` command executes `orchestrator v0`: it reads a packet JSON, builds a route plan, selects a single runner or emits a manual handoff, and writes deterministic run artifacts through `src/dopetask/artifacts/writer.py` (`src/dopetask/orchestrator/kernel.py`, `src/dopetask/artifacts/writer.py`).\ndocs/specs/dopetask-canonical-spec.md:74:- [CODE] Two execution abstractions coexist. The low-level `tp exec` path uses `src/dopetask_adapters/gemini/*`; the route/orchestrate family uses runner adapters under `src/dopetask/runners/*` (`claude_code`, `codex_cli`, `copilot_cli`, `google_jules`).\ndocs/specs/dopetask-canonical-spec.md:75:- [CODE] Router availability defaults enumerate model names such as `gpt-5.4`, `gpt-5.3-codex`, `sonnet-4.6`, and `haiku-4.5`, plus runner availability for `claude_code`, `codex_desktop`, `copilot_cli`, and `google_jules` (`src/dopetask/router/availability.py`, `src/dopetask/router/types.py`).\ndocs/specs/dopetask-canonical-spec.md:76:- [CODE] The low-level executor does not currently connect those router runner definitions to actual non-Gemini execution in `tp exec`; the surfaces are parallel rather than unified (`src/dopetask/ops/tp_exec/engine.py`, `src/dopetask/router/*`, `src/dopetask/runners/*`).\nsrc/dopetask/orchestrator/kernel.py:15:from dopetask.runners import RUNNER_ADAPTERS\ndocs/92_CONTRACT_CLAIMS_INVENTORY.md:27:| C-0005 | `README.md` (`## Guarantees`) | \"Single-path: no hidden retries, no fallback runners, no background execution.\" |\ndocs/92_CONTRACT_CLAIMS_INVENTORY.md:47:| C-0025 | `docs/11_PUBLIC_CONTRACT.md` (`## Non-goals`) | \"Implicit retries and fallback runners\" |\ndocs/specs/dopetask-architecture-canonical-spec.md:9:[CODE] Verification inputs include `pyproject.toml`, `src/dopetask/core/schema.py`, `src/dopetask/core/tp_parser.py`, `src/dopetask/utils/schema_registry.py`, `src/dopetask/router/*`, `src/dopetask/orchestrator/*`, `src/dopetask/ops/tp_series/*`, `src/dopetask/ops/tp_exec/*`, `src/dopetask/ops/tp_git/*`, `src/dopetask/project/*`, `src/dopetask/artifacts/*`, `src/dopetask/manifest/*`, `src/dopetask/obs/*`, `src/dopetask/runners/*`, `src/dopetask_adapters/*`, and verified CLI help output from `python -m dopetask ... --help` surfaces.\ndocs/specs/dopetask-architecture-canonical-spec.md:25:[CODE] **Routing plane.** `src/dopetask/router/availability.py`, `src/dopetask/router/scoring.py`, `src/dopetask/router/planner.py`, `src/dopetask/router/types.py`, `src/dopetask/router/reporting.py`, and `src/dopetask/router/handoff.py` define deterministic route planning. This plane owns availability loading from `.dopetask/runtime/availability.yaml`, deterministic candidate scoring, refusal reasons, route plan serialization, and standalone routing/handoff artifacts under `out/dopetask_route/`.\ndocs/specs/dopetask-architecture-canonical-spec.md:27:[CODE] **Orchestration plane.** `src/dopetask/orchestrator/kernel.py` consumes JSON packets, builds route plans, resolves one runnable step, dispatches through `RUNNER_ADAPTERS`, and writes run-local artifacts through `src/dopetask/artifacts/writer.py`. This plane is separate from TP series and does not own git worktree lifecycle.\ndocs/specs/dopetask-architecture-canonical-spec.md:73:[CODE] **Determinism invariants.** Routing sorts models and runners before scoring, computes fixed integer totals, and rounds confidence deterministically. Artifact writers emit canonical JSON with sorted keys or stable field ordering. Route-plan writers use fixed filenames. Run and manifest helpers provide deterministic timestamp modes and stable run-id conventions when deterministic mode is selected.\ndocs/specs/dopetask-architecture-canonical-spec.md:85:[CODE] `route` and `orchestrate` remain active architecture, not dead history. `python -m dopetask route --help` and `python -m dopetask orchestrate --help` both expose live surfaces, and `orchestrator/kernel.py` still routes through `RUNNER_ADAPTERS` defined in `src/dopetask/runners/__init__.py`.\ndocs/specs/dopetask-architecture-canonical-spec.md:107:[CODE] Router config is repo-local and explicit. `availability_path_for_repo(repo_root)` resolves to `.dopetask/runtime/availability.yaml`, `route init` writes the deterministic template, and router loading refuses missing or malformed config instead of guessing availability.\ndocs/specs/dopetask-architecture-canonical-spec.md:113:[DOCS/PLANS] The terse kernel docs describe a single spine of packet -> validation -> planning -> route plan/refusal -> runner/handoff -> artifacts. That captures the ethos, but it collapses several active subsystems that now exist in parallel.\ndocs/specs/dopetask-architecture-canonical-spec.md:121:[CODE] A fourth seam is low-level agent support. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, and the parser/normalizer includes compilers for those profiles, but `ops/tp_exec/engine.py` only constructs `GeminiAdapter` and raises for other agents. The low-level execution plane is therefore multi-profile in compilation but Gemini-only in actual runtime execution.\ndocs/specs/dopetask-drift-matrix.md:10:| D003 | Low-level executor help advertises multiple agents, but runtime implementation only supports Gemini | [CODE] Runtime `python -m dopetask tp exec --help` and source `src/dopetask/ops/tp_exec/cli.py` advertise `gemini, codex, or vibe`; `src/dopetask/ops/tp_series/cli.py` repeats the same option help. | [CODE] `src/dopetask/ops/tp_exec/engine.py` instantiates `GeminiAdapter` for `agent == \"gemini\"` and raises `ValueError` for every other profile. | runtime/source mismatch | high | The user-visible CLI suggests supported agent profiles that will fail at execution time. | Narrow the option help to Gemini only, or implement the missing engines before advertising them. |\ndocs/ORCHESTRATOR_STATUS.md:10:The `orchestrate` command (Orchestrator v0) now has a real `codex_desktop` runner path in `auto` mode, but it is still not a default production workflow and still depends on route availability data plus runner-specific output contracts.\ndocs/ORCHESTRATOR_STATUS.md:13:1. **Missing Configuration:** The required `.dopetask/runtime/availability.yaml` file is missing. The router refuses to plan without this authoritative source of runner/model availability.\ndocs/ORCHESTRATOR_STATUS.md:14:2. **Partial Runner Coverage:** `codex_desktop` now has a real runner path, but the other registered runners remain refusal stubs.\ndocs/ORCHESTRATOR_STATUS.md:19:- Deterministic route planning logic.\nsrc/dopetask/ui.py:178:        raise ValueError(f\"Unknown theme: {theme!r}. Valid themes: {', '.join(sorted(THEMES))}\")\nsrc/dopetask/ui.py:194:        raise ValueError(\"Multiple DOPETASK NEON begin markers found.\")\nsrc/dopetask/ui.py:196:        raise ValueError(\"Multiple DOPETASK NEON end markers found.\")\nsrc/dopetask/ui.py:201:        raise ValueError(\"Malformed DOPETASK NEON markers: begin marker missing.\")\nsrc/dopetask/ui.py:203:        raise ValueError(\"Malformed DOPETASK NEON markers: end marker missing.\")\nsrc/dopetask/ui.py:205:        raise ValueError(\"Malformed DOPETASK NEON markers: end marker appears before begin marker.\")\nsrc/dopetask/ui.py:288:        raise ValueError(f\"Unknown theme: {theme!r}. Valid themes: {', '.join(sorted(THEMES))}\")\nsrc/dopetask/git/finish.py:181:        except ValueError:\nsrc/dopetask/git/finish.py:185:        except ValueError:\nsrc/dopetask/core/schema.py:145:                raise ValueError(\nsrc/dopetask/core/schema.py:167:            raise ValueError(f\"TaskPacket is missing required field: {e}\") from e\nsrc/dopetask/runners/claude_code.py:1:\"\"\"Claude Code runner adapter (v0 deterministic refusal stub).\"\"\"\nsrc/dopetask/runners/claude_code.py:9:    \"\"\"Adapter for the claude_code runner.\"\"\"\nsrc/dopetask/runners/claude_code.py:11:    runner_id = \"claude_code\"\nsrc/dopetask/git/worktree.py:176:        except ValueError:\nsrc/dopetask/neon_persist.py:22:        raise ValueError(\nsrc/dopetask/neon_persist.py:44:            raise ValueError(\"Multiple DOPETASK NEON begin markers found.\")\nsrc/dopetask/neon_persist.py:48:            raise ValueError(\"Multiple DOPETASK NEON end markers found.\")\nsrc/dopetask/neon_persist.py:57:            raise ValueError(\"Malformed DOPETASK NEON markers: begin marker missing.\")\nsrc/dopetask/neon_persist.py:59:            raise ValueError(\"Malformed DOPETASK NEON markers: end marker missing.\")\nsrc/dopetask/neon_persist.py:61:            raise ValueError(\nsrc/dopetask/neon_persist.py:65:        raise ValueError(\"Malformed DOPETASK NEON markers (begin/end mismatch).\")\nsrc/dopetask/neon_persist.py:149:        raise ValueError(\nsrc/dopetask/schemas/validator.py:33:        ValueError: If validation fails and strict=True\nsrc/dopetask/schemas/validator.py:58:            raise ValueError(\nsrc/dopetask/core/compilers/codex.py:15:            raise ValueError(\"TaskPacket must have at least one step for Codex profile.\")\nsrc/dopetask/core/compilers/codex.py:21:                raise ValueError(\nsrc/dopetask/core/compilers/claude_code.py:1:\"\"\"Claude Code compiler for step-oriented task packet execution.\"\"\"\nsrc/dopetask/core/compilers/claude_code.py:10:    \"\"\"Compile generic task packets into a per-step Claude Code profile.\"\"\"\nsrc/dopetask/core/compilers/claude_code.py:13:        \"\"\"Compile the task packet into the format expected by the Claude Code adapter.\"\"\"\nsrc/dopetask/core/compilers/claude_code.py:15:            raise ValueError(\"TaskPacket must have at least one step for Claude Code profile.\")\nsrc/dopetask/core/compilers/claude_code.py:21:                raise ValueError(\nsrc/dopetask/core/compilers/claude_code.py:22:                    f\"Fail-Closed: Claude Code profile requires explicit validation. \"\nsrc/dopetask/runners/codex_cli.py:11:    \"\"\"Adapter for the codex_desktop runner.\"\"\"\nsrc/dopetask/runners/codex_cli.py:13:    runner_id = \"codex_desktop\"\nsrc/dopetask/pipeline/bundle/ingester.py:31:    raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/pipeline/bundle/ingester.py:245:                    raise ValueError(f\"Malicious filename detected in zip: {filename}\")\nsrc/dopetask/pipeline/bundle/ingester.py:259:            raise ValueError(\"CASE_MANIFEST.json must contain a JSON object\")\nsrc/dopetask/git/commit_run.py:209:        except (ValueError, TypeError):\nsrc/dopetask/core/tp_parser.py:7:from dopetask.core.compilers.claude_code import ClaudeCodeCompiler\nsrc/dopetask/core/tp_parser.py:32:            ValueError: If the required fields are missing.\nsrc/dopetask/core/tp_parser.py:60:        \"claude_code\": ClaudeCodeCompiler,\nsrc/dopetask/core/tp_parser.py:76:            ValueError: If the profile is unknown or if the compiler rejects the TP.\nsrc/dopetask/core/tp_parser.py:80:            raise ValueError(f\"Unknown compilation profile: {profile}. Available: {list(cls.COMPILERS.keys())}\")\nsrc/dopetask/core/compilers/base.py:26:            ValueError: If the generic TP lacks required fields for this specific profile.\nsrc/dopetask/ops/tp_exec/cli.py:31:            help=\"Agent profile: gemini, codex, or claude_code.\",\nsrc/dopetask/ops/tp_exec/cli.py:81:        except ValueError as exc:\nsrc/dopetask/core/compilers/gemini.py:29:            ValueError: If any step lacks validation commands or requirements.\nsrc/dopetask/core/compilers/gemini.py:32:            raise ValueError(\"TaskPacket must have at least one step for Gemini profile.\")\nsrc/dopetask/core/compilers/gemini.py:35:            raise ValueError(\"Fail-Closed: Gemini execution requires a valid and enabled pal_chain block.\")\nsrc/dopetask/core/compilers/gemini.py:37:            raise ValueError(\"Fail-Closed: Gemini execution requires non-empty pal_chain.steps.\")\nsrc/dopetask/core/compilers/gemini.py:39:            raise ValueError(\nsrc/dopetask/core/compilers/gemini.py:48:                raise ValueError(\nsrc/dopetask/ops/tp_exec/engine.py:16:from dopetask_adapters.claude_code.executor import ClaudeCodeExecutor\nsrc/dopetask/ops/tp_exec/engine.py:80:        elif agent == \"claude_code\":\nsrc/dopetask/ops/tp_exec/engine.py:87:            raise ValueError(f\"Agent profile '{agent}' not yet fully implemented in executor.\")\nsrc/dopetask/pipeline/loop/orchestrator.py:449:            raise ValueError(\"No run folders with RUN_SUMMARY.json found\")\nsrc/dopetask/runners/__init__.py:3:from dopetask.runners.base import RunnerAdapter\nsrc/dopetask/runners/__init__.py:4:from dopetask.runners.claude_code import ClaudeCodeAdapter\nsrc/dopetask/runners/__init__.py:5:from dopetask.runners.codex_cli import CodexCliAdapter\nsrc/dopetask/runners/__init__.py:6:from dopetask.runners.copilot_cli import CopilotCliAdapter\nsrc/dopetask/runners/__init__.py:7:from dopetask.runners.google_jules import GoogleJulesAdapter\nsrc/dopetask/runners/__init__.py:10:    \"claude_code\": ClaudeCodeAdapter,\nsrc/dopetask/runners/__init__.py:11:    \"codex_desktop\": CodexCliAdapter,\nsrc/dopetask/docs/refresh_llm.py:166:    runners_raw = payload.get(\"runners\", {})\nsrc/dopetask/docs/refresh_llm.py:169:    if not isinstance(models_raw, dict) or not isinstance(runners_raw, dict) or not isinstance(policy_raw, dict):\nsrc/dopetask/docs/refresh_llm.py:180:    available_runners: list[str] = []\nsrc/dopetask/docs/refresh_llm.py:181:    for name in sorted(runners_raw):\nsrc/dopetask/docs/refresh_llm.py:182:        entry = runners_raw[name]\nsrc/dopetask/docs/refresh_llm.py:186:            available_runners.append(name)\nsrc/dopetask/docs/refresh_llm.py:198:    snippet_runner = available_runners[0] if available_runners else \"example-runner\"\nsrc/dopetask/docs/refresh_llm.py:205:        \"runners:\",\nsrc/dopetask/docs/refresh_llm.py:218:        \"available_runners\": available_runners,\nsrc/dopetask/docs/refresh_llm.py:240:        \"- Config: `.dopetask/runtime/availability.yaml`\",\nsrc/dopetask/docs/refresh_llm.py:245:        \"- Execution: assisted-only (prints handoffs; does not invoke external runners)\",\nsrc/dopetask/docs/refresh_llm.py:248:        f\"- Available runners: {', '.join(availability_summary['available_runners'])}\",\nsrc/dopetask/pipeline/evidence/collector.py:36:        ValueError: If run directory or RUN_ENVELOPE.json invalid\nsrc/dopetask/pipeline/evidence/collector.py:40:        raise ValueError(f\"Run directory not found: {run_dir}\")\nsrc/dopetask/pipeline/evidence/collector.py:45:        raise ValueError(f\"RUN_ENVELOPE.json not found in {run_dir}\")\nsrc/dopetask/pipeline/evidence/collector.py:80:        raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/pipeline/compliance/gate.py:197:    except (ValueError, AttributeError):\nsrc/dopetask/pipeline/task_runner/runner.py:42:        ValueError: If task packet is invalid\nsrc/dopetask/pipeline/task_runner/runner.py:57:        raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/pipeline/case/auditor.py:36:    raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/pipeline/case/auditor.py:59:        raise ValueError(f\"Expected object JSON at {path}\")\nsrc/dopetask/pipeline/case/auditor.py:588:        raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/pipeline/case/auditor.py:591:        raise ValueError(f\"Case directory not found: {case_dir}\")\nsrc/dopetask/pipeline/task_runner/parser.py:45:        ValueError: If packet format is invalid\nsrc/dopetask/pipeline/task_runner/parser.py:59:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:78:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:85:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:92:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:291:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:312:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:320:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:325:        raise ValueError(f\"Task packet {packet_path} COMMIT PLAN must be a JSON object\")\nsrc/dopetask/pipeline/task_runner/parser.py:329:        raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:336:            raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:346:            raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:350:            raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:354:            raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:361:                raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:370:                raise ValueError(\nsrc/dopetask/pipeline/task_runner/parser.py:376:                    raise ValueError(\nsrc/dopetask/manifest/manifest.py:169:        raise ValueError(f\"{path} is not a JSON object\")\nsrc/dopetask/manifest/manifest.py:354:    except ValueError:\nsrc/dopetask/manifest/manifest.py:398:    except ValueError:\nsrc/dopetask/utils/repo_config.py:115:        except (KeyError, TypeError, ValueError) as e:\nsrc/dopetask/utils/repo_config.py:131:        except (KeyError, TypeError, ValueError) as e:\nsrc/dopetask/ops/tp_series/cli.py:67:    agent: str = typer.Option(\"gemini\", \"--agent\", help=\"Agent profile: gemini, codex, or claude_code.\"),\nsrc/dopetask/utils/json_output.py:229:            raise ValueError(f\"Validation failed: {errors}\")\nsrc/dopetask/utils/json_output.py:265:        ValueError: If validation fails\nsrc/dopetask/utils/json_output.py:277:        # Convert to ValueError for backward compatibility\nsrc/dopetask/utils/json_output.py:278:        raise ValueError(str(e)) from e\nsrc/dopetask/utils/repo.py:298:        except ValueError as exc:\nsrc/dopetask/utils/repo.py:373:        except ValueError:\nsrc/dopetask/pipeline/task_compiler/compiler.py:450:        raise ValueError(f\"Invalid timestamp_mode: {timestamp_mode}\")\nsrc/dopetask/utils/package_data.py:54:        ValueError: If schema is malformed\nsrc/dopetask/pipeline/spec_feedback/feedback.py:42:        raise ValueError(f\"Invalid task queue: {errors}\")\nsrc/dopetask/pipeline/spec_feedback/feedback.py:102:            raise ValueError(f\"Invalid run summary {summary_path}: {errors}\")\nsrc/dopetask/utils/schema_registry.py:141:            ValueError: If schema JSON is malformed\nsrc/dopetask/utils/schema_registry.py:151:            raise ValueError(\nsrc/dopetask/utils/schema_registry.py:199:        ValueError: If schema is malformed\nsrc/dopetask/cli.py:702:    except ValueError as exc:\nsrc/dopetask/cli.py:857:    except ValueError:\nsrc/dopetask/cli.py:2693:        help=\"Overwrite existing availability.yaml\",\nsrc/dopetask/cli.py:2739:    \"\"\"Build deterministic route plan artifacts from packet + availability.\"\"\"\nsrc/dopetask/cli.py:4049:    except ValueError as exc:\nsrc/dopetask/cli.py:4075:    except ValueError as exc:\nsrc/dopetask/cli.py:4100:    except ValueError as exc:\nsrc/dopetask/cli.py:4152:    except ValueError as exc:\nsrc/dopetask/cli.py:4198:    except ValueError as exc:\nsrc/dopetask/cli.py:4477:    agent: str = typer.Option(\"gemini\", \"--agent\", help=\"Agent profile: gemini or codex.\"),\nsrc/dopetask/ops/tp_git/exec.py:1:\"\"\"Command runners for TP git workflows.\"\"\"\nsrc/dopetask/project/init.py:27:        raise ValueError(f\"Unsupported preset: {preset}\")\nsrc/dopetask/ops/tp_series/logic.py:140:    except ValueError:\nsrc/dopetask/ops/tp_series/logic.py:311:        raise ValueError(\"tp series exec requires packet.series metadata\")\nsrc/dopetask/ops/tp_series/logic.py:313:        raise ValueError(\"tp series exec requires packet.commit metadata\")\nsrc/dopetask/ops/tp_series/logic.py:315:        raise ValueError(\"tp series exec requires packet.commit.allowlist to be non-empty\")\nsrc/dopetask/ops/tp_series/logic.py:317:        raise ValueError(\"packet.depends_on must not include the packet id itself\")\nsrc/dopetask/ops/tp_series/logic.py:319:        raise ValueError(\"series.parent_tp_id must be null only for root packets\")\nsrc/dopetask/ops/tp_series/logic.py:321:        raise ValueError(\"series.parent_tp_id must also be present in depends_on\")\nsrc/dopetask/ops/tp_series/logic.py:327:    except ValueError as exc:\nsrc/dopetask/ops/tp_series/logic.py:330:            raise ValueError(\"tp series import requires packet.series metadata\") from exc\nsrc/dopetask/ops/tp_series/logic.py:332:            raise ValueError(\"tp series import requires packet.commit metadata\") from exc\nsrc/dopetask/ops/tp_series/logic.py:334:            raise ValueError(\"tp series import requires packet.commit.allowlist to be non-empty\") from exc\nsrc/dopetask/obs/run_artifacts.py:40:    raise ValueError(\nsrc/dopetask/obs/run_artifacts.py:81:    raise ValueError(f\"Unsupported canonical timestamp mode: {timestamp_mode}\")\nsrc/dopetask/project/toggles.py:34:            raise ValueError(f\"Unsupported managed file: {file_path.name}\")\nsrc/dopetask/project/toggles.py:130:        raise ValueError(f\"Unsupported directive pack: {pack_name}\")\nsrc/dopetask/project/mode.py:26:        raise ValueError(f\"Unsupported mode '{mode}'. Allowed values: {allowed}\")\nsrc/dopetask/project/common.py:71:        raise ValueError(f\"Unsupported directive pack: {pack_name}\")\nsrc/dopetask/project/common.py:140:        raise ValueError(f\"Unsupported directive pack: {pack_name}\")\nsrc/dopetask/project/common.py:167:    raise ValueError(f\"Unsupported sentinel pair: {begin_marker} / {end_marker}\")\n"
+  },
+  "stale_docs": [
+    {
+      "line": 83,
+      "path": "docs/00_OVERVIEW.md",
+      "pattern": "currently supports `gemini` and `codex`",
+      "snippet": "- Low-level `tp exec` remains a separate execution plane and currently supports `gemini` and `codex`."
+    },
+    {
+      "line": 34,
+      "path": "docs/11_PUBLIC_CONTRACT.md",
+      "pattern": "currently supports `gemini` and `codex`",
+      "snippet": "- `tp exec` currently supports `gemini` and `codex`"
+    },
+    {
+      "line": 41,
+      "path": "docs/23_INTEGRATION_GUIDE.md",
+      "pattern": "Its runtime-supported execution surface now includes both `gemini` and `codex`",
+      "snippet": "Its runtime-supported execution surface now includes both `gemini` and `codex`."
+    },
+    {
+      "line": 13,
+      "path": "docs/26_SUPERVISOR_PROMPTS.md",
+      "pattern": "currently supports `gemini` and `codex`",
+      "snippet": "Runtime note: the low-level `tp exec` plane currently supports `gemini` and `codex`. Route/orchestrate remains a separate runner plane; do not assume parity between those surfaces."
+    },
+    {
+      "line": 192,
+      "path": "docs/design/dopetask-agent-system-combined-ui-design-inputs.md",
+      "pattern": "--agent claude_code` raises ValueError",
+      "snippet": "Gap: `--agent claude_code` raises ValueError in engine.py \u2014 this is the first implementation target."
+    },
+    {
+      "line": 88,
+      "path": "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+      "pattern": "Availability check.*Unknown",
+      "snippet": "| **Availability check** | Is there an `availability_path_for_repo` for claude_code? | Unknown \u2014 router reads from availability path; Claude's path is unverified |"
+    },
+    {
+      "line": 89,
+      "path": "docs/integrations/dope-agent-system-dopetask-design-inputs.md",
+      "pattern": "Route scoring.*Not yet defined in scoring\\.py",
+      "snippet": "| **Route scoring** | What score does claude_code get vs codex_desktop? | Not yet defined in scoring.py |"
+    },
+    {
+      "line": 121,
+      "path": "docs/specs/dopetask-architecture-canonical-spec.md",
+      "pattern": "advertises `gemini`, `codex`, and `vibe`",
+      "snippet": "[CODE] A fourth seam is low-level agent support. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, and the parser/normalizer includes compilers for those profiles, but `ops/tp_exec/engine.py` only constructs `GeminiAdapter` and raises for other agents. The low-level execution plane is therefore multi-profile in compilation but Gemini-only in actual runtime execution."
+    },
+    {
+      "line": 48,
+      "path": "docs/specs/dopetask-canonical-spec.md",
+      "pattern": "only the `gemini` profile is implemented",
+      "snippet": "- [CODE] In the current runtime, only the `gemini` profile is implemented in `execute_task_packet()`; other advertised agent names raise `ValueError` (`src/dopetask/ops/tp_exec/engine.py`)."
+    },
+    {
+      "line": 62,
+      "path": "docs/specs/dopetask-docs-canonical-spec.md",
+      "pattern": "advertises `gemini`, `codex`, and `vibe`",
+      "snippet": "[CODE] Runtime execution support is not symmetrical with that product story. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, but `src/dopetask/ops/tp_exec/engine.py` only constructs a `GeminiAdapter` and raises `ValueError` for other agents. `src/dopetask_adapters/gemini/step_runner.py` executes declared shell commands with `subprocess.run(shell=True)` rather than a provider-native multi-agent orchestration layer."
+    }
+  ],
+  "stale_docs_found": true
+}

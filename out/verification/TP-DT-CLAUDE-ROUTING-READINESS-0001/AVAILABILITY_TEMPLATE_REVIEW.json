@@ -1,0 +1,21 @@
+{
+  "claude_code": {
+    "available": true,
+    "strengths": [
+      "code_edit",
+      "iterative_refactor",
+      "tests"
+    ]
+  },
+  "contains_claude_code": true,
+  "runner_names": [
+    "claude_code",
+    "codex_desktop",
+    "copilot_cli",
+    "google_jules"
+  ],
+  "runner_names_source": "src/dopetask/router/types.py::RUNNER_NAMES",
+  "template_source": "src/dopetask/router/availability.py::AVAILABILITY_CONFIG_TEMPLATE",
+  "template_yaml_sort_keys_true": "models:\n  gpt-5.1-mini:\n    context: medium\n    cost_tier: cheap\n    strengths:\n    - cheap\n    - docs\n    - routing\n  gpt-5.3-codex:\n    context: large\n    cost_tier: high\n    strengths:\n    - code_edit\n    - wide_edit_surface\n    - tests\n  gpt-5.4:\n    context: medium\n    cost_tier: medium\n    strengths:\n    - correctness\n    - gates\n    - finalization\n  haiku-4.5:\n    context: small\n    cost_tier: cheap\n    strengths:\n    - cheap\n    - docs\n    - summaries\n  opus-4.6:\n    context: large\n    cost_tier: high\n    strengths:\n    - reasoning\n    - correctness\n    - code_edit\n  sonnet-4.6:\n    context: large\n    cost_tier: medium\n    strengths:\n    - code_edit\n    - tests\n    - balanced\npolicy:\n  escalation_ladder:\n  - gpt-5.1-mini\n  - haiku-4.5\n  - sonnet-4.6\n  - gpt-5.3-codex\n  max_cost_tier: high\n  max_escalations: 2\n  min_total_score: 50\n  require_explain: true\n  stop_on_ambiguity: true\nrunners:\n  claude_code:\n    available: true\n    strengths:\n    - code_edit\n    - iterative_refactor\n    - tests\n  codex_desktop:\n    available: true\n    strengths:\n    - code_edit\n    - planning\n    - tests\n  copilot_cli:\n    available: true\n    strengths:\n    - quick_commands\n    - cheap_flows\n    - automation\n  google_jules:\n    available: true\n    strengths:\n    - context_awareness\n    - file_system\n    - reasoning\n",
+  "template_yaml_sort_keys_true_sha256": "c8ec77fcd87b38bb473b9f2f52e6ffcf2e983e202bd1be7bf864ebe615cd9ea5"
+}

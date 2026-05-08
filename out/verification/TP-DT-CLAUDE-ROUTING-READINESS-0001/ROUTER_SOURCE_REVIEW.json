@@ -1,0 +1,248 @@
+{
+  "availability_template_contains_claude_code": true,
+  "claude_code_runner_default": {
+    "available": true,
+    "strengths": [
+      "code_edit",
+      "iterative_refactor",
+      "tests"
+    ]
+  },
+  "cli_help_mentions_claude_code_for_tp_exec": true,
+  "cli_help_mentions_claude_code_for_tp_series_exec": true,
+  "commands": {
+    "execute_help": {
+      "argv": [
+        "dopetask",
+        "execute",
+        "--help"
+      ],
+      "command": "dopetask execute --help",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "                                                                                \n Usage: dopetask execute [OPTIONS]                                              \n                                                                                \n Automatically discover, import, and execute the next runnable Task Packet.     \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --agent        TEXT  Agent profile: gemini or codex. [default: gemini]       \u2502\n\u2502 --model        TEXT  Optional explicit model override.                       \u2502\n\u2502 --repo         PATH  Repository path.                                        \u2502\n\u2502 --help               Show this message and exit.                             \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    "route_help": {
+      "argv": [
+        "dopetask",
+        "route",
+        "--help"
+      ],
+      "command": "dopetask route --help",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "                                                                                \n Usage: dopetask route [OPTIONS] COMMAND [ARGS]...                              \n                                                                                \n Assisted deterministic routing commands                                        \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --help          Show this message and exit.                                  \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Commands \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 init     Create repo-local route availability declaration.                   \u2502\n\u2502 plan     Build deterministic route plan artifacts from packet +              \u2502\n\u2502          availability.                                                       \u2502\n\u2502 handoff  Generate deterministic handoff markdown (assisted only).            \u2502\n\u2502 explain  Explain deterministic route scoring for a single step.              \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    "route_plan_help": {
+      "argv": [
+        "dopetask",
+        "route",
+        "plan",
+        "--help"
+      ],
+      "command": "dopetask route plan --help",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "                                                                                \n Usage: dopetask route plan [OPTIONS]                                           \n                                                                                \n Build deterministic route plan artifacts from packet + availability.           \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502    --repo-root                    PATH  Repository root path [default: .]    \u2502\n\u2502 *  --packet                       PATH  Task Packet markdown path [required] \u2502\n\u2502    --steps                        TEXT  Planned steps (repeatable and/or     \u2502\n\u2502                                         comma-separated)                     \u2502\n\u2502    --out                          PATH  Output path for ROUTE_PLAN.json      \u2502\n\u2502                                         [default:                            \u2502\n\u2502                                         out/dopetask_route/ROUTE_PLAN.json]  \u2502\n\u2502    --explain      --no-explain          Include step reasons in markdown     \u2502\n\u2502                                         report                               \u2502\n\u2502                                         [default: explain]                   \u2502\n\u2502    --help                               Show this message and exit.          \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    "tp_exec_help": {
+      "argv": [
+        "dopetask",
+        "tp",
+        "exec",
+        "--help"
+      ],
+      "command": "dopetask tp exec --help",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "                                                                                \n Usage: dopetask tp exec [OPTIONS] TP_FILE                                      \n                                                                                \n Execute a Task Packet using a specific agent profile.                          \n                                                                                \n\u256d\u2500 Arguments \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 *    tp_file      FILE  Generic Task Packet JSON file. [required]            \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --agent          TEXT  Agent profile: gemini, codex, or claude_code.         \u2502\n\u2502                        [default: gemini]                                     \u2502\n\u2502 --model          TEXT  Optional explicit model override for the selected     \u2502\n\u2502                        agent.                                                \u2502\n\u2502 --dry-run              Compile and show prompts without executing.           \u2502\n\u2502 --tmux                 Run execution inside an isolated tmux session.        \u2502\n\u2502 --help                 Show this message and exit.                           \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    "tp_series_exec_help": {
+      "argv": [
+        "dopetask",
+        "tp",
+        "series",
+        "exec",
+        "--help"
+      ],
+      "command": "dopetask tp series exec --help",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "                                                                                \n Usage: dopetask tp series exec [OPTIONS] TP_FILE                               \n                                                                                \n Execute a JSON Task Packet inside a DAG-aware series workflow.                 \n                                                                                \n\u256d\u2500 Arguments \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 *    tp_file      FILE  [required]                                           \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --agent        TEXT  Agent profile: gemini, codex, or claude_code.           \u2502\n\u2502                      [default: gemini]                                       \u2502\n\u2502 --model        TEXT  Optional explicit model override.                       \u2502\n\u2502 --force              Force execution even if branch/worktree already exists  \u2502\n\u2502                      (destructive).                                          \u2502\n\u2502 --repo         PATH  Repository path.                                        \u2502\n\u2502 --help               Show this message and exit.                             \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    }
+  },
+  "execute_help_mentions_claude_code": false,
+  "handoff_has_claude_code_prompt_section": true,
+  "reviewed_files": [
+    "src/dopetask/router/availability.py",
+    "src/dopetask/router/types.py",
+    "src/dopetask/router/scoring.py",
+    "src/dopetask/router/planner.py",
+    "src/dopetask/router/handoff.py",
+    "src/dopetask/router/reporting.py",
+    "src/dopetask/ops/tp_exec/cli.py",
+    "src/dopetask/ops/tp_series/cli.py",
+    "src/dopetask/cli.py"
+  ],
+  "route_cli_commands_available": {
+    "route_help_returncode": 0,
+    "route_plan_help_returncode": 0,
+    "route_plan_requires_packet_option": true
+  },
+  "runner_names": [
+    "claude_code",
+    "codex_desktop",
+    "copilot_cli",
+    "google_jules"
+  ],
+  "runner_names_include_claude_code": true,
+  "scoring_can_select_claude_code_for_run_task": true,
+  "scoring_notes": "score_step_candidates iterates sorted available runners and sorted models; claude_code has code_edit/tests strengths, so it receives run-task runner fit bonuses and can win deterministic ties by sorted runner name.",
+  "source_matches": [
+    {
+      "line": 22,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "AVAILABILITY_CONFIG_TEMPLATE",
+      "snippet": "AVAILABILITY_CONFIG_TEMPLATE: dict[str, Any] = {"
+    },
+    {
+      "line": 56,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "claude_code",
+      "snippet": "\"claude_code\": {"
+    },
+    {
+      "line": 101,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "return repo_root.resolve() / \".dopetask\" / \"runtime\" / \"availability.yaml\""
+    },
+    {
+      "line": 105,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "\"\"\"Create default availability YAML deterministically.\"\"\""
+    },
+    {
+      "line": 111,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "AVAILABILITY_CONFIG_TEMPLATE",
+      "snippet": "rendered = yaml.safe_dump(AVAILABILITY_CONFIG_TEMPLATE, sort_keys=True)"
+    },
+    {
+      "line": 129,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "f\"availability.yaml parse error: {exc}\","
+    },
+    {
+      "line": 134,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "\"availability.yaml parse error: expected mapping at top level\","
+    },
+    {
+      "line": 143,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "raise AvailabilityError(\"availability.yaml missing required non-empty `models` mapping\")"
+    },
+    {
+      "line": 145,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "raise AvailabilityError(\"availability.yaml missing required non-empty `runners` mapping\")"
+    },
+    {
+      "line": 147,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "availability.yaml",
+      "snippet": "raise AvailabilityError(\"availability.yaml missing required `policy` mapping\")"
+    },
+    {
+      "line": 254,
+      "path": "src/dopetask/router/availability.py",
+      "pattern": "AVAILABILITY_CONFIG_TEMPLATE",
+      "snippet": "DEFAULT_ROUTE_POLICY = _normalize_policy(AVAILABILITY_CONFIG_TEMPLATE[\"policy\"])"
+    },
+    {
+      "line": 18,
+      "path": "src/dopetask/router/types.py",
+      "pattern": "availability.yaml",
+      "snippet": "DEFAULT_AVAILABILITY_RELATIVE_PATH = Path(\".dopetask/runtime/availability.yaml\")"
+    },
+    {
+      "line": 25,
+      "path": "src/dopetask/router/types.py",
+      "pattern": "claude_code",
+      "snippet": "RUNNER_NAMES: tuple[str, ...] = (\"claude_code\", \"codex_desktop\", \"copilot_cli\", \"google_jules\")"
+    },
+    {
+      "line": 18,
+      "path": "src/dopetask/router/scoring.py",
+      "pattern": "RUNNER_NAMES",
+      "snippet": "runner_names = sorted(availability.runners)"
+    },
+    {
+      "line": 20,
+      "path": "src/dopetask/router/scoring.py",
+      "pattern": "RUNNER_NAMES",
+      "snippet": "for runner_name in runner_names:"
+    },
+    {
+      "line": 38,
+      "path": "src/dopetask/router/handoff.py",
+      "pattern": "Claude Code",
+      "snippet": "\"### Claude Code prompt\","
+    },
+    {
+      "line": 76,
+      "path": "src/dopetask/router/handoff.py",
+      "pattern": "claude_code",
+      "snippet": "elif step.runner == \"claude_code\":"
+    },
+    {
+      "line": 79,
+      "path": "src/dopetask/router/handoff.py",
+      "pattern": "Claude Code",
+      "snippet": "\"### Claude Code prompt\","
+    },
+    {
+      "line": 31,
+      "path": "src/dopetask/ops/tp_exec/cli.py",
+      "pattern": "claude_code",
+      "snippet": "help=\"Agent profile: gemini, codex, or claude_code.\","
+    },
+    {
+      "line": 67,
+      "path": "src/dopetask/ops/tp_series/cli.py",
+      "pattern": "claude_code",
+      "snippet": "agent: str = typer.Option(\"gemini\", \"--agent\", help=\"Agent profile: gemini, codex, or claude_code.\"),"
+    },
+    {
+      "line": 2693,
+      "path": "src/dopetask/cli.py",
+      "pattern": "availability.yaml",
+      "snippet": "help=\"Overwrite existing availability.yaml\","
+    },
+    {
+      "line": 4477,
+      "path": "src/dopetask/cli.py",
+      "pattern": "gemini or codex",
+      "snippet": "agent: str = typer.Option(\"gemini\", \"--agent\", help=\"Agent profile: gemini or codex.\"),"
+    }
+  ],
+  "stale_cli_references": [
+    {
+      "line": 4477,
+      "path": "src/dopetask/cli.py",
+      "pattern": "gemini or codex",
+      "snippet": "agent: str = typer.Option(\"gemini\", \"--agent\", help=\"Agent profile: gemini or codex.\"),"
+    }
+  ]
+}

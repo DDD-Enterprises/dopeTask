@@ -1,0 +1,141 @@
+{
+  "branch": "main",
+  "commands": {
+    "ancestor_check": {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "113bbe7ccb68f909da0996b663a811dca048ce0a",
+        "HEAD"
+      ],
+      "command": "git merge-base --is-ancestor 113bbe7ccb68f909da0996b663a811dca048ce0a HEAD",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "branch": {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "command": "git branch --show-current",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "main\n"
+    },
+    "command_v_dopetask": {
+      "argv": [
+        "zsh",
+        "-lc",
+        "command -v dopetask || true"
+      ],
+      "command": "zsh -lc \"command -v dopetask || true\"",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "/Users/hue/.local/share/mise/installs/python/3.12.13/bin/dopetask\n"
+    },
+    "dope_agent_system_status_readonly": {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "command": "git status --porcelain",
+      "cwd": "/Users/hue/code/dope-agent-system",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "dopetask_module_path": {
+      "argv": [
+        "python3",
+        "-c",
+        "import dopetask; print(dopetask.__file__)"
+      ],
+      "command": "python3 -c \"import dopetask; print(dopetask.__file__)\"",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "/Users/hue/code/dopeTask/src/dopetask/__init__.py\n"
+    },
+    "dopetask_version": {
+      "argv": [
+        "dopetask",
+        "--version"
+      ],
+      "command": "dopetask --version",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0.5.7\n"
+    },
+    "head": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "command": "git rev-parse HEAD",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "113bbe7ccb68f909da0996b663a811dca048ce0a\n"
+    },
+    "local_source_version": {
+      "argv": [
+        "python3",
+        "-m",
+        "dopetask.cli",
+        "--version"
+      ],
+      "command": "python3 -m dopetask.cli --version",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0.5.7\n"
+    },
+    "python_version": {
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "command": "python3 --version",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Python 3.12.13\n"
+    },
+    "status_before": {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "command": "git status --porcelain",
+      "cwd": "/Users/hue/code/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "dopetask_command_path": "/Users/hue/.local/share/mise/installs/python/3.12.13/bin/dopetask",
+  "dopetask_module_path": "/Users/hue/code/dopeTask/src/dopetask/__init__.py",
+  "dopetask_version": "0.5.7",
+  "expected_head": "113bbe7ccb68f909da0996b663a811dca048ce0a",
+  "git_status_before": "",
+  "head": "113bbe7ccb68f909da0996b663a811dca048ce0a",
+  "head_is_expected_or_descendant": true,
+  "local_source_invocation_needed": false,
+  "local_source_invocation_reason": "Installed dopetask resolves to /Users/hue/code/dopeTask/src and exposes route init/plan/handoff plus claude_code help text.",
+  "local_source_version": "0.5.7",
+  "no_source_edits_performed_note": "No source edits performed; only out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ is used for primary-repo writes.",
+  "primary_repo_clean_start": true,
+  "python_version": "Python 3.12.13",
+  "repo_path": "/Users/hue/code/dopeTask",
+  "tp_id": "TP-DT-CLAUDE-ROUTING-READINESS-0001"
+}
