@@ -1,0 +1,171 @@
+{
+  "tp_id": "TP-DT-UI-WORKSPACE-0001",
+  "objective": "Add a read-only dopeTask workspace config schema and resolver for locating dope-agent-system through explicit path, environment variable, or .dopetask/workspace.yaml without hardcoded paths, CLI commands, dependency changes, runner changes, or dope-agent-system writes.",
+  "dependency_commits_observed": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+      "commit": "2fff7d921058666358c11f931b18fdc5ab3972bc",
+      "proof_json_present": true,
+      "observed_as_starting_head": true
+    }
+  ],
+  "files_created": [
+    "src/dopetask/workspace.py",
+    "dopetask_schemas/workspace.schema.json",
+    "tests/test_workspace.py",
+    "task-packets/TP-DT-UI-WORKSPACE-0001.json",
+    "proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+    "proof/TP-DT-UI-WORKSPACE-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [],
+  "schema_created": "dopetask_schemas/workspace.schema.json",
+  "resolver_api": [
+    "WORKSPACE_FILENAME",
+    "DEFAULT_DAS_ENV_VAR",
+    "WorkspaceConfigError",
+    "workspace_path_for_repo(repo_root)",
+    "load_workspace_config(repo_root)",
+    "resolve_dope_agent_system_path(repo_root, explicit_path=None, env=None)"
+  ],
+  "tests_created_or_modified": [
+    "tests/test_workspace.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/router/availability.py",
+    "tests/ui/test_runner_health.py",
+    "dopetask_schemas/runner_health.schema.json",
+    "dopetask_schemas/task_packet.schema.json",
+    "task-packets/TP-DT-UI-RUNNERHEALTH-0001.json",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/IMPLEMENTER_REPORT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool dopetask_schemas/workspace.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-WORKSPACE-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/test_workspace.py -v",
+      "exit_code": 0,
+      "summary": "16 passed"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": "?? dopetask_schemas/workspace.schema.json\n?? src/dopetask/workspace.py\n?? task-packets/TP-DT-UI-WORKSPACE-0001.json\n?? tests/test_workspace.py",
+      "note": "proof/TP-DT-UI-WORKSPACE-0001 is ignored by proof/* and must be force-added."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/workspace.py tests/test_workspace.py || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"/Users/hue\\|/Users/\" src/dopetask/workspace.py tests/test_workspace.py || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import Draft202012Validator\nschema = json.loads(Path('dopetask_schemas/workspace.schema.json').read_text())\nDraft202012Validator.check_schema(schema)\nDraft202012Validator(schema).validate({\n    'schema_version': '1.0',\n    'dope_agent_system_path': '../dope-agent-system',\n    'das_path_env_override': 'DOPE_AGENT_SYSTEM_PATH',\n})\nprint('workspace-schema-valid')\nPY",
+      "exit_code": 0,
+      "summary": "workspace-schema-valid"
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import Draft7Validator\nschema = json.loads(Path('dopetask_schemas/task_packet.schema.json').read_text())\npayload = json.loads(Path('task-packets/TP-DT-UI-WORKSPACE-0001.json').read_text())\nDraft7Validator.check_schema(schema)\nerrors = sorted(Draft7Validator(schema).iter_errors(payload), key=lambda e: list(e.path))\nif errors:\n    for error in errors:\n        print('/'.join(map(str, error.path)) or '<root>', error.message)\n    raise SystemExit(1)\nprint('task-packet-schema-valid')\nPY",
+      "exit_code": 0,
+      "summary": "task-packet-schema-valid"
+    }
+  ],
+  "workspace_schema_validation_result": {
+    "status": "passed",
+    "schema": "dopetask_schemas/workspace.schema.json",
+    "evidence": "json.tool passed, Draft202012Validator.check_schema passed in tests, and explicit schema validation printed workspace-schema-valid.",
+    "additional_properties": false,
+    "permissive_config": false
+  },
+  "resolver_behavior_summary": {
+    "workspace_config_path": ".dopetask/workspace.yaml",
+    "precedence": [
+      "explicit_path argument",
+      "environment variable named by das_path_env_override or DOPE_AGENT_SYSTEM_PATH",
+      "workspace dope_agent_system_path",
+      "workspace das_path",
+      "None"
+    ],
+    "missing_config": "load_workspace_config returns {}, and resolve_dope_agent_system_path returns None when no explicit or environment path is present.",
+    "invalid_config": "Malformed YAML, non-mapping YAML, unsupported top-level keys, non-string DAS path fields, non-string or empty env override, and conflicting dope_agent_system_path/das_path values raise WorkspaceConfigError.",
+    "path_normalization": "Absolute paths, relative paths, and home-relative paths are normalized with Path.expanduser and Path.resolve without checking existence.",
+    "writes": "No resolver function writes files or invokes subprocesses."
+  },
+  "git_status_before": {
+    "branch": "main",
+    "head": "2fff7d921058666358c11f931b18fdc5ab3972bc",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "2fff7d921058666358c11f931b18fdc5ab3972bc",
+    "short": "?? dopetask_schemas/workspace.schema.json\n?? src/dopetask/workspace.py\n?? task-packets/TP-DT-UI-WORKSPACE-0001.json\n?? tests/test_workspace.py",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+      "proof/TP-DT-UI-WORKSPACE-0001/IMPLEMENTER_REPORT.md"
+    ]
+  },
+  "no_cli_command_added": true,
+  "no_ui_status": true,
+  "no_report_command": true,
+  "no_cockpit": true,
+  "no_asset_library": true,
+  "no_runner_health_changes": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_textual_added": true,
+  "no_hardcoded_local_paths": true,
+  "commit_ready": true,
+  "commit_message": "feat(workspace): add explicit DAS path resolver",
+  "commit_hash": "self_referential_unavailable",
+  "self_referential_commit_hash_caveat": "This proof is generated before the source commit. A Git commit cannot contain its own final SHA in a tracked proof file without changing that SHA. The final commit hash and post-commit status are verified after commit and reported in the final response.",
+  "blockers": []
+}

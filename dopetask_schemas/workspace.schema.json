@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/workspace.schema.json",
+  "title": "dopeTask Workspace Configuration",
+  "description": "Optional .dopetask/workspace.yaml configuration for read-only dope-agent-system path discovery.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dope_agent_system_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Preferred field for the dope-agent-system asset/template/reference repository path. May be absolute or repository-relative."
+    },
+    "das_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Alias retained for earlier design wording. May be absolute or repository-relative."
+    },
+    "das_path_env_override": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Environment variable name to consult for the dope-agent-system path. Runtime defaults to DOPE_AGENT_SYSTEM_PATH when absent."
+    }
+  }
+}
