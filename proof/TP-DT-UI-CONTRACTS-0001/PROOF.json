@@ -1,0 +1,211 @@
+{
+  "tp_id": "TP-DT-UI-CONTRACTS-0001",
+  "objective": "Publish runtime artifact JSON Schemas for the dopeTask UI/TUI data contract foundation, validate existing fixture/sample artifacts honestly, create task packet and proof artifacts, and prepare a clean commit.",
+  "files_created": [
+    "dopetask_schemas/series_state.schema.json",
+    "dopetask_schemas/exec_record.schema.json",
+    "dopetask_schemas/exec_error.schema.json",
+    "dopetask_schemas/series_context.schema.json",
+    "dopetask_schemas/route_plan.schema.json",
+    "tests/schemas/test_runtime_artifact_schemas.py",
+    "task-packets/TP-DT-UI-CONTRACTS-0001.json",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+    "proof/TP-DT-UI-CONTRACTS-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [],
+  "schemas_created": [
+    "dopetask_schemas/series_state.schema.json",
+    "dopetask_schemas/exec_record.schema.json",
+    "dopetask_schemas/exec_error.schema.json",
+    "dopetask_schemas/series_context.schema.json",
+    "dopetask_schemas/route_plan.schema.json"
+  ],
+  "tests_created": [
+    "tests/schemas/test_runtime_artifact_schemas.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/ops/tp_series/logic.py",
+    "src/dopetask/router/reporting.py",
+    "src/dopetask/router/types.py",
+    "src/dopetask/router/planner.py",
+    "dopetask_schemas/task_packet.strict.schema.json",
+    "dopetask_schemas/run_summary.schema.json",
+    "task-packets/TP-DT-CLAUDE-ADAPTER-0001.json",
+    ".gitignore",
+    ".dopetask/project.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/PROOF.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "fixture_artifacts_validated": [
+    {
+      "artifact_type": "series_state",
+      "schema": "dopetask_schemas/series_state.schema.json",
+      "count": 14,
+      "paths": [
+        "out/tp_series/SERIES-AUDIT-057-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-AUDIT-057B-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-AUDIT-057C-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-AUDIT-057D-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-AUDIT-057E-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/SERIES_STATE.json",
+        "out/tp_series/SERIES-CLI-UX-001/SERIES_STATE.json",
+        "out/tp_series/SERIES-REFACTOR-001/SERIES_STATE.json",
+        "out/tp_series/docs-cleanup-series/SERIES_STATE.json",
+        "out/tp_series/docs-install-best-practices-corrective-series/SERIES_STATE.json",
+        "out/tp_series/docs-install-best-practices-series/SERIES_STATE.json",
+        "out/tp_series/docs-install-cli-series/SERIES_STATE.json",
+        "out/tp_series/release-0-5-3/SERIES_STATE.json",
+        "out/tp_series/validation-series/SERIES_STATE.json"
+      ]
+    },
+    {
+      "artifact_type": "exec_record",
+      "schema": "dopetask_schemas/exec_record.schema.json",
+      "count": 2,
+      "paths": [
+        "out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/packets/TP-AUDIT-057F-PROMPT-PIPELINE/EXEC.json",
+        "out/tp_series/docs-cleanup-series/packets/TP-CORE-011-legacy-docs-cleanup/EXEC.json"
+      ]
+    },
+    {
+      "artifact_type": "exec_error",
+      "schema": "dopetask_schemas/exec_error.schema.json",
+      "count": 14,
+      "paths": [
+        "out/tp_series/SERIES-AUDIT-057-PROMPT-PIPELINE/packets/TP-AUDIT-057-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-AUDIT-057B-PROMPT-PIPELINE/packets/TP-AUDIT-057B-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-AUDIT-057C-PROMPT-PIPELINE/packets/TP-AUDIT-057C-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-AUDIT-057D-PROMPT-PIPELINE/packets/TP-AUDIT-057D-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-AUDIT-057E-PROMPT-PIPELINE/packets/TP-AUDIT-057E-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/packets/TP-AUDIT-057F-PROMPT-PIPELINE/EXEC_ERROR.json",
+        "out/tp_series/SERIES-CLI-UX-001/packets/TP-CLI-UX-001/EXEC_ERROR.json",
+        "out/tp_series/SERIES-REFACTOR-001/packets/TP-PHASE-1-EXEC-REFACTOR/EXEC_ERROR.json",
+        "out/tp_series/docs-cleanup-series/packets/TP-CORE-011-legacy-docs-cleanup/EXEC_ERROR.json",
+        "out/tp_series/docs-install-best-practices-corrective-series/packets/TP-CORE-014-install-best-practices-corrective/EXEC_ERROR.json",
+        "out/tp_series/docs-install-best-practices-series/packets/TP-CORE-013-install-best-practices/EXEC_ERROR.json",
+        "out/tp_series/docs-install-cli-series/packets/TP-CORE-015-install-docs-isolated-cli/EXEC_ERROR.json",
+        "out/tp_series/release-0-5-3/packets/TP-CORE-012-release-v0.5.3/EXEC_ERROR.json",
+        "out/tp_series/validation-series/packets/TP-VALIDATION-SMOKE/EXEC_ERROR.json"
+      ]
+    },
+    {
+      "artifact_type": "series_context",
+      "schema": "dopetask_schemas/series_context.schema.json",
+      "count": 11,
+      "paths": [
+        "out/tp_series/SERIES-AUDIT-057B-PROMPT-PIPELINE/packets/TP-AUDIT-057B-PROMPT-PIPELINE/SERIES_CONTEXT.json",
+        "out/tp_series/SERIES-AUDIT-057C-PROMPT-PIPELINE/packets/TP-AUDIT-057C-PROMPT-PIPELINE/SERIES_CONTEXT.json",
+        "out/tp_series/SERIES-AUDIT-057D-PROMPT-PIPELINE/packets/TP-AUDIT-057D-PROMPT-PIPELINE/SERIES_CONTEXT.json",
+        "out/tp_series/SERIES-AUDIT-057E-PROMPT-PIPELINE/packets/TP-AUDIT-057E-PROMPT-PIPELINE/SERIES_CONTEXT.json",
+        "out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/packets/TP-AUDIT-057F-PROMPT-PIPELINE/SERIES_CONTEXT.json",
+        "out/tp_series/SERIES-REFACTOR-001/packets/TP-PHASE-1-EXEC-REFACTOR/SERIES_CONTEXT.json",
+        "out/tp_series/docs-cleanup-series/packets/TP-CORE-011-legacy-docs-cleanup/SERIES_CONTEXT.json",
+        "out/tp_series/docs-install-best-practices-series/packets/TP-CORE-013-install-best-practices/SERIES_CONTEXT.json",
+        "out/tp_series/docs-install-cli-series/packets/TP-CORE-015-install-docs-isolated-cli/SERIES_CONTEXT.json",
+        "out/tp_series/release-0-5-3/packets/TP-CORE-012-release-v0.5.3/SERIES_CONTEXT.json",
+        "out/tp_series/validation-series/packets/TP-VALIDATION-SMOKE/SERIES_CONTEXT.json"
+      ]
+    }
+  ],
+  "fixture_artifacts_absent": [
+    {
+      "artifact_type": "route_plan",
+      "schema": "dopetask_schemas/route_plan.schema.json",
+      "patterns": [
+        "out/dopetask_route/**/ROUTE_PLAN.json"
+      ],
+      "count": 0,
+      "test_result": "explicit pytest skip"
+    }
+  ],
+  "documented_shape_inconsistencies": [
+    {
+      "surface": "ROUTE_PLAN.json design prose vs runtime writer",
+      "observation": "TUI_DATA_ARCHITECTURE.md names planned-step fields step_id and top_candidates, but src/dopetask/router/reporting.py emits step and candidates_top3.",
+      "resolution": "route_plan.schema.json follows route_plan_to_dict() because runtime code is higher authority than design prose."
+    },
+    {
+      "surface": "Historical EXEC.json fixtures vs current runtime writer",
+      "observation": "Existing out/tp_series EXEC.json fixtures lack agent, model, requested_model, effective_model, and effective_model_source even though current logic.py writes them.",
+      "resolution": "exec_record.schema.json models those metadata fields as optional to preserve historical artifact validation without inventing auth metadata."
+    },
+    {
+      "surface": "SERIES_CONTEXT.json file vs returned context payload",
+      "observation": "_write_series_context() writes SERIES_CONTEXT.json before adding worktree_context to the returned payload used inside EXEC.context.",
+      "resolution": "series_context.schema.json allows optional worktree_context while not requiring it for standalone SERIES_CONTEXT.json fixtures."
+    }
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool dopetask_schemas/series_state.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool dopetask_schemas/exec_record.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool dopetask_schemas/exec_error.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool dopetask_schemas/series_context.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool dopetask_schemas/route_plan.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-CONTRACTS-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+      "exit_code": 0,
+      "summary": "12 passed, 1 skipped; skipped fixture validation is route_plan because no out/dopetask_route/**/ROUTE_PLAN.json artifact exists."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": "?? dopetask_schemas/exec_error.schema.json\n?? dopetask_schemas/exec_record.schema.json\n?? dopetask_schemas/route_plan.schema.json\n?? dopetask_schemas/series_context.schema.json\n?? dopetask_schemas/series_state.schema.json\n?? task-packets/TP-DT-UI-CONTRACTS-0001.json\n?? tests/schemas/",
+      "note": "proof/TP-DT-UI-CONTRACTS-0001 is ignored by the existing proof/* .gitignore rule and must be force-added when committing."
+    },
+    {
+      "command": "grep -R \"textual\" src/dopetask tests/schemas dopetask_schemas task-packets/TP-DT-UI-CONTRACTS-0001.json proof/TP-DT-UI-CONTRACTS-0001 || true",
+      "exit_code": 0,
+      "summary": "Matches were existing generic source comments/docstrings plus governance references in this task packet. No textual import, dependency, or pyproject change was introduced."
+    }
+  ],
+  "git_status_before": {
+    "branch": "main",
+    "head": "40a255a93368991dcb1da410af26cb712b27adc7",
+    "short": ""
+  },
+  "git_status_after": {
+    "branch": "main",
+    "head": "40a255a93368991dcb1da410af26cb712b27adc7",
+    "short": "?? dopetask_schemas/exec_error.schema.json\n?? dopetask_schemas/exec_record.schema.json\n?? dopetask_schemas/route_plan.schema.json\n?? dopetask_schemas/series_context.schema.json\n?? dopetask_schemas/series_state.schema.json\n?? task-packets/TP-DT-UI-CONTRACTS-0001.json\n?? tests/schemas/",
+    "note": "Visible status contains only allowed non-ignored paths. proof/TP-DT-UI-CONTRACTS-0001 is ignored by proof/* and is intentionally included in the commit allowlist."
+  },
+  "no_ui_code": true,
+  "no_runtime_semantics_changed": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "commit_ready": true,
+  "commit_message": "feat(schema): publish UI runtime artifact contracts",
+  "blockers": []
+}

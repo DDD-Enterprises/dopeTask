@@ -1,0 +1,166 @@
+{
+  "id": "TP-DT-UI-CONTRACTS-0001",
+  "project": "dopetask",
+  "target": "Publish runtime artifact JSON Schemas for the dopeTask UI/TUI data contract foundation in /Users/hue/code/dopeTask without adding UI, report, cockpit, status collector, runner health, workspace resolver, dependency, or runtime behavior changes.",
+  "invariants": [
+    "dopeTask is runtime authority for series, exec, context, and route artifacts.",
+    "dope-agent-system is asset/template/reference authority only; this packet performs no dope-agent-system writes.",
+    "PAL/clink is planning/context only and is not execution transport.",
+    "No TUI implementation, report command, cockpit command, status collector, runner health probe, workspace resolver, auth metadata promotion, textual dependency, dependency change, pyproject change, route/orchestrate runner change, Claude adapter change, or runtime execution semantic change is in scope.",
+    "Do not change src/dopetask/ops/tp_series/logic.py or proof/standards/.",
+    "Schema shapes must be inferred from runtime code and existing artifacts only, with runtime code taking precedence over ignored fixture artifacts.",
+    "EXEC_ERROR.json is historical/error evidence and not current state authority."
+  ],
+  "depends_on": [],
+  "repo_binding": {
+    "project_id": "dopetask.core",
+    "repo_marker": ".dopetaskroot",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-UI-CONTRACTS",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/ui-contracts-0001"
+  },
+  "commit": {
+    "message": "feat(schema): publish UI runtime artifact contracts",
+    "allowlist": [
+      "dopetask_schemas/series_state.schema.json",
+      "dopetask_schemas/exec_record.schema.json",
+      "dopetask_schemas/exec_error.schema.json",
+      "dopetask_schemas/series_context.schema.json",
+      "dopetask_schemas/route_plan.schema.json",
+      "tests/schemas/test_runtime_artifact_schemas.py",
+      "task-packets/TP-DT-UI-CONTRACTS-0001.json",
+      "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+      "proof/TP-DT-UI-CONTRACTS-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "verify": [
+      "python3 -m json.tool dopetask_schemas/series_state.schema.json",
+      "python3 -m json.tool dopetask_schemas/exec_record.schema.json",
+      "python3 -m json.tool dopetask_schemas/exec_error.schema.json",
+      "python3 -m json.tool dopetask_schemas/series_context.schema.json",
+      "python3 -m json.tool dopetask_schemas/route_plan.schema.json",
+      "python3 -m json.tool task-packets/TP-DT-UI-CONTRACTS-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+      "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+      "git diff --check",
+      "git status --short",
+      "grep -R \"textual\" src/dopetask tests/schemas dopetask_schemas task-packets/TP-DT-UI-CONTRACTS-0001.json proof/TP-DT-UI-CONTRACTS-0001 || true"
+    ]
+  },
+  "pr": {
+    "title": "Publish UI runtime artifact schema contracts",
+    "body": "Adds schema contracts and validation tests for the dopeTask UI/TUI data contract foundation. No UI, report, cockpit, dependency, auth metadata, workspace resolver, or runtime behavior changes.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_runtime_authority_inspection",
+      "task": "Inspect runtime artifact writers, existing schema conventions, source design artifacts, and ignored fixture artifacts before authoring schemas.",
+      "requirements": [
+        "Use src/dopetask/ops/tp_series/logic.py as source authority for SERIES_STATE.json, EXEC.json, EXEC_ERROR.json, and SERIES_CONTEXT.json.",
+        "Use src/dopetask/router/reporting.py as source authority for ROUTE_PLAN.json.",
+        "Use out/tp_series/* and out/dopetask_route/* only as fixture examples.",
+        "Record design drift or historical shape variation honestly in proof artifacts."
+      ],
+      "commands": [],
+      "expected_files": [],
+      "validation": [
+        "python3 -m json.tool out/design/TP-DT-TUI-OPUS-DESIGN-0001/PROOF.json"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py",
+        "src/dopetask/router/reporting.py",
+        "src/dopetask/router/types.py",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/PROOF.json",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+      ]
+    },
+    {
+      "id": "step_2_schema_and_test_publication",
+      "task": "Create runtime artifact JSON Schemas and a read-only pytest fixture validation suite.",
+      "requirements": [
+        "Create exactly the five requested schema files under dopetask_schemas/.",
+        "Do not create runner_health, workspace, or ui_status schemas in this packet.",
+        "Create tests/schemas/test_runtime_artifact_schemas.py.",
+        "Tests must read ignored fixture artifacts only and must not write to out/, proof/, or dope-agent-system.",
+        "Do not call dopetask doctor, route plan, tp series exec, or any write-side-effect command from tests.",
+        "Do not add auth_mode or bare_mode fields to exec_record.schema.json in this packet."
+      ],
+      "commands": [],
+      "expected_files": [
+        "dopetask_schemas/series_state.schema.json",
+        "dopetask_schemas/exec_record.schema.json",
+        "dopetask_schemas/exec_error.schema.json",
+        "dopetask_schemas/series_context.schema.json",
+        "dopetask_schemas/route_plan.schema.json",
+        "tests/schemas/test_runtime_artifact_schemas.py"
+      ],
+      "validation": [
+        "python3 -m json.tool dopetask_schemas/series_state.schema.json",
+        "python3 -m json.tool dopetask_schemas/exec_record.schema.json",
+        "python3 -m json.tool dopetask_schemas/exec_error.schema.json",
+        "python3 -m json.tool dopetask_schemas/series_context.schema.json",
+        "python3 -m json.tool dopetask_schemas/route_plan.schema.json",
+        "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py",
+        "src/dopetask/router/reporting.py",
+        "src/dopetask/router/types.py"
+      ]
+    },
+    {
+      "id": "step_3_governance_proof_and_commit",
+      "task": "Create packet/proof/report artifacts, run required validation, and commit only the allowlisted files if validation passes.",
+      "requirements": [
+        "Create task-packets/TP-DT-UI-CONTRACTS-0001.json.",
+        "Create proof/TP-DT-UI-CONTRACTS-0001/PROOF.json.",
+        "Create proof/TP-DT-UI-CONTRACTS-0001/IMPLEMENTER_REPORT.md.",
+        "Record validation command exit codes and fixture validation counts in proof artifacts.",
+        "Run the textual grep safety check and confirm no new textual dependency or import.",
+        "Stage only the commit allowlist and commit with the declared commit message if all validations pass and final status includes only allowed files."
+      ],
+      "commands": [
+        "python3 -m json.tool dopetask_schemas/series_state.schema.json",
+        "python3 -m json.tool dopetask_schemas/exec_record.schema.json",
+        "python3 -m json.tool dopetask_schemas/exec_error.schema.json",
+        "python3 -m json.tool dopetask_schemas/series_context.schema.json",
+        "python3 -m json.tool dopetask_schemas/route_plan.schema.json",
+        "python3 -m json.tool task-packets/TP-DT-UI-CONTRACTS-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+        "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+        "git diff --check",
+        "git status --short",
+        "grep -R \"textual\" src/dopetask tests/schemas dopetask_schemas task-packets/TP-DT-UI-CONTRACTS-0001.json proof/TP-DT-UI-CONTRACTS-0001 || true"
+      ],
+      "expected_files": [
+        "task-packets/TP-DT-UI-CONTRACTS-0001.json",
+        "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+        "proof/TP-DT-UI-CONTRACTS-0001/IMPLEMENTER_REPORT.md"
+      ],
+      "validation": [
+        "python3 -m json.tool task-packets/TP-DT-UI-CONTRACTS-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+        "git diff --check",
+        "git status --short"
+      ],
+      "context_files": [
+        "dopetask_schemas/task_packet.strict.schema.json",
+        ".gitignore"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/route_plan.schema.json",
+  "title": "dopeTask Route Plan",
+  "description": "Deterministic route plan JSON written by src/dopetask/router/reporting.py as out/dopetask_route/ROUTE_PLAN.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "repo_root",
+    "packet_path",
+    "availability_path",
+    "policy",
+    "refusal_reasons",
+    "steps"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "refused"
+      ]
+    },
+    "repo_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "availability_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy": {
+      "$ref": "#/$defs/policy"
+    },
+    "refusal_reasons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/refusal_reason"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/planned_step"
+      }
+    }
+  },
+  "$defs": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "require_explain",
+        "stop_on_ambiguity",
+        "max_cost_tier",
+        "escalation_ladder",
+        "max_escalations",
+        "min_total_score"
+      ],
+      "properties": {
+        "require_explain": {
+          "type": "boolean"
+        },
+        "stop_on_ambiguity": {
+          "type": "boolean"
+        },
+        "max_cost_tier": {
+          "type": "string",
+          "enum": [
+            "cheap",
+            "medium",
+            "high"
+          ]
+        },
+        "escalation_ladder": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "max_escalations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_total_score": {
+          "type": "integer"
+        }
+      }
+    },
+    "refusal_reason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason_code",
+        "message"
+      ],
+      "properties": {
+        "reason_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "planned_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step",
+        "runner",
+        "model",
+        "confidence",
+        "scores",
+        "reasons",
+        "candidates_top3"
+      ],
+      "properties": {
+        "step": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "scores": {
+          "$ref": "#/$defs/scores"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidates_top3": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/top_candidate"
+          }
+        }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner_fit",
+        "model_fit",
+        "cost_penalty",
+        "confidence_penalty",
+        "total"
+      ],
+      "properties": {
+        "runner_fit": {
+          "type": "integer"
+        },
+        "model_fit": {
+          "type": "integer"
+        },
+        "cost_penalty": {
+          "type": "integer"
+        },
+        "confidence_penalty": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "top_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner",
+        "model",
+        "total"
+      ],
+      "properties": {
+        "runner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

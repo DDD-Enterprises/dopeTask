@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/exec_error.schema.json",
+  "title": "dopeTask TP Series Exec Error",
+  "description": "Historical packet execution error artifact written by src/dopetask/ops/tp_series/logic.py as EXEC_ERROR.json. This is not current state authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "series_id",
+    "tp_id",
+    "branch",
+    "worktree_path",
+    "error"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "series_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tp_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "worktree_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
