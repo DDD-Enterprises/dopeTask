@@ -1,0 +1,213 @@
+{
+  "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+  "objective": "Add a runner health schema, read-only runner health probe module, and minimal dopetask ui runners CLI surface that reports configured, binary, auth, TP-series adapter, and route-plane adapter health without implementing status, report, cockpit, workspace resolver, runner behavior changes, or mutating launchers.",
+  "dependency_commits_observed": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+      "proof_json_present": true,
+      "observed_as_starting_head": true
+    }
+  ],
+  "files_created": [
+    "dopetask_schemas/runner_health.schema.json",
+    "src/dopetask/ui/__init__.py",
+    "src/dopetask/ui/runner_health.py",
+    "tests/ui/test_runner_health.py",
+    "task-packets/TP-DT-UI-RUNNERHEALTH-0001.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/cli.py"
+  ],
+  "schema_created": "dopetask_schemas/runner_health.schema.json",
+  "cli_surface_added": [
+    "dopetask ui runners --json",
+    "dopetask ui runners --refresh --json"
+  ],
+  "runtime_outputs_written": [
+    {
+      "path": "out/dopetask_ui/RUNNER_HEALTH.json",
+      "reason": "Explicit validation command used --refresh.",
+      "tracked": false
+    }
+  ],
+  "tests_created_or_modified": [
+    "tests/ui/test_runner_health.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/cli.py",
+    "src/dopetask/ui.py",
+    "src/dopetask/router/availability.py",
+    "src/dopetask/router/types.py",
+    "src/dopetask/runners/__init__.py",
+    "src/dopetask/runners/base.py",
+    "src/dopetask/runners/claude_code.py",
+    "src/dopetask/runners/codex_cli.py",
+    "src/dopetask/runners/copilot_cli.py",
+    "src/dopetask/runners/google_jules.py",
+    "src/dopetask_adapters/claude_code/executor.py",
+    "src/dopetask_adapters/codex/executor.py",
+    "src/dopetask_adapters/gemini/executor.py",
+    "dopetask_schemas/exec_record.schema.json",
+    "dopetask_schemas/route_plan.schema.json",
+    "tests/schemas/test_runtime_artifact_schemas.py",
+    "task-packets/TP-DT-UI-AUTHMETA-0001.json",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "runner_axes_implemented": [
+    "configured",
+    "binary_present",
+    "auth_ready",
+    "tp_series_adapter",
+    "route_plane_adapter",
+    "overall_health",
+    "notes"
+  ],
+  "adapter_state_source": {
+    "configured": ".dopetask/runtime/availability.yaml via dopetask.router.availability.load_availability; missing file yields configured='missing-config'.",
+    "binary_present": "shutil.which only; no shell commands or runner commands are invoked.",
+    "auth_ready": "Defaults to 'unknown' with auth_probe_method='not_implemented'; no auth success is inferred.",
+    "tp_series_adapter": "Module availability under src/dopetask_adapters, with codex_desktop mapped to the codex TP-series adapter.",
+    "route_plane_adapter": "src/dopetask/runners.RUNNER_ADAPTERS plus source inspection of run methods for RUNNER_NOT_IMPLEMENTED refusal stubs.",
+    "observed_route_plane": {
+      "claude_code": "RUNNER_NOT_IMPLEMENTED",
+      "codex": "missing",
+      "codex_desktop": "implemented",
+      "copilot_cli": "RUNNER_NOT_IMPLEMENTED",
+      "gemini": "missing",
+      "google_jules": "RUNNER_NOT_IMPLEMENTED"
+    },
+    "observed_tp_series": {
+      "claude_code": "implemented",
+      "codex": "implemented",
+      "codex_desktop": "implemented",
+      "copilot_cli": "missing",
+      "gemini": "implemented",
+      "google_jules": "missing"
+    }
+  },
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool dopetask_schemas/runner_health.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-RUNNERHEALTH-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "exit_code": 0,
+      "summary": "13 passed"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui runners --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui runners --refresh --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool out/dopetask_ui/RUNNER_HEALTH.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import Draft202012Validator\nschema = json.loads(Path('dopetask_schemas/runner_health.schema.json').read_text())\npayload = json.loads(Path('out/dopetask_ui/RUNNER_HEALTH.json').read_text())\nDraft202012Validator.check_schema(schema)\nerrors = sorted(Draft202012Validator(schema).iter_errors(payload), key=lambda e: list(e.path))\nif errors:\n    for error in errors:\n        print(error.message)\n    raise SystemExit(1)\nprint('runner-health-artifact-schema-valid')\nPY",
+      "exit_code": 0,
+      "summary": "runner-health-artifact-schema-valid"
+    },
+    {
+      "command": "python3 -m dopetask ui runners --refresh --json | python3 -m json.tool >/tmp/dopetask_runner_health_refresh.json && python3 -m json.tool out/dopetask_ui/RUNNER_HEALTH.json >/tmp/dopetask_runner_health_artifact.json && python3 - <<'PY'\nimport json\nfrom pathlib import Path\nstdout_payload = json.loads(Path('/tmp/dopetask_runner_health_refresh.json').read_text())\nartifact_payload = json.loads(Path('/tmp/dopetask_runner_health_artifact.json').read_text())\nassert stdout_payload == artifact_payload\nprint('runner-health-refresh-artifact-match')\nPY",
+      "exit_code": 0,
+      "summary": "runner-health-refresh-artifact-match"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M src/dopetask/cli.py\n?? dopetask_schemas/runner_health.schema.json\n?? src/dopetask/ui/\n?? task-packets/TP-DT-UI-RUNNERHEALTH-0001.json\n?? tests/ui/",
+      "note": "proof/TP-DT-UI-RUNNERHEALTH-0001 is ignored by proof/* and must be force-added; out/dopetask_ui/RUNNER_HEALTH.json is ignored runtime output and must not be added."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "runner_health_schema_validation_result": {
+    "status": "passed",
+    "schema": "dopetask_schemas/runner_health.schema.json",
+    "evidence": "Draft202012Validator.check_schema passed in tests/ui/test_runner_health.py and json.tool passed."
+  },
+  "runner_health_artifact_validation_result": {
+    "status": "passed",
+    "artifact": "out/dopetask_ui/RUNNER_HEALTH.json",
+    "evidence": "Refresh CLI emitted parseable JSON, wrote the ignored artifact, json.tool passed, explicit Draft202012Validator validation printed runner-health-artifact-schema-valid, and a sequential refresh/artifact comparison printed runner-health-refresh-artifact-match."
+  },
+  "git_status_before": {
+    "branch": "main",
+    "head": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+    "short": " M src/dopetask/cli.py\n?? dopetask_schemas/runner_health.schema.json\n?? src/dopetask/ui/\n?? task-packets/TP-DT-UI-RUNNERHEALTH-0001.json\n?? tests/ui/",
+    "ignored_runtime_outputs": [
+      "out/dopetask_ui/RUNNER_HEALTH.json"
+    ],
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+      "proof/TP-DT-UI-RUNNERHEALTH-0001/IMPLEMENTER_REPORT.md"
+    ]
+  },
+  "commit_hash": null,
+  "git_status_after_commit": null,
+  "post_commit_hash_caveat": "This proof is generated before the source commit. A Git commit cannot contain its own final SHA in a tracked proof file without changing that SHA. The final commit hash and post-commit status are verified after commit and reported in the final response.",
+  "no_status_collector": true,
+  "no_report_command": true,
+  "no_cockpit": true,
+  "no_workspace_resolver": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_textual_added": true,
+  "auth_ready_defaults_unknown": true,
+  "configured_only_never_healthy": true,
+  "commit_ready": true,
+  "commit_message": "feat(ui): add runner health probe",
+  "blockers": []
+}

@@ -88,6 +88,7 @@ from dopetask.ui import (
 from dopetask.ui import (
     worship as worship_impl,
 )
+from dopetask.ui.runner_health import collect_runner_health
 
 # Import pipeline modules (from migrated dopetask code)
 try:
@@ -198,6 +199,8 @@ neon_app = typer.Typer(help="Neon terminal cosmetics (console-only). Artifacts s
 cli.add_typer(neon_app, name="neon")
 metrics_app = typer.Typer(help="Local-only opt-in usage metrics (no telemetry).")
 cli.add_typer(metrics_app, name="metrics")
+ui_app = typer.Typer(help="Read-only UI data surfaces.", no_args_is_help=True)
+cli.add_typer(ui_app, name="ui")
 tp_app = typer.Typer(name="tp", help="Task Packet workflow commands", no_args_is_help=True)
 cli.add_typer(tp_app, name="tp")
 if tp_git_app:
@@ -553,6 +556,26 @@ def metrics_reset() -> None:
     path = resolve_metrics_path(env=os.environ, home=Path.home())
     _ = reset_metrics(path)
     typer.echo("metrics_commands_reset=1")
+
+
+@ui_app.command("runners")
+def ui_runners(
+    refresh: bool = typer.Option(
+        False,
+        "--refresh",
+        help="Write out/dopetask_ui/RUNNER_HEALTH.json after collecting runner health.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit machine-readable JSON. This is the only supported output in this TP.",
+    ),
+) -> None:
+    """Emit read-only runner health JSON."""
+
+    _ = json_output
+    payload = collect_runner_health(Path.cwd(), refresh=refresh)
+    typer.echo(json.dumps(payload, indent=2, sort_keys=True))
 
 
 def _check_repo_guard(bypass: bool, rescue_patch: typing.Optional[str] = None) -> Path:
