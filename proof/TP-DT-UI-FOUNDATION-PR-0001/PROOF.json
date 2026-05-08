@@ -1,0 +1,154 @@
+{
+  "tp_id": "TP-DT-UI-FOUNDATION-PR-0001",
+  "objective": "Create a draft PR checkpoint for the accepted dopeTask UI foundation slice through TP-DT-UI-REPORT-0001, with proof artifacts, accepted-risk notes, and GitHub PR metadata.",
+  "accepted_tp_sequence": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a"
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41"
+    },
+    {
+      "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+      "commit": "2fff7d921058666358c11f931b18fdc5ab3972bc"
+    },
+    {
+      "tp_id": "TP-DT-UI-WORKSPACE-0001",
+      "commit": "715be219f79b06ba01abb479a98b987f031c7b1d"
+    },
+    {
+      "tp_id": "TP-DT-UI-STATUS-0001",
+      "commit": "8c50b3c36548ad70835956ef86e2cd52d6e5131d"
+    },
+    {
+      "tp_id": "TP-DT-UI-REPORT-0001",
+      "commit": "f77081d774085c0e8455517a8c9a499f7fb790cb"
+    }
+  ],
+  "expected_start_head": "f77081d774085c0e8455517a8c9a499f7fb790cb",
+  "actual_start_head": "f77081d774085c0e8455517a8c9a499f7fb790cb",
+  "origin_main_head": "e1bb295c0a438bb4735ff11a3d1f9f3513e7bdb4",
+  "merge_base": "e1bb295c0a438bb4735ff11a3d1f9f3513e7bdb4",
+  "pr_branch": "codex/ui-foundation-pr-0001",
+  "pr_url": "https://github.com/DDD-Enterprises/dopeTask/pull/84",
+  "pr_number": 84,
+  "files_created": [
+    "task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+    "proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+    "proof/TP-DT-UI-FOUNDATION-PR-0001/IMPLEMENTER_REPORT.md",
+    "proof/TP-DT-UI-FOUNDATION-PR-0001/PR_BODY.md",
+    "proof/TP-DT-UI-FOUNDATION-PR-0001/FOUNDATION_SLICE_SUMMARY.md"
+  ],
+  "files_modified": [],
+  "commit_hash": "self_referential_unavailable",
+  "final_head": "self_referential_unavailable",
+  "final_git_status": "verified clean after commit in final closeout",
+  "changed_files_from_merge_base": {
+    "command": "git diff --name-only $(git merge-base HEAD origin/main)..HEAD",
+    "status": "verified after checkpoint commit",
+    "note": "The accepted foundation diff from origin/main is large. The final command output is recorded in the final response; this checkpoint adds only the five allowlisted TP-DT-UI-FOUNDATION-PR-0001 files."
+  },
+  "allowlist_check": {
+    "status": "passed",
+    "allowed_files": [
+      "task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/IMPLEMENTER_REPORT.md",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/PR_BODY.md",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/FOUNDATION_SLICE_SUMMARY.md"
+    ],
+    "outside_allowlist": []
+  },
+  "validation_commands": [
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "git rev-parse --abbrev-ref HEAD",
+      "exit_code": 0,
+      "stdout": "main"
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit_code": 0,
+      "stdout": "f77081d774085c0e8455517a8c9a499f7fb790cb"
+    },
+    {
+      "command": "git rev-parse --verify origin/main",
+      "exit_code": 0,
+      "stdout": "e1bb295c0a438bb4735ff11a3d1f9f3513e7bdb4"
+    },
+    {
+      "command": "git merge-base HEAD origin/main",
+      "exit_code": 0,
+      "stdout": "e1bb295c0a438bb4735ff11a3d1f9f3513e7bdb4"
+    },
+    {
+      "command": "git show-ref --verify --quiet refs/heads/codex/ui-foundation-pr-0001; echo local:$?",
+      "exit_code": 0,
+      "stdout": "local:1"
+    },
+    {
+      "command": "git ls-remote --heads origin codex/ui-foundation-pr-0001",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": "?? task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+      "note": "proof/TP-DT-UI-FOUNDATION-PR-0001 is ignored by proof/* and must be force-added."
+    },
+    {
+      "command": "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE >/tmp/dopetask_foundation_report_smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_foundation_report_smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "gh pr view --json number,url,title,state,isDraft,headRefName,baseRefName",
+      "exit_code": 0,
+      "stdout": "{\"baseRefName\":\"main\",\"headRefName\":\"codex/ui-foundation-pr-0001\",\"isDraft\":true,\"number\":84,\"state\":\"OPEN\",\"title\":\"dopeTask UI Foundation: schemas, auth metadata, runner/workspace/status/report\",\"url\":\"https://github.com/DDD-Enterprises/dopeTask/pull/84\"}"
+    }
+  ],
+  "no_source_edits": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_cockpit": true,
+  "no_asset_library": true,
+  "no_mutating_launchers": true,
+  "no_audit_panes": true,
+  "no_route_orchestrate_runner": true,
+  "pushed_branch": true,
+  "draft_pr_created": true,
+  "merge_performed": false,
+  "self_referential_commit_hash_caveat": "The final amended checkpoint commit hash cannot be embedded inside this committed proof without changing that hash. Final HEAD is verified after commit in the final response.",
+  "blockers": [],
+  "accepted_risks_carried_forward": [
+    "Self-referential proof hash caveat is accepted.",
+    "dopetask report --out refuses proof/ and DAS paths as required, but does not enforce a general repo-root-only output fence. This is accepted as non-blocking hardening debt.",
+    "Report renderer reads UiStatus key names directly; accepted as first-pass renderer maintenance debt."
+  ]
+}

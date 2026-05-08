@@ -1,0 +1,130 @@
+{
+  "id": "TP-DT-UI-FOUNDATION-PR-0001",
+  "project": "dopetask",
+  "target": "Create a draft PR checkpoint for the accepted dopeTask UI foundation slice through TP-DT-UI-REPORT-0001 without implementing new UI features.",
+  "invariants": [
+    "No new UI features are implemented.",
+    "No runtime source files are modified by this checkpoint TP.",
+    "Do not implement cockpit, Asset Library, audit panes, mutating launchers, or route/orchestrate Claude runner work.",
+    "Do not change dependencies, pyproject.toml, or uv.lock.",
+    "Do not write to dope-agent-system.",
+    "Do not execute Task Packets.",
+    "Do not call dopetask doctor or dopetask route plan.",
+    "Do not push to main, merge the PR, delete branches, rewrite accepted commits, or amend previous TP commits.",
+    "This TP may create a PR branch, push that branch, and open a draft PR."
+  ],
+  "depends_on": [
+    "TP-DT-UI-REPORT-0001"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask.core",
+    "repo_marker": ".dopetaskroot",
+    "origin_hint": "local:/Users/hue/code/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-UI-FOUNDATION-PR",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-UI-REPORT-0001",
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/ui-foundation-pr-0001"
+  },
+  "commit": {
+    "message": "chore(ui): open foundation PR checkpoint",
+    "allowlist": [
+      "task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/IMPLEMENTER_REPORT.md",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/PR_BODY.md",
+      "proof/TP-DT-UI-FOUNDATION-PR-0001/FOUNDATION_SLICE_SUMMARY.md"
+    ],
+    "verify": [
+      "python3 -m json.tool task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+      "git diff --check",
+      "git status --short",
+      "git rev-parse --abbrev-ref HEAD",
+      "git rev-parse HEAD",
+      "git log --oneline --decorate -8",
+      "git merge-base HEAD origin/main",
+      "git diff --name-only $(git merge-base HEAD origin/main)..HEAD",
+      "git diff --stat $(git merge-base HEAD origin/main)..HEAD",
+      "gh pr view --json number,url,title,state,isDraft,headRefName,baseRefName"
+    ]
+  },
+  "pr": {
+    "title": "dopeTask UI Foundation: schemas, auth metadata, runner/workspace/status/report",
+    "base": "main",
+    "draft": true,
+    "body_path": "proof/TP-DT-UI-FOUNDATION-PR-0001/PR_BODY.md"
+  },
+  "accepted_tp_sequence": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a"
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41"
+    },
+    {
+      "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+      "commit": "2fff7d921058666358c11f931b18fdc5ab3972bc"
+    },
+    {
+      "tp_id": "TP-DT-UI-WORKSPACE-0001",
+      "commit": "715be219f79b06ba01abb479a98b987f031c7b1d"
+    },
+    {
+      "tp_id": "TP-DT-UI-STATUS-0001",
+      "commit": "8c50b3c36548ad70835956ef86e2cd52d6e5131d"
+    },
+    {
+      "tp_id": "TP-DT-UI-REPORT-0001",
+      "commit": "f77081d774085c0e8455517a8c9a499f7fb790cb"
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1_verify_start_state",
+      "task": "Verify clean worktree, accepted report HEAD, origin/main, merge base, and branch availability.",
+      "validation": [
+        "git status --short",
+        "git rev-parse HEAD",
+        "git rev-parse --verify origin/main",
+        "git merge-base HEAD origin/main"
+      ],
+      "expected_files": []
+    },
+    {
+      "id": "step_2_create_checkpoint_artifacts",
+      "task": "Create the checkpoint task packet, proof, implementer report, PR body, and foundation slice summary.",
+      "validation": [
+        "python3 -m json.tool task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+        "git diff --check",
+        "git status --short"
+      ],
+      "expected_files": [
+        "task-packets/TP-DT-UI-FOUNDATION-PR-0001.json",
+        "proof/TP-DT-UI-FOUNDATION-PR-0001/PROOF.json",
+        "proof/TP-DT-UI-FOUNDATION-PR-0001/IMPLEMENTER_REPORT.md",
+        "proof/TP-DT-UI-FOUNDATION-PR-0001/PR_BODY.md",
+        "proof/TP-DT-UI-FOUNDATION-PR-0001/FOUNDATION_SLICE_SUMMARY.md"
+      ]
+    },
+    {
+      "id": "step_3_commit_push_pr",
+      "task": "Commit only allowlisted checkpoint artifacts, push the PR branch, open a draft PR, and record PR metadata.",
+      "validation": [
+        "git diff --name-only $(git merge-base HEAD origin/main)..HEAD",
+        "git diff --stat $(git merge-base HEAD origin/main)..HEAD",
+        "gh pr view --json number,url,title,state,isDraft,headRefName,baseRefName"
+      ],
+      "expected_files": []
+    }
+  ]
+}
