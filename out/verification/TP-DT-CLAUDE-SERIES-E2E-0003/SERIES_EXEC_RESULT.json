@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/hue/.local/share/mise/installs/python/3.12.13/bin/python",
+    "-m",
+    "dopetask.cli",
+    "tp",
+    "series",
+    "exec",
+    "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/task_packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE.json",
+    "--agent",
+    "claude_code",
+    "--repo",
+    "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask"
+  ],
+  "cwd": "/Users/hue/code/dopeTask",
+  "duration_ms": 19983,
+  "returncode": 0,
+  "stderr": "",
+  "stderr_tail": "",
+  "stdout": "repo_root=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask\nseries_id=SERIES-DT-CLAUDE-SERIES-E2E-SMOKE\ntp_id=TP-DT-CLAUDE-SERIES-E2E-SMOKE\nbranch=codex/claude-series-e2e-smoke\nworktree_path=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/.worktrees/TP-DT-CLAUDE-SERIES-E2E-SMOKE\nrun_dir=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE\nproof_bundle=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json\nseries packet completed: TP-DT-CLAUDE-SERIES-E2E-SMOKE\n",
+  "stdout_tail": "repo_root=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask\nseries_id=SERIES-DT-CLAUDE-SERIES-E2E-SMOKE\ntp_id=TP-DT-CLAUDE-SERIES-E2E-SMOKE\nbranch=codex/claude-series-e2e-smoke\nworktree_path=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/.worktrees/TP-DT-CLAUDE-SERIES-E2E-SMOKE\nrun_dir=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE\nproof_bundle=/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json\nseries packet completed: TP-DT-CLAUDE-SERIES-E2E-SMOKE\n",
+  "timed_out": false
+}

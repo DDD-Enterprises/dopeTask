@@ -256,10 +256,18 @@ def _run_shell_commands(commands: list[str], *, cwd: Path) -> list[dict[str, Any
     return results
 
 
-def _cleanup_generated_files(worktree_path: Path) -> None:
+def _is_current_tp_proof_artifact(path: Path, tp_id: str) -> bool:
+    return path.is_file() and path.name.startswith(f"{tp_id}_")
+
+
+def _cleanup_generated_files(worktree_path: Path, *, tp_id: str) -> None:
     proof_dir = worktree_path / "proof"
     if proof_dir.exists():
-        shutil.rmtree(proof_dir)
+        for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name):
+            if _is_current_tp_proof_artifact(item, tp_id):
+                item.unlink()
+        if not any(proof_dir.iterdir()):
+            proof_dir.rmdir()
     context_path = worktree_path / ".dopetask" / CONTEXT_FILENAME
     if context_path.exists():
         context_path.unlink()
@@ -268,19 +276,26 @@ def _cleanup_generated_files(worktree_path: Path) -> None:
         dopetask_dir.rmdir()
 
 
-def _copy_proof_artifacts(*, worktree_path: Path, run_dir: Path) -> Optional[Path]:
+def _copy_proof_artifacts(*, worktree_path: Path, run_dir: Path, tp_id: str) -> Optional[Path]:
     proof_dir = worktree_path / "proof"
     if not proof_dir.exists():
         return None
 
+    matching_items = [
+        item
+        for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name)
+        if _is_current_tp_proof_artifact(item, tp_id)
+    ]
+    if not matching_items:
+        return None
+
     run_dir.mkdir(parents=True, exist_ok=True)
     copied_bundle: Optional[Path] = None
-    for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name):
-        if item.is_file():
-            destination = run_dir / item.name
-            shutil.copy2(item, destination)
-            if item.name.endswith("_PROOF_BUNDLE.json"):
-                copied_bundle = destination.resolve()
+    for item in matching_items:
+        destination = run_dir / item.name
+        shutil.copy2(item, destination)
+        if item.name.endswith("_PROOF_BUNDLE.json"):
+            copied_bundle = destination.resolve()
     return copied_bundle
 
 
@@ -700,9 +715,9 @@ def exec_series_packet(
             try:
                 bundle_path = execute_task_packet(packet_path, agent=agent, model=model, working_dir=worktree_path)
             finally:
-                proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
+                proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir, tp_id=tp.id)
 
-            _cleanup_generated_files(worktree_path)
+            _cleanup_generated_files(worktree_path, tp_id=tp.id)
             proof_metadata = _read_proof_metadata(run_dir=run_dir, tp_id=tp.id)
 
             verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)

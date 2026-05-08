@@ -1,0 +1,30 @@
+{
+  "artifacts": [
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/ENVIRONMENT.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/TEMP_REPO_SETUP.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PACKET.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_EXEC_RESULT.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_STATE_SNAPSHOT.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/EXEC_JSON_SNAPSHOT.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF_BUNDLE_SUMMARY.json",
+    "/Users/hue/code/dopeTask/out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/VALIDATION.json"
+  ],
+  "blocking_failures": [],
+  "committed_files": [
+    "scratch/claude_series_e2e/SMOKE.md"
+  ],
+  "exec_json_agent": "claude_code",
+  "primary_repo_status_after_e2e": " M src/dopetask/ops/tp_series/logic.py\n?? task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json\n?? tests/unit/tp_series/test_proof_artifact_cleanup.py\n",
+  "primary_repo_status_before_e2e": " M src/dopetask/ops/tp_series/logic.py\n?? task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json\n?? tests/unit/tp_series/test_proof_artifact_cleanup.py\n",
+  "proof_bundle": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json",
+  "proof_bundle_exists": true,
+  "repo": "/Users/hue/code/dopeTask",
+  "series_exec_returncode": 0,
+  "series_status": "completed",
+  "smoke_file_content_matched": true,
+  "status": "PASS",
+  "temp_repo": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask",
+  "temp_repo_final_status": "",
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-0003",
+  "tracked_proof_deletions_observed": false
+}

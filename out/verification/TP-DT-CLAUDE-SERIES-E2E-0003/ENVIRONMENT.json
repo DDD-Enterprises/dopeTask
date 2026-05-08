@@ -1,0 +1,27 @@
+{
+  "claude_path_returncode": 0,
+  "claude_path_stdout": "/Users/hue/.local/bin/claude",
+  "dopetask_source_path": "/Users/hue/code/dopeTask/src",
+  "primary_branch": "codex/series-proof-cleanup-0001",
+  "primary_head": "217d353233e735389111c20df92f8dbaf8ea584e",
+  "primary_status_before_e2e": " M src/dopetask/ops/tp_series/logic.py\n?? task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json\n?? tests/unit/tp_series/test_proof_artifact_cleanup.py\n",
+  "python_executable": "/Users/hue/.local/share/mise/installs/python/3.12.13/bin/python",
+  "python_version": {
+    "argv": [
+      "/Users/hue/.local/share/mise/installs/python/3.12.13/bin/python",
+      "--version"
+    ],
+    "cwd": "/Users/hue/code/dopeTask",
+    "duration_ms": 6,
+    "returncode": 0,
+    "stderr": "",
+    "stderr_tail": "",
+    "stdout": "Python 3.12.13\n",
+    "stdout_tail": "Python 3.12.13\n",
+    "timed_out": false
+  },
+  "repo": "/Users/hue/code/dopeTask",
+  "series_exec_help_mentions_repo_option": true,
+  "series_exec_help_returncode": 0,
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-0003"
+}

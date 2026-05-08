@@ -1,0 +1,18 @@
+{
+  "agent": null,
+  "exists": true,
+  "path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json",
+  "payload_keys": [
+    "acceptance_checks",
+    "artifacts",
+    "lane",
+    "manifest",
+    "packet_family",
+    "status",
+    "summary",
+    "tp_id",
+    "validation"
+  ],
+  "status": "VALIDATED",
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-SMOKE"
+}
