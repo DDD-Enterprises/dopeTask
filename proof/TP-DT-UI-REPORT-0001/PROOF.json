@@ -1,0 +1,221 @@
+{
+  "tp_id": "TP-DT-UI-REPORT-0001",
+  "objective": "Add a read-only dopetask report <series_id> markdown command that renders from the accepted UiStatus collector.",
+  "dependency_commits_observed": [
+    {
+      "tp_id": "TP-DT-UI-CONTRACTS-0001",
+      "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-AUTHMETA-0001",
+      "commit": "fe59e06eea2ec394df4addc05a1c1061f9bcaf41",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-RUNNERHEALTH-0001",
+      "commit": "2fff7d921058666358c11f931b18fdc5ab3972bc",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-WORKSPACE-0001",
+      "commit": "715be219f79b06ba01abb479a98b987f031c7b1d",
+      "proof_json_present": true
+    },
+    {
+      "tp_id": "TP-DT-UI-STATUS-0001",
+      "commit": "8c50b3c36548ad70835956ef86e2cd52d6e5131d",
+      "proof_json_present": true,
+      "observed_as_starting_head": true
+    }
+  ],
+  "files_created": [
+    "src/dopetask/ui/report.py",
+    "tests/ui/test_report.py",
+    "task-packets/TP-DT-UI-REPORT-0001.json",
+    "proof/TP-DT-UI-REPORT-0001/PROOF.json",
+    "proof/TP-DT-UI-REPORT-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/cli.py"
+  ],
+  "cli_surface_added": [
+    "dopetask report <series_id>",
+    "dopetask report <series_id> --out <path>",
+    "dopetask report <series_id> --refresh-runners",
+    "dopetask report <series_id> --das-path <path>"
+  ],
+  "report_api": [
+    "render_series_report(status_payload, series_id)",
+    "write_report(path, markdown, repo_root=repo_root, das_path=das_path)",
+    "find_series(status_payload, series_id)"
+  ],
+  "tests_created_or_modified": [
+    "tests/ui/test_report.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/ui/status.py",
+    "src/dopetask/ui/durability.py",
+    "src/dopetask/ui/runner_health.py",
+    "src/dopetask/workspace.py",
+    "src/dopetask/cli.py",
+    "dopetask_schemas/ui_status.schema.json",
+    "tests/ui/test_status.py",
+    "tests/ui/test_runner_health.py",
+    "tests/test_workspace.py",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+    "proof/TP-DT-UI-RUNNERHEALTH-0001/PROOF.json",
+    "proof/TP-DT-UI-WORKSPACE-0001/PROOF.json",
+    "proof/TP-DT-UI-STATUS-0001/PROOF.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-REPORT-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-REPORT-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_report.py -v",
+      "exit_code": 0,
+      "summary": "16 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_status.py -v",
+      "exit_code": 0,
+      "summary": "20 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "exit_code": 0,
+      "summary": "13 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/test_workspace.py -v",
+      "exit_code": 0,
+      "summary": "16 passed"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE",
+      "exit_code": 0,
+      "summary": "Existing cached series was used for report smoke validation; no Task Packet was executed to create input."
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out /tmp/dopetask_report_tp_dt_ui_report_0001.md",
+      "exit_code": 0,
+      "summary": "Wrote only the explicit /tmp report path."
+    },
+    {
+      "command": "test -s /tmp/dopetask_report_tp_dt_ui_report_0001.md",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n \"Durability\" /tmp/dopetask_report_tp_dt_ui_report_0001.md",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n \"Auth Mode\" /tmp/dopetask_report_tp_dt_ui_report_0001.md",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M src/dopetask/cli.py\n?? src/dopetask/ui/report.py\n?? task-packets/TP-DT-UI-REPORT-0001.json\n?? tests/ui/test_report.py",
+      "note": "proof/TP-DT-UI-REPORT-0001 is ignored by proof/* and must be force-added."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"auth_mode.*subscription\\|Auth Mode.*subscription\" tests/ui src/dopetask/ui/report.py || true",
+      "exit_code": 0,
+      "stdout": "tests/ui/test_status.py:def test_missing_auth_mode_renders_unknown_never_subscription(tmp_path: Path) -> None:\ntests/ui/test_status.py:    assert packet[\"auth_mode\"] != \"subscription\"\nBinary file tests/ui/__pycache__/test_status.cpython-312-pytest-9.0.3.pyc matches\nBinary file tests/ui/__pycache__/test_status.cpython-312.pyc matches",
+      "note": "Matches are from the accepted TP-DT-UI-STATUS-0001 test asserting missing auth is not subscription, plus generated pycache from compileall. src/dopetask/ui/report.py has no match and no report defaulting logic uses subscription."
+    }
+  ],
+  "report_snapshot_or_fixture_summary": {
+    "unit_fixture": "tests/ui/test_report.py builds deterministic UiStatus dictionaries with fixed timestamps, packet metadata, durability labels, historical EXEC_ERROR state, and runner health absence.",
+    "smoke_series_id": "SERIES-AUDIT-057B-PROMPT-PIPELINE",
+    "smoke_input_source": "Existing cached out/tp_series artifact; no Task Packet execution was performed."
+  },
+  "stdout_mode_write_check": {
+    "status": "passed",
+    "evidence": "test_report_cli_stdout_emits_markdown_without_writes compared isolated filesystem contents before and after stdout mode."
+  },
+  "out_path_write_check": {
+    "status": "passed",
+    "evidence": "test_report_cli_out_writes_only_requested_file asserted the requested report file was the only file written under tmp_path; CLI smoke wrote /tmp/dopetask_report_tp_dt_ui_report_0001.md."
+  },
+  "refused_output_paths": [
+    {
+      "path_class": "proof/",
+      "status": "passed",
+      "evidence": "test_report_cli_out_under_proof_is_refused"
+    },
+    {
+      "path_class": "resolved dope-agent-system path",
+      "status": "passed",
+      "evidence": "test_report_cli_out_under_das_is_refused"
+    }
+  ],
+  "git_status_before": {
+    "branch": "main",
+    "head": "8c50b3c36548ad70835956ef86e2cd52d6e5131d",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "8c50b3c36548ad70835956ef86e2cd52d6e5131d",
+    "short": " M src/dopetask/cli.py\n?? src/dopetask/ui/report.py\n?? task-packets/TP-DT-UI-REPORT-0001.json\n?? tests/ui/test_report.py",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-REPORT-0001/PROOF.json",
+      "proof/TP-DT-UI-REPORT-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "explicit_tmp_output": "/tmp/dopetask_report_tp_dt_ui_report_0001.md"
+  },
+  "no_cockpit": true,
+  "no_asset_library": true,
+  "no_mutating_launchers": true,
+  "no_audit_panes": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_textual_added": true,
+  "auth_mode_literal_rendering": true,
+  "durability_column_mandatory": true,
+  "commit_ready": true,
+  "commit_message": "feat(ui): add markdown series report",
+  "commit_hash": "self_referential_unavailable",
+  "self_referential_commit_hash_caveat": "The final commit hash is not embedded in this proof because changing the committed proof would change the hash. Final HEAD is verified after commit.",
+  "blockers": []
+}

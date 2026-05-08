@@ -89,6 +89,12 @@ from dopetask.ui import (
     worship as worship_impl,
 )
 from dopetask.ui.runner_health import collect_runner_health
+from dopetask.ui.report import (
+    ReportOutputRefusedError,
+    ReportSeriesNotFoundError,
+    render_series_report,
+    write_report,
+)
 from dopetask.ui.status import collect_status
 from dopetask.workspace import WorkspaceConfigError, resolve_dope_agent_system_path
 
@@ -615,6 +621,50 @@ def ui_status(
     if out is not None:
         _write_ui_status_output(repo_root, out, rendered, das_path=das_path)
     typer.echo(rendered, nl=False)
+
+
+@cli.command("report")
+def report(
+    series_id: str = typer.Argument(..., help="Series id to render from UiStatus."),
+    out: typing.Optional[Path] = typer.Option(
+        None,
+        "--out",
+        help="Write markdown to an explicit output path.",
+    ),
+    refresh_runners: bool = typer.Option(
+        False,
+        "--refresh-runners",
+        help="Refresh out/dopetask_ui/RUNNER_HEALTH.json before collecting status.",
+    ),
+    das_path: typing.Optional[Path] = typer.Option(
+        None,
+        "--das-path",
+        help="Explicit dope-agent-system path for resolver boundary checks.",
+    ),
+) -> None:
+    """Render a read-only markdown report for a series."""
+
+    repo_root = Path.cwd()
+    status_payload = collect_status(repo_root, refresh_runner_health=refresh_runners, das_path=das_path)
+    try:
+        markdown = render_series_report(status_payload, series_id)
+    except ReportSeriesNotFoundError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(2) from exc
+
+    if out is None:
+        typer.echo(markdown, nl=False)
+        return
+
+    resolved_das_path = das_path
+    if resolved_das_path is None and status_payload.get("das_path") is not None:
+        resolved_das_path = Path(str(status_payload["das_path"]))
+    try:
+        write_report(out, markdown, repo_root=repo_root, das_path=resolved_das_path)
+    except ReportOutputRefusedError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(2) from exc
+    typer.echo(f"Wrote report to {out}")
 
 
 def _write_ui_status_output(
