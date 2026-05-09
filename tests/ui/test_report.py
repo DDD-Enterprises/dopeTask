@@ -10,7 +10,12 @@ from typer.testing import CliRunner
 
 import dopetask.cli as cli_module
 from dopetask.cli import cli
-from dopetask.ui.report import ReportSeriesNotFoundError, render_series_report
+from dopetask.ui.report import (
+    ReportOutputRefusedError,
+    ReportSeriesNotFoundError,
+    render_series_report,
+    write_report,
+)
 
 SERIES_ID = "SERIES-REPORT-001"
 TP_ID = "TP-REPORT-001"
@@ -202,11 +207,52 @@ def test_report_cli_out_writes_only_requested_file(monkeypatch: Any, tmp_path: P
         return _status_payload(Path(repo_root))
 
     monkeypatch.setattr(cli_module, "collect_status", fake_collect_status)
+    monkeypatch.chdir(tmp_path)
     result = runner.invoke(cli, ["report", SERIES_ID, "--out", str(output_path)])
 
     assert result.exit_code == 0, result.output
     assert output_path.exists()
     assert sorted(path for path in tmp_path.rglob("*") if path.is_file()) == [output_path]
+
+
+def test_report_cli_outside_repo_is_refused_and_not_created(monkeypatch: Any, tmp_path: Path) -> None:
+    runner = CliRunner()
+    outside_path = tmp_path / "outside.md"
+
+    def fake_collect_status(repo_root: Path, **_: Any) -> dict[str, Any]:
+        return _status_payload(Path(repo_root))
+
+    monkeypatch.setattr(cli_module, "collect_status", fake_collect_status)
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(cli, ["report", SERIES_ID, "--out", "../outside.md"])
+
+    assert result.exit_code != 0
+    assert "outside repository root" in result.output
+    assert not outside_path.exists()
+
+
+def test_write_report_refuses_absolute_path_outside_repo(tmp_path: Path) -> None:
+    repo_root = tmp_path / "repo"
+    outside_path = tmp_path / "outside.md"
+    repo_root.mkdir()
+
+    try:
+        write_report(outside_path, "report\n", repo_root=repo_root)
+    except ReportOutputRefusedError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("outside absolute report output should be refused")
+
+    assert "outside repository root" in message
+    assert not outside_path.exists()
+
+
+def test_write_report_allows_repo_local_out_path(tmp_path: Path) -> None:
+    out_path = tmp_path / "out" / "reports" / "report.md"
+
+    write_report(Path("out/reports/report.md"), "report\n", repo_root=tmp_path)
+
+    assert out_path.read_text(encoding="utf-8") == "report\n"
 
 
 def test_report_cli_out_under_proof_is_refused(monkeypatch: Any, tmp_path: Path) -> None:
@@ -221,23 +267,78 @@ def test_report_cli_out_under_proof_is_refused(monkeypatch: Any, tmp_path: Path)
 
     assert result.exit_code != 0
     assert "proof/" in result.output
+    assert not (tmp_path / "proof" / "report.md").exists()
 
 
 def test_report_cli_out_under_das_is_refused(monkeypatch: Any, tmp_path: Path) -> None:
     runner = CliRunner()
-    das = tmp_path / "fake-das"
+    repo_root = tmp_path / "repo"
+    das = repo_root / "fake-das"
     output_path = das / "report.md"
+    das.mkdir(parents=True)
 
     def fake_collect_status(repo_root: Path, **kwargs: Any) -> dict[str, Any]:
         supplied_das = kwargs.get("das_path")
         return _status_payload(Path(repo_root), das_path=str(supplied_das) if supplied_das else None)
 
     monkeypatch.setattr(cli_module, "collect_status", fake_collect_status)
+    monkeypatch.chdir(repo_root)
     result = runner.invoke(cli, ["report", SERIES_ID, "--das-path", str(das), "--out", str(output_path)])
 
     assert result.exit_code != 0
     assert "dope-agent-system" in result.output
     assert not output_path.exists()
+
+
+def test_write_report_refuses_symlink_to_outside_repo(tmp_path: Path) -> None:
+    outside_target = tmp_path.parent / "outside-report-target.md"
+    symlink_path = tmp_path / "linked-report.md"
+    symlink_path.symlink_to(outside_target)
+
+    try:
+        write_report(symlink_path, "report\n", repo_root=tmp_path)
+    except ReportOutputRefusedError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("symlink to outside report output should be refused")
+
+    assert "outside repository root" in message
+    assert not outside_target.exists()
+
+
+def test_write_report_refuses_symlink_to_proof(tmp_path: Path) -> None:
+    proof_target = tmp_path / "proof" / "linked-report.md"
+    proof_target.parent.mkdir()
+    symlink_path = tmp_path / "linked-report.md"
+    symlink_path.symlink_to(proof_target)
+
+    try:
+        write_report(symlink_path, "report\n", repo_root=tmp_path)
+    except ReportOutputRefusedError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("symlink to proof report output should be refused")
+
+    assert "proof/" in message
+    assert not proof_target.exists()
+
+
+def test_write_report_refuses_symlink_to_das(tmp_path: Path) -> None:
+    das_root = tmp_path / "fake-das"
+    das_target = das_root / "linked-report.md"
+    das_root.mkdir()
+    symlink_path = tmp_path / "linked-report.md"
+    symlink_path.symlink_to(das_target)
+
+    try:
+        write_report(symlink_path, "report\n", repo_root=tmp_path, das_path=das_root)
+    except ReportOutputRefusedError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("symlink to DAS report output should be refused")
+
+    assert "dope-agent-system" in message
+    assert not das_target.exists()
 
 
 def test_report_command_source_has_no_forbidden_invocations() -> None:

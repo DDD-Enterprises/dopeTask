@@ -680,6 +680,10 @@ def _write_ui_status_output(
         output_path = resolved_repo_root / output_path
     output_path = output_path.resolve()
 
+    if not _is_relative_to(output_path, resolved_repo_root):
+        typer.echo("Error: --out outside repository root is refused for UI status", err=True)
+        raise typer.Exit(2)
+
     proof_root = resolved_repo_root / "proof"
     if _is_relative_to(output_path, proof_root):
         typer.echo("Error: --out under proof/ is refused for UI status", err=True)

@@ -289,6 +289,20 @@ def test_cli_status_out_writes_only_requested_file(tmp_path: Path, monkeypatch) 
     assert files == {Path("nested/status.json")}
 
 
+def test_cli_status_refuses_outside_repo_and_does_not_create_file(tmp_path: Path, monkeypatch) -> None:
+    runner = CliRunner()
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    outside_path = tmp_path / "outside-status.json"
+    monkeypatch.chdir(repo_root)
+
+    result = runner.invoke(cli, ["ui", "status", "--json", "--out", "../outside-status.json"])
+
+    assert result.exit_code == 2
+    assert "outside repository root" in result.output
+    assert not outside_path.exists()
+
+
 def test_cli_status_refuses_out_under_proof(tmp_path: Path, monkeypatch) -> None:
     runner = CliRunner()
     monkeypatch.chdir(tmp_path)
@@ -354,3 +368,51 @@ def test_status_refuses_das_out_write(tmp_path: Path, monkeypatch) -> None:
 
     assert result.exit_code == 2
     assert not (das_root / "status.json").exists()
+
+
+def test_status_refuses_symlink_to_outside_repo(tmp_path: Path, monkeypatch) -> None:
+    runner = CliRunner()
+    outside_target = tmp_path.parent / "outside-status-target.json"
+    symlink_path = tmp_path / "linked-status.json"
+    symlink_path.symlink_to(outside_target)
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(cli, ["ui", "status", "--json", "--out", str(symlink_path)])
+
+    assert result.exit_code == 2
+    assert "outside repository root" in result.output
+    assert not outside_target.exists()
+
+
+def test_status_refuses_symlink_to_proof(tmp_path: Path, monkeypatch) -> None:
+    runner = CliRunner()
+    proof_target = tmp_path / "proof" / "linked-status.json"
+    proof_target.parent.mkdir()
+    symlink_path = tmp_path / "linked-status.json"
+    symlink_path.symlink_to(proof_target)
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(cli, ["ui", "status", "--json", "--out", str(symlink_path)])
+
+    assert result.exit_code == 2
+    assert "proof/" in result.output
+    assert not proof_target.exists()
+
+
+def test_status_refuses_symlink_to_das(tmp_path: Path, monkeypatch) -> None:
+    runner = CliRunner()
+    das_root = tmp_path / "das"
+    das_target = das_root / "linked-status.json"
+    das_root.mkdir()
+    symlink_path = tmp_path / "linked-status.json"
+    symlink_path.symlink_to(das_target)
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(
+        cli,
+        ["ui", "status", "--json", "--das-path", str(das_root), "--out", str(symlink_path)],
+    )
+
+    assert result.exit_code == 2
+    assert "dope-agent-system" in result.output
+    assert not das_target.exists()
