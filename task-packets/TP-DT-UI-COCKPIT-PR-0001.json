@@ -1,0 +1,107 @@
+{
+  "id": "TP-DT-UI-COCKPIT-PR-0001",
+  "project": "dopetask",
+  "target": "Create a PR checkpoint for the accepted read-only cockpit slice. Repo binding: /Users/hue/code/dopeTask. Branch: codex/tp-dt-ui-cockpit-0001. Accepted cockpit commit: 929aacfc8a01ade7e4bfcbdba8e115fce95dd99b. Execution agent: codex. No implementation changes.",
+  "invariants": [
+    "Do not implement cockpit changes.",
+    "Do not implement Asset Library listing or preview.",
+    "Do not implement audit panes, mutating launchers, route/orchestrate Claude runner, or any new feature.",
+    "Do not add Textual or change dependencies.",
+    "Do not modify pyproject.toml, uv.lock, source files, tests, or dope-agent-system.",
+    "Do not execute Task Packets, dopetask doctor, or dopetask route plan.",
+    "Do not push to main, merge the PR, delete branches, or rewrite accepted cockpit commit 929aacfc8a01ade7e4bfcbdba8e115fce95dd99b.",
+    "Only TP-DT-UI-COCKPIT-PR-0001 checkpoint artifacts may be committed."
+  ],
+  "depends_on": [
+    "TP-DT-UI-COCKPIT-0001",
+    "commit-929aacfc8a01ade7e4bfcbdba8e115fce95dd99b",
+    "TP-DT-UI-REPORT-FENCE-0001",
+    "commit-9c93356ce662ed0c76bcd744545d3e5b827460ee",
+    "PR-84-44e6cf6f121040a6946978de634dce3c29dfdcf2"
+  ],
+  "series": {
+    "id": "SERIES-DT-UI-COCKPIT-PR",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-UI-COCKPIT-0001",
+    "final_packet": true
+  },
+  "commit": {
+    "message": "chore(ui): open cockpit PR checkpoint",
+    "allowlist": [
+      "task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/IMPLEMENTER_REPORT.md",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/PR_BODY.md",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/COCKPIT_SLICE_SUMMARY.md"
+    ],
+    "verify": [
+      "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+      "git diff --check",
+      "git status --short",
+      "git rev-parse --abbrev-ref HEAD",
+      "git rev-parse HEAD",
+      "git status --short",
+      "git log --oneline --decorate -8",
+      "git merge-base HEAD origin/main",
+      "git diff --name-only $(git merge-base HEAD origin/main)..HEAD",
+      "git diff --stat $(git merge-base HEAD origin/main)..HEAD",
+      "python3 -m dopetask cockpit --view all >/tmp/dopetask_cockpit_pr_smoke.txt",
+      "test -s /tmp/dopetask_cockpit_pr_smoke.txt",
+      "gh pr view <new-pr-number> --json number,url,title,state,isDraft,headRefName,baseRefName"
+    ]
+  },
+  "steps": [
+    {
+      "id": "verify_branch_and_base",
+      "task": "Verify clean status, accepted cockpit commit existence, current branch/head, origin/main, merge base, and cockpit branch ancestry.",
+      "requirements": [
+        "Stop if unexpected feature commits exist after the accepted cockpit commit before this checkpoint TP.",
+        "Document any remote base drift truthfully."
+      ],
+      "validation": [
+        "git status --short",
+        "git cat-file -e 929aacfc8a01ade7e4bfcbdba8e115fce95dd99b^{commit}",
+        "git fetch origin main",
+        "git merge-base --is-ancestor 44e6cf6f121040a6946978de634dce3c29dfdcf2 HEAD",
+        "git merge-base --is-ancestor 9c93356ce662ed0c76bcd744545d3e5b827460ee HEAD"
+      ]
+    },
+    {
+      "id": "write_checkpoint_artifacts",
+      "task": "Create the TaskPacket, proof, implementer report, PR body, and cockpit slice summary for PR checkpointing only.",
+      "requirements": [
+        "No source or test edits.",
+        "Record ACCEPT audit verdict and accepted non-blocking findings.",
+        "Record PR metadata as pending until PR creation."
+      ],
+      "expected_files": [
+        "task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+        "proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+        "proof/TP-DT-UI-COCKPIT-PR-0001/IMPLEMENTER_REPORT.md",
+        "proof/TP-DT-UI-COCKPIT-PR-0001/PR_BODY.md",
+        "proof/TP-DT-UI-COCKPIT-PR-0001/COCKPIT_SLICE_SUMMARY.md"
+      ],
+      "validation": [
+        "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+        "git diff --check",
+        "git status --short"
+      ]
+    },
+    {
+      "id": "push_and_open_pr",
+      "task": "Commit only checkpoint artifacts, push codex/tp-dt-ui-cockpit-0001, open a draft PR against main, and capture PR metadata.",
+      "requirements": [
+        "Do not merge.",
+        "Do not push to main.",
+        "If PR metadata is recorded after creation, amend this checkpoint commit once or create one metadata-only follow-up commit."
+      ],
+      "validation": [
+        "git push -u origin codex/tp-dt-ui-cockpit-0001",
+        "gh pr view <new-pr-number> --json number,url,title,state,isDraft,headRefName,baseRefName",
+        "git status --short"
+      ]
+    }
+  ]
+}

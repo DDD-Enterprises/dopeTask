@@ -1,0 +1,171 @@
+{
+  "tp_id": "TP-DT-UI-COCKPIT-PR-0001",
+  "objective": "Create a PR checkpoint for the accepted read-only cockpit slice, push the cockpit branch, and open a draft PR without implementation changes.",
+  "accepted_cockpit_commit": "929aacfc8a01ade7e4bfcbdba8e115fce95dd99b",
+  "expected_start_head": "929aacfc8a01ade7e4bfcbdba8e115fce95dd99b",
+  "actual_start_head": "929aacfc8a01ade7e4bfcbdba8e115fce95dd99b",
+  "origin_main_head": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+  "merge_base": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+  "pr_branch": "codex/tp-dt-ui-cockpit-0001",
+  "pr_url": "https://github.com/DDD-Enterprises/dopeTask/pull/85",
+  "pr_number": 85,
+  "files_created": [
+    "task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+    "proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+    "proof/TP-DT-UI-COCKPIT-PR-0001/IMPLEMENTER_REPORT.md",
+    "proof/TP-DT-UI-COCKPIT-PR-0001/PR_BODY.md",
+    "proof/TP-DT-UI-COCKPIT-PR-0001/COCKPIT_SLICE_SUMMARY.md"
+  ],
+  "files_modified": [],
+  "commit_hash": "self_referential_unavailable",
+  "final_head": "verified in final response",
+  "final_git_status": "verified in final response",
+  "changed_files_from_merge_base": [
+    "proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md",
+    "proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+    "proof/TP-DT-UI-REPORT-FENCE-0001/IMPLEMENTER_REPORT.md",
+    "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+    "src/dopetask/cli.py",
+    "src/dopetask/ui/cockpit.py",
+    "src/dopetask/ui/report.py",
+    "src/dopetask/ui/views/__init__.py",
+    "src/dopetask/ui/views/asset_library.py",
+    "src/dopetask/ui/views/authority_diff.py",
+    "src/dopetask/ui/views/packet_detail.py",
+    "src/dopetask/ui/views/repo_health.py",
+    "src/dopetask/ui/views/runner_health.py",
+    "src/dopetask/ui/views/series_detail.py",
+    "src/dopetask/ui/views/series_overview.py",
+    "src/dopetask/ui/widgets/__init__.py",
+    "src/dopetask/ui/widgets/banners.py",
+    "task-packets/TP-DT-UI-COCKPIT-0001.json",
+    "task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+    "tests/ui/cockpit/test_banners.py",
+    "tests/ui/cockpit/test_cockpit_views.py",
+    "tests/ui/test_report.py",
+    "tests/ui/test_status.py"
+  ],
+  "allowlist_check": {
+    "status": "passed",
+    "allowed_files_only": true,
+    "allowed_files": [
+      "task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/IMPLEMENTER_REPORT.md",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/PR_BODY.md",
+      "proof/TP-DT-UI-COCKPIT-PR-0001/COCKPIT_SLICE_SUMMARY.md"
+    ]
+  },
+  "validation_commands": [
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "git cat-file -e 929aacfc8a01ade7e4bfcbdba8e115fce95dd99b^{commit}",
+      "exit_code": 0
+    },
+    {
+      "command": "git fetch origin main",
+      "exit_code": 0
+    },
+    {
+      "command": "git merge-base --is-ancestor 44e6cf6f121040a6946978de634dce3c29dfdcf2 HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "git merge-base --is-ancestor 9c93356ce662ed0c76bcd744545d3e5b827460ee HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-PR-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-COCKPIT-PR-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "summary": "Only TP-DT-UI-COCKPIT-PR-0001 checkpoint files present before staging; proof paths ignored by proof/*."
+    },
+    {
+      "command": "git rev-parse --abbrev-ref HEAD",
+      "exit_code": 0,
+      "stdout": "codex/tp-dt-ui-cockpit-0001"
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit_code": 0,
+      "stdout": "929aacfc8a01ade7e4bfcbdba8e115fce95dd99b"
+    },
+    {
+      "command": "git log --oneline --decorate -8",
+      "exit_code": 0
+    },
+    {
+      "command": "git merge-base HEAD origin/main",
+      "exit_code": 0,
+      "stdout": "44e6cf6f121040a6946978de634dce3c29dfdcf2"
+    },
+    {
+      "command": "git diff --name-only $(git merge-base HEAD origin/main)..HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --stat $(git merge-base HEAD origin/main)..HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask cockpit --view all >/tmp/dopetask_cockpit_pr_smoke.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_cockpit_pr_smoke.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "gh pr view <new-pr-number> --json number,url,title,state,isDraft,headRefName,baseRefName",
+      "exit_code": 0,
+      "stdout": "{\"baseRefName\":\"main\",\"headRefName\":\"codex/tp-dt-ui-cockpit-0001\",\"isDraft\":true,\"number\":85,\"state\":\"OPEN\",\"title\":\"dopeTask Cockpit: read-only rich terminal views\",\"url\":\"https://github.com/DDD-Enterprises/dopeTask/pull/85\"}"
+    }
+  ],
+  "no_source_edits": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_asset_library_expansion": true,
+  "no_mutating_launchers": true,
+  "no_audit_panes": true,
+  "no_route_orchestrate_runner": true,
+  "no_textual_added": true,
+  "pushed_branch": "codex/tp-dt-ui-cockpit-0001",
+  "draft_pr_created": true,
+  "merge_performed": false,
+  "blockers": [],
+  "accepted_audit_findings_carried_forward": [
+    {
+      "id": "F-01",
+      "severity": "LOW",
+      "finding": "planning_banner() is defined and tested but not rendered yet because no planning view exists.",
+      "status": "accepted_non_blocking"
+    },
+    {
+      "id": "F-02",
+      "severity": "INFO",
+      "finding": "--refresh-runners may write RUNNER_HEALTH.json, but only when explicitly invoked.",
+      "status": "accepted_non_blocking"
+    }
+  ],
+  "remote_base_drift": {
+    "origin_main_head": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+    "local_main_head_observed": "9c93356ce662ed0c76bcd744545d3e5b827460ee",
+    "note": "The branch contains the accepted report/status fence commit, but origin/main had not advanced to it when this checkpoint was prepared."
+  },
+  "self_referential_commit_hash_caveat": "The final checkpoint commit hash and final HEAD are verified after commit/PR creation to avoid repeated self-referential proof rewrites."
+}
