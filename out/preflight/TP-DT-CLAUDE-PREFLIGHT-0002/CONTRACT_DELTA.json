@@ -1,0 +1,47 @@
+{
+  "adapter_ready": true,
+  "anthropic_api_key_present": false,
+  "auth_mode_conclusion": "subscription_or_oauth_likely",
+  "bare_mode_used": false,
+  "blocking_failures": [],
+  "claude_binary": "/Users/hue/.local/bin/claude",
+  "claude_version": "2.1.119 (Claude Code)",
+  "corrected_command_shape": {
+    "base": [
+      "claude",
+      "-p",
+      "--permission-mode",
+      "bypassPermissions",
+      "--output-format",
+      "json",
+      "--no-session-persistence",
+      "--allowedTools",
+      "Bash,Write,Edit,Read"
+    ],
+    "prompt_delivery": "stdin",
+    "stdout_capture": true,
+    "working_directory_control": "subprocess cwd / shell cwd, not -C"
+  },
+  "depends_on": "TP-DT-CLAUDE-PREFLIGHT-0001",
+  "permission_mode_verified": true,
+  "positional_write_without_allowedtools": {
+    "file_content_exact_match": true,
+    "file_created": true,
+    "json_parseable": true,
+    "returncode": 0
+  },
+  "previous_preflight_commit": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+  "stdin_no_write": {
+    "json_parseable": true,
+    "result_text": "CLAUDE_STDIN_NO_WRITE_OK",
+    "returncode": 0
+  },
+  "stdin_write_with_allowedtools": {
+    "file_content_exact_match": true,
+    "file_created": true,
+    "json_parseable": true,
+    "returncode": 0
+  },
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002",
+  "write_smoke_verified": true
+}

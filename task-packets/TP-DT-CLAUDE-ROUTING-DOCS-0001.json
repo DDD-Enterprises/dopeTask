@@ -1,0 +1,131 @@
+{
+  "id": "TP-DT-CLAUDE-ROUTING-DOCS-0001",
+  "project": "dopetask",
+  "target": "Update docs and help text to reflect merged claude_code tp-series support and routing readiness.",
+  "invariants": [
+    "No runtime behavior changes",
+    "No Claude adapter code changes",
+    "No route/orchestrate runner code changes",
+    "No dope-agent-system changes",
+    "Route/orchestrate remains deferred",
+    "dope-agent-system integration remains deferred",
+    "PAL/clink remains planning only",
+    "No --bare default"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask.core",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-CLAUDE-ROUTING-DOCS",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/claude-routing-docs-0001"
+  },
+  "commit": {
+    "message": "docs(router): update claude_code routing state",
+    "allowlist": [
+      "task-packets/TP-DT-CLAUDE-ROUTING-DOCS-0001.json",
+      "README.md",
+      "docs/**/*.md",
+      "src/dopetask/ops/**/cli.py",
+      "src/dopetask/cli.py",
+      "out/implementation/TP-DT-CLAUDE-ROUTING-DOCS-0001/PROOF.json"
+    ],
+    "verify": [
+      "python -m compileall -q src tests",
+      "pytest -q tests/unit/tp_series/test_cli.py --no-cov",
+      "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py --no-cov",
+      "pytest --no-cov",
+      "git diff --check"
+    ]
+  },
+  "pr": {
+    "title": "Update Claude routing documentation",
+    "body": "Updates docs/specs and help text to reflect that claude_code is now implemented for tp-series execution and available in routing readiness evidence, while route/orchestrate and dope-agent-system integration remain deferred.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_inspect_readiness_artifacts_and_stale_docs",
+      "task": "Inspect the routing readiness artifacts and find stale docs/specs/help text.",
+      "requirements": [
+        "Read out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/VALIDATION.json, PROOF.json, DOCS_REVIEW.json, ROUTE_PLAN_RESULT.json, ROUTE_HANDOFF_RESULT.json, ROUTER_SOURCE_REVIEW.json, and AVAILABILITY_TEMPLATE_REVIEW.json if present.",
+        "Use the readiness artifacts as the primary source for what is stale.",
+        "Search README.md, docs, and CLI help text for stale phrases like 'gemini or codex', 'claude_code not implemented', 'ValueError for claude_code', 'route/orchestrate required for Claude', or pre-adapter-only state.",
+        "Classify stale items as docs-only, help-text-only, or behavior change required.",
+        "If any required change is behavior-changing, stop and report SCOPE_ESCALATION_REQUIRED."
+      ],
+      "expected_files": [],
+      "validation": [
+        "python - <<'PY'\nfrom pathlib import Path\nbase = Path('out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001')\nassert base.exists(), f'missing readiness artifacts: {base}'\nprint('routing readiness artifacts present')\nPY"
+      ],
+      "context_files": [
+        "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/PROOF.json",
+        "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/VALIDATION.json",
+        "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/DOCS_REVIEW.json"
+      ]
+    },
+    {
+      "id": "step_2_update_docs_and_help_text",
+      "task": "Update stale docs/specs and help text to match the current accepted Claude routing state.",
+      "requirements": [
+        "Document that claude_code is implemented for tp-series execution.",
+        "Document that the real workflow is dopetask tp series exec --agent claude_code <packet.json>.",
+        "Document that routing readiness proved claude_code in availability template, generated availability.yaml, route plan, and handoff/report.",
+        "Document that route/orchestrate runner support is still deferred and separate.",
+        "Document that dope-agent-system integration is deferred and not runtime authority.",
+        "Document that no --bare default is allowed.",
+        "Update stale help text only if it is text-only and does not alter behavior.",
+        "Do not claim dope-agent-system integration exists.",
+        "Do not claim route/orchestrate Claude runner is implemented.",
+        "Do not remove historical caveats unless superseded by evidence."
+      ],
+      "expected_files": [
+        "docs/12_ROUTER.md"
+      ],
+      "validation": [
+        "rg -n \"claude_code|Claude Code|gemini or codex|not yet fully implemented|route/orchestrate|runners/claude_code|dope-agent-system\" README.md docs src/dopetask/ops src/dopetask/cli.py || true"
+      ],
+      "context_files": [
+        "docs/12_ROUTER.md",
+        "README.md",
+        "src/dopetask/ops/tp_exec/cli.py",
+        "src/dopetask/ops/tp_series/cli.py"
+      ]
+    },
+    {
+      "id": "step_3_validate_and_prove",
+      "task": "Run validation, write proof, and commit.",
+      "requirements": [
+        "Run compileall even if only docs changed, because help text may have changed.",
+        "Run focused CLI tests if help text changed.",
+        "Run full pytest --no-cov.",
+        "Write implementation proof JSON with stale docs found, files updated, validations, allowlist, and forbidden scope.",
+        "Commit only if validation passes and changed files are within allowlist.",
+        "Backfill proof metadata in a second commit if committed proof cannot self-reference."
+      ],
+      "expected_files": [
+        "out/implementation/TP-DT-CLAUDE-ROUTING-DOCS-0001/PROOF.json",
+        "task-packets/TP-DT-CLAUDE-ROUTING-DOCS-0001.json"
+      ],
+      "validation": [
+        "python -m compileall -q src tests",
+        "pytest -q tests/unit/tp_series/test_cli.py --no-cov",
+        "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py --no-cov",
+        "pytest --no-cov",
+        "git diff --check"
+      ],
+      "context_files": [
+        "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/PROOF.json",
+        "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/DOCS_REVIEW.json"
+      ]
+    }
+  ]
+}

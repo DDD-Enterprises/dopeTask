@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/runner_health.schema.json",
+  "title": "dopeTask Runner Health",
+  "description": "Read-only runner health artifact written only by explicit UI runner health refresh.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "repo_root",
+    "refreshed",
+    "runners"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repo_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "refreshed": {
+      "type": "boolean"
+    },
+    "runners": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/runner_health"
+      }
+    }
+  },
+  "$defs": {
+    "configured_state": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "const": "missing-config"
+        }
+      ]
+    },
+    "auth_ready_state": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "const": "unknown"
+        }
+      ]
+    },
+    "tp_series_adapter_state": {
+      "type": "string",
+      "enum": [
+        "implemented",
+        "missing",
+        "unknown"
+      ]
+    },
+    "route_plane_adapter_state": {
+      "type": "string",
+      "enum": [
+        "implemented",
+        "RUNNER_NOT_IMPLEMENTED",
+        "missing",
+        "unknown"
+      ]
+    },
+    "overall_health": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "degraded",
+        "unavailable",
+        "unknown"
+      ]
+    },
+    "runner_health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configured",
+        "binary_present",
+        "binary_path",
+        "auth_ready",
+        "auth_probe_method",
+        "tp_series_adapter",
+        "route_plane_adapter",
+        "overall_health",
+        "notes"
+      ],
+      "properties": {
+        "configured": {
+          "$ref": "#/$defs/configured_state"
+        },
+        "binary_present": {
+          "type": "boolean"
+        },
+        "binary_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "auth_ready": {
+          "$ref": "#/$defs/auth_ready_state"
+        },
+        "auth_probe_method": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tp_series_adapter": {
+          "$ref": "#/$defs/tp_series_adapter_state"
+        },
+        "route_plane_adapter": {
+          "$ref": "#/$defs/route_plane_adapter_state"
+        },
+        "overall_health": {
+          "$ref": "#/$defs/overall_health"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

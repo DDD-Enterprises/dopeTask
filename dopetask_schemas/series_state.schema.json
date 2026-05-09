@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/series_state.schema.json",
+  "title": "dopeTask TP Series State",
+  "description": "Runtime ledger written by src/dopetask/ops/tp_series/logic.py as out/tp_series/<series_id>/SERIES_STATE.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "series_id",
+    "base_branch",
+    "created_at",
+    "updated_at",
+    "packets",
+    "pr"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "series_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packets": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/packet_record"
+      }
+    },
+    "pr": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/pr_record"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "string_array": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nullable_string": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packet_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tp_id",
+        "packet_path",
+        "branch",
+        "base_ref",
+        "depends_on",
+        "parent_tp_id",
+        "final_packet",
+        "status",
+        "worktree_path",
+        "run_dir",
+        "started_at",
+        "updated_at",
+        "head_sha",
+        "proof_bundle",
+        "error"
+      ],
+      "properties": {
+        "tp_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "packet_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depends_on": {
+          "$ref": "#/$defs/string_array"
+        },
+        "parent_tp_id": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "final_packet": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "running",
+            "completed",
+            "failed"
+          ]
+        },
+        "worktree_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "completed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "failed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "head_sha": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "proof_bundle": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "committed_files": {
+          "$ref": "#/$defs/string_array"
+        },
+        "error": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      }
+    },
+    "pr_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "state",
+        "mergeStateStatus",
+        "autoMergeRequest",
+        "repo_root",
+        "series_id",
+        "branch",
+        "base_branch",
+        "final_tp_id"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "mergeStateStatus": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "autoMergeRequest": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "repo_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "series_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "final_tp_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

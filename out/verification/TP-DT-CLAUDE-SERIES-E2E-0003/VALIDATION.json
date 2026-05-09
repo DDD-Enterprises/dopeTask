@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "evidence": {
+        "returncode": 0
+      },
+      "name": "series_exec_returncode_zero",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "status": "completed"
+      },
+      "name": "series_state_packet_status_completed",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/EXEC.json"
+      },
+      "name": "exec_json_exists",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "agent": "claude_code"
+      },
+      "name": "exec_json_agent_claude_code",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "committed_files": [
+          "scratch/claude_series_e2e/SMOKE.md"
+        ]
+      },
+      "name": "exec_json_committed_files_exact",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json"
+      },
+      "name": "proof_bundle_exists",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "content": "CLAUDE_SERIES_E2E_VERIFIED",
+        "stdout_repr": "'CLAUDE_SERIES_E2E_VERIFIED\\n'"
+      },
+      "name": "smoke_file_content_exact",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "deleted_proof_stdout": ""
+      },
+      "name": "no_tracked_proof_deletions",
+      "passed": true
+    }
+  ],
+  "smoke_show": {
+    "argv": [
+      "git",
+      "show",
+      "codex/claude-series-e2e-smoke:scratch/claude_series_e2e/SMOKE.md"
+    ],
+    "cwd": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask",
+    "duration_ms": 11,
+    "returncode": 0,
+    "stderr": "",
+    "stderr_tail": "",
+    "stdout": "CLAUDE_SERIES_E2E_VERIFIED\n",
+    "stdout_tail": "CLAUDE_SERIES_E2E_VERIFIED\n",
+    "timed_out": false
+  },
+  "status": "PASS",
+  "temp_repo_final_status": "",
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-0003",
+  "tracked_proof_deletions_stdout": ""
+}

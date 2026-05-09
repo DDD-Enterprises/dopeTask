@@ -1,0 +1,40 @@
+{
+  "anthropic_api_key_present": false,
+  "auth_mode_conclusion": "subscription_or_oauth_likely",
+  "auth_status": {
+    "argv": [
+      "claude",
+      "auth",
+      "status"
+    ],
+    "duration_ms": 224,
+    "parse_error": null,
+    "parsed_json": {
+      "apiProvider": "firstParty",
+      "authMethod": "claude.ai",
+      "email": "houston@krohman.org",
+      "loggedIn": true,
+      "orgId": "9df78530-35b0-4c64-9124-97c8d7582979",
+      "orgName": "houston@krohman.org's Organization",
+      "subscriptionType": "max"
+    },
+    "parsed_json_success": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\n  \"loggedIn\": true,\n  \"authMethod\": \"claude.ai\",\n  \"apiProvider\": \"firstParty\",\n  \"email\": \"houston@krohman.org\",\n  \"orgId\": \"9df78530-35b0-4c64-9124-97c8d7582979\",\n  \"orgName\": \"houston@krohman.org's Organization\",\n  \"subscriptionType\": \"max\"\n}\n",
+    "timed_out": false
+  },
+  "auth_status_command_attempted": true,
+  "auth_status_json": {
+    "apiProvider": "firstParty",
+    "authMethod": "claude.ai",
+    "email": "houston@krohman.org",
+    "loggedIn": true,
+    "orgId": "9df78530-35b0-4c64-9124-97c8d7582979",
+    "orgName": "houston@krohman.org's Organization",
+    "subscriptionType": "max"
+  },
+  "auth_status_json_parse_success": true,
+  "bare_flag_used": false,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002"
+}

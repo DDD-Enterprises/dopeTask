@@ -1,0 +1,92 @@
+{
+  "bare_mode_used": false,
+  "clone_command": {
+    "argv": [
+      "git",
+      "clone",
+      "--branch",
+      "main",
+      "--single-branch",
+      "/Users/hue/code/dopeTask",
+      "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask"
+    ],
+    "cwd": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_",
+    "duration_ms": 157,
+    "returncode": 0,
+    "stderr": "Cloning into '/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask'...\ndone.\n",
+    "stderr_tail": "Cloning into '/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask'...\ndone.\n",
+    "stdout": "",
+    "stdout_tail": "",
+    "timed_out": false
+  },
+  "setup_commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--branch",
+        "main",
+        "--single-branch",
+        "/Users/hue/code/dopeTask",
+        "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask"
+      ],
+      "cwd": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_",
+      "duration_ms": 157,
+      "returncode": 0,
+      "stderr": "Cloning into '/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask'...\ndone.\n",
+      "stderr_tail": "Cloning into '/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask'...\ndone.\n",
+      "stdout": "",
+      "stdout_tail": "",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "user.email",
+        "codex@example.test"
+      ],
+      "cwd": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask",
+      "duration_ms": 6,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_tail": "",
+      "stdout": "",
+      "stdout_tail": "",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "user.name",
+        "Codex Test"
+      ],
+      "cwd": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask",
+      "duration_ms": 6,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_tail": "",
+      "stdout": "",
+      "stdout_tail": "",
+      "timed_out": false
+    }
+  ],
+  "temp_repo": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask",
+  "temp_root": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_",
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-0003",
+  "tracked_proof_deleted_before": "",
+  "tracked_proof_file_count": 10,
+  "tracked_proof_file_sample": [
+    "proof/standards/PROOF_ARCHIVE_EXAMPLE_MANIFEST.json",
+    "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+    "proof/standards/PROOF_BUNDLE_EXAMPLE.json",
+    "proof/standards/PROOF_BUNDLE_SCHEMA.json",
+    "proof/tp-dt-das-investigate-0001/PROOF.json",
+    "proof/tp-dt-das-investigate-0001/commands.log",
+    "proof/tp-dt-das-investigate-0001/dope_agent_system_git_status.txt",
+    "proof/tp-dt-das-investigate-0001/evidence_index.json",
+    "proof/tp-dt-das-investigate-0001/git_status_after.txt",
+    "proof/tp-dt-das-investigate-0001/git_status_before.txt"
+  ]
+}

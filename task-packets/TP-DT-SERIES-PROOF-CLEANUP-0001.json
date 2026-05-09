@@ -1,0 +1,171 @@
+{
+  "id": "TP-DT-SERIES-PROOF-CLEANUP-0001",
+  "project": "dopetask",
+  "target": "Fix tp-series proof artifact copy and cleanup so generated proof files for the current TP are handled without deleting tracked historical proof artifacts.",
+  "invariants": [
+    "dopeTask remains runtime authority",
+    "Do not modify Claude adapter code",
+    "Do not modify route/orchestrate runner code",
+    "Do not modify dope-agent-system",
+    "Do not delete tracked historical proof files",
+    "Do not bypass commit allowlist enforcement",
+    "Proof cleanup must be scoped to current TP-generated artifacts"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask.core",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-SERIES-PROOF-CLEANUP",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/series-proof-cleanup-0001"
+  },
+  "commit": {
+    "message": "fix(tp-series): preserve tracked proof archives during cleanup",
+    "allowlist": [
+      "task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json",
+      "src/dopetask/ops/tp_series/logic.py",
+      "tests/unit/tp_series/test_proof_artifact_cleanup.py",
+      "out/implementation/TP-DT-SERIES-PROOF-CLEANUP-0001/PROOF.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/**"
+    ],
+    "verify": [
+      "python -m compileall -q src tests",
+      "pytest -q tests/unit/tp_series/test_proof_artifact_cleanup.py",
+      "pytest -q tests/unit/tp_series/test_cli.py",
+      "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py",
+      "pytest -q",
+      "git diff --check"
+    ]
+  },
+  "pr": {
+    "title": "Preserve tracked proof archives during tp-series cleanup",
+    "body": "Fixes tp-series proof artifact cleanup so only current TP-generated proof files are copied and removed. Prevents tracked historical proof archives from being deleted during series execution.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_reproduce_and_inspect",
+      "task": "Inspect the failed E2E symptoms and current tp-series proof copy/cleanup implementation.",
+      "requirements": [
+        "Verify that _copy_proof_artifacts and _cleanup_generated_files currently operate too broadly.",
+        "Confirm the fix should scope proof artifact handling to files whose names start with the current TP id followed by an underscore.",
+        "Do not change code in this step until the current behavior is understood."
+      ],
+      "expected_files": [],
+      "validation": [
+        "python - <<'PY'\nfrom pathlib import Path\np = Path('src/dopetask/ops/tp_series/logic.py')\ntext = p.read_text()\nassert '_cleanup_generated_files' in text\nassert '_copy_proof_artifacts' in text\nprint('tp_series proof cleanup functions located')\nPY"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py"
+      ]
+    },
+    {
+      "id": "step_2_fix_scoped_proof_artifacts",
+      "task": "Update tp-series proof copy and cleanup to handle only current TP-generated proof artifacts.",
+      "requirements": [
+        "Modify _copy_proof_artifacts to accept tp_id.",
+        "Modify _cleanup_generated_files to accept tp_id.",
+        "Copy only files in worktree proof/ whose filename starts with f'{tp_id}_'.",
+        "Remove only files in worktree proof/ whose filename starts with f'{tp_id}_'.",
+        "Do not delete the whole proof/ directory unless it is empty after removing current TP-generated files.",
+        "Do not copy unrelated checked-in proof files into the series run_dir.",
+        "Do not delete unrelated checked-in proof files from the worktree.",
+        "Update exec_series_packet call sites accordingly.",
+        "Keep allowlist enforcement unchanged."
+      ],
+      "expected_files": [
+        "src/dopetask/ops/tp_series/logic.py"
+      ],
+      "validation": [
+        "python -m compileall -q src/dopetask/ops/tp_series/logic.py"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py"
+      ]
+    },
+    {
+      "id": "step_3_regression_tests",
+      "task": "Add unit tests proving proof copy/cleanup preserves unrelated tracked proof files.",
+      "requirements": [
+        "Create tests/unit/tp_series/test_proof_artifact_cleanup.py.",
+        "Test that _copy_proof_artifacts copies only current TP-prefixed proof files.",
+        "Test that _copy_proof_artifacts returns the current TP proof bundle path when present.",
+        "Test that _cleanup_generated_files deletes only current TP-prefixed proof files.",
+        "Test that unrelated proof files remain in place.",
+        "Test that proof/ directory is removed only when empty after cleanup.",
+        "Do not require live Claude in unit tests."
+      ],
+      "expected_files": [
+        "tests/unit/tp_series/test_proof_artifact_cleanup.py"
+      ],
+      "validation": [
+        "pytest -q tests/unit/tp_series/test_proof_artifact_cleanup.py"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py"
+      ]
+    },
+    {
+      "id": "step_4_rerun_claude_series_e2e",
+      "task": "Rerun the claude_code tp-series E2E smoke in an isolated temp repo using correct repo binding.",
+      "requirements": [
+        "Run only in an isolated temp clone/copy.",
+        "Do not mutate the primary dopeTask repo except out/verification artifacts.",
+        "Use repo_binding.project_id: dopetask.core.",
+        "Use actual dopetask tp series exec --agent claude_code.",
+        "Verify EXEC.json is created.",
+        "Verify SERIES_STATE.json packet status is completed.",
+        "Verify committed_files contains only scratch/claude_series_e2e/SMOKE.md.",
+        "Verify proof bundle exists.",
+        "Verify smoke file content is exactly CLAUDE_SERIES_E2E_VERIFIED.",
+        "Verify no tracked proof deletions occur.",
+        "Record all evidence under out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/."
+      ],
+      "expected_files": [
+        "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF.json"
+      ],
+      "validation": [
+        "python -m json.tool out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF.json >/dev/null"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py",
+        "src/dopetask/ops/tp_exec/engine.py",
+        "src/dopetask_adapters/claude_code/executor.py"
+      ]
+    },
+    {
+      "id": "step_5_validation_proof_commit",
+      "task": "Run validation, write implementation proof, commit, and backfill proof metadata.",
+      "requirements": [
+        "Run focused tests and full pytest.",
+        "Write implementation proof JSON.",
+        "Commit only if validations pass and changed paths are within allowlist.",
+        "After implementation commit, backfill proof metadata in a second commit.",
+        "Do not commit if source/test validation fails."
+      ],
+      "expected_files": [
+        "out/implementation/TP-DT-SERIES-PROOF-CLEANUP-0001/PROOF.json",
+        "task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json"
+      ],
+      "validation": [
+        "python -m compileall -q src tests",
+        "pytest -q tests/unit/tp_series/test_proof_artifact_cleanup.py",
+        "pytest -q tests/unit/tp_series/test_cli.py",
+        "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py",
+        "pytest -q",
+        "git diff --check"
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_series/logic.py"
+      ]
+    }
+  ]
+}

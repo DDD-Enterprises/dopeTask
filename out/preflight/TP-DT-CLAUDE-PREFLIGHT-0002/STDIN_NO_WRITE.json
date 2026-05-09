@@ -1,0 +1,109 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "--permission-mode",
+    "plan",
+    "--output-format",
+    "json",
+    "--no-session-persistence"
+  ],
+  "claude_binary": "/Users/hue/.local/bin/claude",
+  "claude_version": "2.1.119 (Claude Code)",
+  "claude_version_command": {
+    "argv": [
+      "claude",
+      "--version"
+    ],
+    "duration_ms": 982,
+    "parse_error": "JSONDecodeError: Extra data: line 1 column 4 (char 3)",
+    "parsed_json": null,
+    "parsed_json_success": false,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "2.1.119 (Claude Code)\n",
+    "timed_out": false
+  },
+  "duration_ms": 13692,
+  "git_status_after": " M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json\n",
+  "git_status_before": " M out/preflight/TP-DT-CLAUDE-PREFLIGHT-0002/BASELINE_REVIEW.json\n",
+  "parse_error": null,
+  "parsed_json": {
+    "api_error_status": null,
+    "duration_api_ms": 7168,
+    "duration_ms": 6248,
+    "fast_mode_state": "off",
+    "is_error": false,
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0,
+        "contextWindow": 200000,
+        "costUSD": 0.00043000000000000004,
+        "inputTokens": 360,
+        "maxOutputTokens": 32000,
+        "outputTokens": 14,
+        "webSearchRequests": 0
+      },
+      "claude-opus-4-7[1m]": {
+        "cacheCreationInputTokens": 63436,
+        "cacheReadInputTokens": 17665,
+        "contextWindow": 1000000,
+        "costUSD": 0.4059875,
+        "inputTokens": 6,
+        "maxOutputTokens": 64000,
+        "outputTokens": 26,
+        "webSearchRequests": 0
+      }
+    },
+    "num_turns": 1,
+    "permission_denials": [],
+    "result": "CLAUDE_STDIN_NO_WRITE_OK",
+    "session_id": "8c2e8748-ae19-426f-8d9d-d44253dfd132",
+    "stop_reason": "end_turn",
+    "subtype": "success",
+    "terminal_reason": "completed",
+    "total_cost_usd": 0.4064175,
+    "type": "result",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 63436,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 63436,
+      "cache_read_input_tokens": 17665,
+      "inference_geo": "",
+      "input_tokens": 6,
+      "iterations": [
+        {
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 63436,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "cache_creation_input_tokens": 63436,
+          "cache_read_input_tokens": 17665,
+          "input_tokens": 6,
+          "output_tokens": 26,
+          "type": "message"
+        }
+      ],
+      "output_tokens": 26,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    },
+    "uuid": "2c63ccb5-f324-464b-9a8b-5b5bbab6d8c0"
+  },
+  "parsed_json_success": true,
+  "prompt": "Reply with exactly: CLAUDE_STDIN_NO_WRITE_OK. Do not edit files.",
+  "prompt_delivery": "stdin",
+  "repo": "/Users/hue/code/dopeTask",
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"api_error_status\":null,\"duration_ms\":6248,\"duration_api_ms\":7168,\"num_turns\":1,\"result\":\"CLAUDE_STDIN_NO_WRITE_OK\",\"stop_reason\":\"end_turn\",\"session_id\":\"8c2e8748-ae19-426f-8d9d-d44253dfd132\",\"total_cost_usd\":0.4064175,\"usage\":{\"input_tokens\":6,\"cache_creation_input_tokens\":63436,\"cache_read_input_tokens\":17665,\"output_tokens\":26,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":63436,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[{\"input_tokens\":6,\"output_tokens\":26,\"cache_read_input_tokens\":17665,\"cache_creation_input_tokens\":63436,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":63436},\"type\":\"message\"}],\"speed\":\"standard\"},\"modelUsage\":{\"claude-haiku-4-5-20251001\":{\"inputTokens\":360,\"outputTokens\":14,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.00043000000000000004,\"contextWindow\":200000,\"maxOutputTokens\":32000},\"claude-opus-4-7[1m]\":{\"inputTokens\":6,\"outputTokens\":26,\"cacheReadInputTokens\":17665,\"cacheCreationInputTokens\":63436,\"webSearchRequests\":0,\"costUSD\":0.4059875,\"contextWindow\":1000000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"uuid\":\"2c63ccb5-f324-464b-9a8b-5b5bbab6d8c0\"}\n",
+  "timed_out": false,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002"
+}

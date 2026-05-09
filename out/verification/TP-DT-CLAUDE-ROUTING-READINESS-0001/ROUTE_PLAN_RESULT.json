@@ -1,0 +1,610 @@
+{
+  "command_used": {
+    "argv": [
+      "dopetask",
+      "route",
+      "plan",
+      "--packet",
+      "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/task_packets/TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE.json",
+      "--repo-root",
+      "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask"
+    ],
+    "command": "dopetask route plan --packet /var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/task_packets/TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE.json --repo-root /var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+    "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "\u2713 Route plan written\nJSON: \n/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq\n4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.json\nMarkdown: \n/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq\n4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.md\n"
+  },
+  "fallback_command": null,
+  "generated_route_artifacts": [
+    "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.json",
+    "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.md"
+  ],
+  "plan_json": {
+    "availability_path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/.dopetask/runtime/availability.yaml",
+    "packet_path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/task_packets/TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE.json",
+    "policy": {
+      "escalation_ladder": [
+        "gpt-5.1-mini",
+        "haiku-4.5",
+        "sonnet-4.6",
+        "gpt-5.3-codex"
+      ],
+      "max_cost_tier": "high",
+      "max_escalations": 2,
+      "min_total_score": 50,
+      "require_explain": true,
+      "stop_on_ambiguity": true
+    },
+    "refusal_reasons": [],
+    "repo_root": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+    "status": "ok",
+    "steps": [
+      {
+        "candidates_top3": [
+          {
+            "model": "gpt-5.1-mini",
+            "runner": "copilot_cli",
+            "total": 59
+          },
+          {
+            "model": "haiku-4.5",
+            "runner": "copilot_cli",
+            "total": 59
+          },
+          {
+            "model": "gpt-5.1-mini",
+            "runner": "claude_code",
+            "total": 51
+          }
+        ],
+        "confidence": 0.79,
+        "model": "gpt-5.1-mini",
+        "reasons": [
+          "cheap_model_preferred",
+          "cost:cheap",
+          "runner_cheap"
+        ],
+        "runner": "copilot_cli",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": 0,
+          "model_fit": 31,
+          "runner_fit": 28,
+          "total": 59
+        },
+        "step": "compile-tasks"
+      },
+      {
+        "candidates_top3": [
+          {
+            "model": "sonnet-4.6",
+            "runner": "claude_code",
+            "total": 85
+          },
+          {
+            "model": "sonnet-4.6",
+            "runner": "codex_desktop",
+            "total": 85
+          },
+          {
+            "model": "sonnet-4.6",
+            "runner": "copilot_cli",
+            "total": 65
+          }
+        ],
+        "confidence": 1.0,
+        "model": "sonnet-4.6",
+        "reasons": [
+          "balanced",
+          "cost:medium",
+          "preferred_code_edit_model",
+          "runner_code_edit",
+          "runner_tests",
+          "tests"
+        ],
+        "runner": "claude_code",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": -2,
+          "model_fit": 47,
+          "runner_fit": 40,
+          "total": 85
+        },
+        "step": "run-task"
+      },
+      {
+        "candidates_top3": [
+          {
+            "model": "gpt-5.1-mini",
+            "runner": "copilot_cli",
+            "total": 57
+          },
+          {
+            "model": "gpt-5.1-mini",
+            "runner": "codex_desktop",
+            "total": 54
+          },
+          {
+            "model": "gpt-5.1-mini",
+            "runner": "claude_code",
+            "total": 49
+          }
+        ],
+        "confidence": 0.76,
+        "model": "gpt-5.1-mini",
+        "reasons": [
+          "cheap_evidence_model",
+          "cost:cheap",
+          "runner_automation"
+        ],
+        "runner": "copilot_cli",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": 0,
+          "model_fit": 29,
+          "runner_fit": 28,
+          "total": 57
+        },
+        "step": "collect-evidence"
+      },
+      {
+        "candidates_top3": [
+          {
+            "model": "gpt-5.4",
+            "runner": "claude_code",
+            "total": 67
+          },
+          {
+            "model": "gpt-5.4",
+            "runner": "codex_desktop",
+            "total": 67
+          },
+          {
+            "model": "opus-4.6",
+            "runner": "claude_code",
+            "total": 63
+          }
+        ],
+        "confidence": 0.89,
+        "model": "gpt-5.4",
+        "reasons": [
+          "correctness_pressure",
+          "cost:medium",
+          "runner_verification"
+        ],
+        "runner": "claude_code",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": 0,
+          "model_fit": 37,
+          "runner_fit": 30,
+          "total": 67
+        },
+        "step": "gate-allowlist"
+      },
+      {
+        "candidates_top3": [
+          {
+            "model": "gpt-5.4",
+            "runner": "claude_code",
+            "total": 67
+          },
+          {
+            "model": "gpt-5.4",
+            "runner": "codex_desktop",
+            "total": 67
+          },
+          {
+            "model": "opus-4.6",
+            "runner": "claude_code",
+            "total": 63
+          }
+        ],
+        "confidence": 0.89,
+        "model": "gpt-5.4",
+        "reasons": [
+          "correctness_pressure",
+          "cost:medium",
+          "runner_verification"
+        ],
+        "runner": "claude_code",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": 0,
+          "model_fit": 37,
+          "runner_fit": 30,
+          "total": 67
+        },
+        "step": "commit-run"
+      },
+      {
+        "candidates_top3": [
+          {
+            "model": "gpt-5.4",
+            "runner": "claude_code",
+            "total": 67
+          },
+          {
+            "model": "gpt-5.4",
+            "runner": "codex_desktop",
+            "total": 67
+          },
+          {
+            "model": "opus-4.6",
+            "runner": "claude_code",
+            "total": 63
+          }
+        ],
+        "confidence": 0.89,
+        "model": "gpt-5.4",
+        "reasons": [
+          "correctness_pressure",
+          "cost:medium",
+          "runner_verification"
+        ],
+        "runner": "claude_code",
+        "scores": {
+          "confidence_penalty": 0,
+          "cost_penalty": 0,
+          "model_fit": 37,
+          "runner_fit": 30,
+          "total": 67
+        },
+        "step": "finish"
+      }
+    ]
+  },
+  "plan_json_path": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.json",
+  "plan_markdown": "# ROUTE_PLAN\n\n- status: ok\n- repo_root: /private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask\n- packet_path: /private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/task_packets/TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE.json\n- availability_path: /private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/.dopetask/runtime/availability.yaml\n\n## Policy\n\n- require_explain: True\n- stop_on_ambiguity: True\n- max_cost_tier: high\n- escalation_ladder: gpt-5.1-mini, haiku-4.5, sonnet-4.6, gpt-5.3-codex\n- max_escalations: 2\n- min_total_score: 50\n\n## Decisions\n\n| step | runner | model | confidence | total |\n| --- | --- | --- | --- | --- |\n| compile-tasks | copilot_cli | gpt-5.1-mini | 0.79 | 59 |\n| run-task | claude_code | sonnet-4.6 | 1.00 | 85 |\n| collect-evidence | copilot_cli | gpt-5.1-mini | 0.76 | 57 |\n| gate-allowlist | claude_code | gpt-5.4 | 0.89 | 67 |\n| commit-run | claude_code | gpt-5.4 | 0.89 | 67 |\n| finish | claude_code | gpt-5.4 | 0.89 | 67 |\n",
+  "plan_md_path": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/dopetask_route/ROUTE_PLAN.md",
+  "plan_status": "ok",
+  "planned_steps_selecting_claude_code": [
+    {
+      "candidates_top3": [
+        {
+          "model": "sonnet-4.6",
+          "runner": "claude_code",
+          "total": 85
+        },
+        {
+          "model": "sonnet-4.6",
+          "runner": "codex_desktop",
+          "total": 85
+        },
+        {
+          "model": "sonnet-4.6",
+          "runner": "copilot_cli",
+          "total": 65
+        }
+      ],
+      "confidence": 1.0,
+      "model": "sonnet-4.6",
+      "reasons": [
+        "balanced",
+        "cost:medium",
+        "preferred_code_edit_model",
+        "runner_code_edit",
+        "runner_tests",
+        "tests"
+      ],
+      "runner": "claude_code",
+      "scores": {
+        "confidence_penalty": 0,
+        "cost_penalty": -2,
+        "model_fit": 47,
+        "runner_fit": 40,
+        "total": 85
+      },
+      "step": "run-task"
+    },
+    {
+      "candidates_top3": [
+        {
+          "model": "gpt-5.4",
+          "runner": "claude_code",
+          "total": 67
+        },
+        {
+          "model": "gpt-5.4",
+          "runner": "codex_desktop",
+          "total": 67
+        },
+        {
+          "model": "opus-4.6",
+          "runner": "claude_code",
+          "total": 63
+        }
+      ],
+      "confidence": 0.89,
+      "model": "gpt-5.4",
+      "reasons": [
+        "correctness_pressure",
+        "cost:medium",
+        "runner_verification"
+      ],
+      "runner": "claude_code",
+      "scores": {
+        "confidence_penalty": 0,
+        "cost_penalty": 0,
+        "model_fit": 37,
+        "runner_fit": 30,
+        "total": 67
+      },
+      "step": "gate-allowlist"
+    },
+    {
+      "candidates_top3": [
+        {
+          "model": "gpt-5.4",
+          "runner": "claude_code",
+          "total": 67
+        },
+        {
+          "model": "gpt-5.4",
+          "runner": "codex_desktop",
+          "total": 67
+        },
+        {
+          "model": "opus-4.6",
+          "runner": "claude_code",
+          "total": 63
+        }
+      ],
+      "confidence": 0.89,
+      "model": "gpt-5.4",
+      "reasons": [
+        "correctness_pressure",
+        "cost:medium",
+        "runner_verification"
+      ],
+      "runner": "claude_code",
+      "scores": {
+        "confidence_penalty": 0,
+        "cost_penalty": 0,
+        "model_fit": 37,
+        "runner_fit": 30,
+        "total": 67
+      },
+      "step": "commit-run"
+    },
+    {
+      "candidates_top3": [
+        {
+          "model": "gpt-5.4",
+          "runner": "claude_code",
+          "total": 67
+        },
+        {
+          "model": "gpt-5.4",
+          "runner": "codex_desktop",
+          "total": 67
+        },
+        {
+          "model": "opus-4.6",
+          "runner": "claude_code",
+          "total": 63
+        }
+      ],
+      "confidence": 0.89,
+      "model": "gpt-5.4",
+      "reasons": [
+        "correctness_pressure",
+        "cost:medium",
+        "runner_verification"
+      ],
+      "runner": "claude_code",
+      "scores": {
+        "confidence_penalty": 0,
+        "cost_penalty": 0,
+        "model_fit": 37,
+        "runner_fit": 30,
+        "total": 67
+      },
+      "step": "finish"
+    }
+  ],
+  "refusal_reasons": [],
+  "returncode": 0,
+  "route_plan_command_succeeded": true,
+  "route_plan_mentions_claude_code": true,
+  "route_plan_selected_claude_code": true,
+  "run_task_selection": {
+    "candidates_top3": [
+      {
+        "model": "sonnet-4.6",
+        "runner": "claude_code",
+        "total": 85
+      },
+      {
+        "model": "sonnet-4.6",
+        "runner": "codex_desktop",
+        "total": 85
+      },
+      {
+        "model": "sonnet-4.6",
+        "runner": "copilot_cli",
+        "total": 65
+      }
+    ],
+    "confidence": 1.0,
+    "model": "sonnet-4.6",
+    "reasons": [
+      "balanced",
+      "cost:medium",
+      "preferred_code_edit_model",
+      "runner_code_edit",
+      "runner_tests",
+      "tests"
+    ],
+    "runner": "claude_code",
+    "scores": {
+      "confidence_penalty": 0,
+      "cost_penalty": -2,
+      "model_fit": 47,
+      "runner_fit": 40,
+      "total": 85
+    },
+    "step": "run-task"
+  },
+  "sample_packet": {
+    "commit": {
+      "allowlist": [
+        "scratch/routing_readiness.txt"
+      ],
+      "message": "test: routing readiness sample",
+      "verify": [
+        "true"
+      ]
+    },
+    "execution": {
+      "agent": "claude_code",
+      "branch": "codex/routing-readiness-sample"
+    },
+    "id": "TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE",
+    "invariants": [
+      "No mutation"
+    ],
+    "pr": {
+      "base": "main",
+      "body": "Sample only.",
+      "title": "Routing readiness sample"
+    },
+    "project": "dopetask",
+    "repo_binding": {
+      "origin_hint": "DDD-Enterprises/dopeTask",
+      "project_id": "dopetask.core",
+      "repo_marker": "pyproject.toml",
+      "require_identity_match": true
+    },
+    "series": {
+      "base_branch": "main",
+      "final_packet": true,
+      "id": "SERIES-DT-CLAUDE-ROUTING-READINESS",
+      "parent_tp_id": null
+    },
+    "steps": [
+      {
+        "commands": [],
+        "context_files": [],
+        "expected_files": [
+          "scratch/routing_readiness.txt"
+        ],
+        "id": "step_1",
+        "requirements": [
+          "No mutation"
+        ],
+        "task": "Sample code edit task.",
+        "validation": [
+          "true"
+        ]
+      }
+    ],
+    "target": "Sample code edit task for routing readiness."
+  },
+  "sample_packet_path": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/out/task_packets/TP-DT-CLAUDE-ROUTING-READINESS-SAMPLE.json",
+  "top_candidates_by_step": {
+    "collect-evidence": [
+      {
+        "model": "gpt-5.1-mini",
+        "runner": "copilot_cli",
+        "total": 57
+      },
+      {
+        "model": "gpt-5.1-mini",
+        "runner": "codex_desktop",
+        "total": 54
+      },
+      {
+        "model": "gpt-5.1-mini",
+        "runner": "claude_code",
+        "total": 49
+      }
+    ],
+    "commit-run": [
+      {
+        "model": "gpt-5.4",
+        "runner": "claude_code",
+        "total": 67
+      },
+      {
+        "model": "gpt-5.4",
+        "runner": "codex_desktop",
+        "total": 67
+      },
+      {
+        "model": "opus-4.6",
+        "runner": "claude_code",
+        "total": 63
+      }
+    ],
+    "compile-tasks": [
+      {
+        "model": "gpt-5.1-mini",
+        "runner": "copilot_cli",
+        "total": 59
+      },
+      {
+        "model": "haiku-4.5",
+        "runner": "copilot_cli",
+        "total": 59
+      },
+      {
+        "model": "gpt-5.1-mini",
+        "runner": "claude_code",
+        "total": 51
+      }
+    ],
+    "finish": [
+      {
+        "model": "gpt-5.4",
+        "runner": "claude_code",
+        "total": 67
+      },
+      {
+        "model": "gpt-5.4",
+        "runner": "codex_desktop",
+        "total": 67
+      },
+      {
+        "model": "opus-4.6",
+        "runner": "claude_code",
+        "total": 63
+      }
+    ],
+    "gate-allowlist": [
+      {
+        "model": "gpt-5.4",
+        "runner": "claude_code",
+        "total": 67
+      },
+      {
+        "model": "gpt-5.4",
+        "runner": "codex_desktop",
+        "total": 67
+      },
+      {
+        "model": "opus-4.6",
+        "runner": "claude_code",
+        "total": 63
+      }
+    ],
+    "run-task": [
+      {
+        "model": "sonnet-4.6",
+        "runner": "claude_code",
+        "total": 85
+      },
+      {
+        "model": "sonnet-4.6",
+        "runner": "codex_desktop",
+        "total": 85
+      },
+      {
+        "model": "sonnet-4.6",
+        "runner": "copilot_cli",
+        "total": 65
+      }
+    ]
+  }
+}

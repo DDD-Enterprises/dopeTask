@@ -1,0 +1,127 @@
+{
+  "id": "TP-DT-PROOF-ARCHIVE-MANIFEST-0001",
+  "project": "dopetask",
+  "target": "Reconcile proof archive manifest schema with checked-in proof archive metadata so full pytest no longer fails on source_path.",
+  "invariants": [
+    "Do not modify Claude adapter code",
+    "Do not modify route/orchestrate runner code",
+    "Do not modify dope-agent-system",
+    "Preserve proof provenance unless proven harmful",
+    "Fix the source-of-truth mismatch, not just the symptom",
+    "Keep the change narrow and auditable"
+  ],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "SERIES-DT-PROOF-ARCHIVE-MANIFEST",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "codex/proof-archive-manifest-0001"
+  },
+  "commit": {
+    "message": "fix(proof): reconcile archive manifest schema",
+    "allowlist": [
+      "task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json",
+      "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+      "src/dopetask/obs/proof_aggregator.py",
+      "tests/unit/obs/test_proof_contract_assets.py",
+      "proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip",
+      "out/implementation/TP-DT-PROOF-ARCHIVE-MANIFEST-0001/PROOF.json"
+    ],
+    "verify": [
+      "python -m json.tool proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json >/dev/null",
+      "python -m compileall -q src tests",
+      "pytest -q tests/unit/obs/test_proof_contract_assets.py",
+      "pytest -q tests/unit/obs/test_proof_aggregator.py",
+      "pytest -q",
+      "git diff --check"
+    ]
+  },
+  "pr": {
+    "title": "Fix proof archive manifest schema drift",
+    "body": "Reconciles the checked-in proof archive manifest metadata with the proof archive manifest schema. This fixes a pre-existing full-suite failure unrelated to the Claude adapter work.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "step_1_reproduce_and_locate_truth",
+      "task": "Reproduce the failing test and inspect the runtime proof archive manifest generator, schema, and checked-in archive.",
+      "requirements": [
+        "Run the exact failing test first.",
+        "Inspect proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json.",
+        "Inspect src/dopetask/obs/proof_aggregator.py.",
+        "Inspect tests/unit/obs/test_proof_contract_assets.py.",
+        "Inspect the manifest inside proof/TP-002-PAL-ENFORCEMENT_PROOF_ARCHIVE.zip without rewriting it.",
+        "Determine whether source_path is current runtime output or only stale historical archive drift."
+      ],
+      "expected_files": [],
+      "validation": [
+        "pytest -q tests/unit/obs/test_proof_contract_assets.py || true"
+      ],
+      "context_files": [
+        "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+        "src/dopetask/obs/proof_aggregator.py",
+        "tests/unit/obs/test_proof_contract_assets.py"
+      ]
+    },
+    {
+      "id": "step_2_apply_minimal_fix",
+      "task": "Apply the smallest correct fix based on source-of-truth investigation.",
+      "requirements": [
+        "If proof_aggregator.py currently emits source_path intentionally, update PROOF_ARCHIVE_MANIFEST_SCHEMA.json to allow source_path as a string.",
+        "If source_path is not current runtime output and only exists in stale checked-in archive data, regenerate or patch only the stale checked-in archive manifest.",
+        "If both runtime and checked-in archive behavior disagree, prefer making schema match current runtime output unless there is a strong reason source_path should be removed.",
+        "Do not alter unrelated proof schema fields.",
+        "Do not relax schema with broad additionalProperties=true.",
+        "If allowing source_path, add it as an explicit property only.",
+        "Do not modify Claude adapter files."
+      ],
+      "expected_files": [
+        "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json"
+      ],
+      "validation": [
+        "python -m json.tool proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json >/dev/null",
+        "pytest -q tests/unit/obs/test_proof_contract_assets.py"
+      ],
+      "context_files": [
+        "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+        "src/dopetask/obs/proof_aggregator.py",
+        "tests/unit/obs/test_proof_contract_assets.py"
+      ]
+    },
+    {
+      "id": "step_3_validation_and_proof",
+      "task": "Run focused and full validation, write proof, and commit.",
+      "requirements": [
+        "Run focused proof-contract tests.",
+        "Run full pytest because this TP specifically targets the prior full-suite failure.",
+        "Write a proof JSON with reproduction, root cause, chosen fix, tests, allowlist check, and commit-readiness.",
+        "Commit only if tests pass and changed paths are within allowlist."
+      ],
+      "expected_files": [
+        "out/implementation/TP-DT-PROOF-ARCHIVE-MANIFEST-0001/PROOF.json",
+        "task-packets/TP-DT-PROOF-ARCHIVE-MANIFEST-0001.json"
+      ],
+      "validation": [
+        "python -m compileall -q src tests",
+        "pytest -q tests/unit/obs/test_proof_contract_assets.py",
+        "pytest -q tests/unit/obs/test_proof_aggregator.py",
+        "pytest -q",
+        "git diff --check"
+      ],
+      "context_files": [
+        "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+        "src/dopetask/obs/proof_aggregator.py",
+        "tests/unit/obs/test_proof_contract_assets.py"
+      ]
+    }
+  ]
+}

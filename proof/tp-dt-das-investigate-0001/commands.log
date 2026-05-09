@@ -1,0 +1,61 @@
+# TP-DT-DAS-INVESTIGATE-0001 Commands Log
+
+Format: [cwd] command → exit_code | result_summary
+
+---
+
+[dopeTask] git status --porcelain → 0 | clean
+[dopeTask] echo "${DOPE_AGENT_SYSTEM_REPO:-NOT_SET}" → 0 | NOT_SET (env var not set)
+[dopeTask] ls /Users/hue/code/dope-agent-system → 0 | FOUND (repo exists)
+[dope-agent-system] git status --porcelain → 0 | clean
+[dope-agent-system] find . -maxdepth 3 -type f | sort → 0 | 130+ files enumerated
+[dopeTask] find . -maxdepth 3 -type f | sort → 0 | full file tree captured
+[dope-agent-system] cat README.md → 0 | read (2800+ lines)
+[dope-agent-system] cat CLAUDE.md → 0 | read
+[dope-agent-system] cat docs/DOPETASK_INTEGRATION_CONTRACT.md → 0 | read
+[dope-agent-system] cat docs/AGENT_SYSTEM_OVERVIEW.md → 0 | read
+[dope-agent-system] cat .agent-project/PROJECT_PROFILE.json → 0 | read
+[dope-agent-system] cat .agent-project/AUTHORITY_ORDER.md → 0 | read
+[dope-agent-system] cat .agent-project/PROOF_CONTRACT.md → 0 | read
+[dope-agent-system] cat DOPETASK_VERSION_PIN.lock → 0 | dopeTask_version=0.5.7
+[dope-agent-system] cat .agent-project/HANDOFF_FORMATS.md → 0 | read
+[dope-agent-system] cat .agent-project/SAFETY_BOUNDARIES.md → 0 | read
+[dope-agent-system] cat schemas/dopeTask_schema_references.json → 0 | read
+[dope-agent-system] cat docs/TOOL_ROUTING_MATRIX.md → 0 | read
+[dope-agent-system] cat proof/tp-agent-system-0011/OWNERSHIP_MATRIX.json → 0 | read
+[dope-agent-system] cat proof/tp-agent-system-0011/RECOMMENDATION.md → 0 | read
+[dope-agent-system] cat docs/LEDGER_RECORD_CONTRACT.md → 0 | read
+[dope-agent-system] cat docs/PROOF_BUNDLE_CONTRACT.md → 0 | read
+[dopeTask] find src -type f -name "*.py" | sort | head -60 → 0 | file list
+[dopeTask] grep -r "interactive|pal|clink|runner" src -l → 0 | matched files list
+[dope-agent-system] cat .agent-project/VALIDATION_COMMANDS.md → 0 | read
+[dope-agent-system] cat .agent-project/THREAD_PROTOCOL.md → 0 | read
+[dopeTask] cat src/dopetask/runners/claude_code.py → 0 | RUNNER_NOT_IMPLEMENTED stub
+[dopeTask] cat src/dopetask/runners/codex_cli.py → 0 | read (subprocess codex exec)
+[dopeTask] cat src/dopetask/pipeline/task_runner/executor.py → 0 | read
+[dopeTask] find docs -type f | sort → 0 | 60+ docs files listed
+[dopeTask] cat src/dopetask/runners/base.py → 0 | read (RunnerAdapter Protocol)
+[dopeTask] cat src/dopetask/orchestrator/kernel.py | head -80 → 0 | read
+[dopeTask] cat docs/guides/dopetask-pal-integration-playbook.md → 0 | read
+[dopeTask] cat docs/plans/dopetask-multi-mode-execution-plan.md → 0 | read
+[dopeTask] cat docs/guides/PAL_EXECUTION_RULES.md → 0 | read
+[dopeTask] cat docs/guides/PAL_CHAINING_DOCTRINE.md → 0 | read
+[dopeTask] cat docs/architecture/dopetask-supervisor-executor-adapter-spec.md → 0 | read
+[dopeTask] cat docs/integrations/dopetask/ADAPTER_SCHEMA.md → 0 | read
+[dopeTask] cat docs/guides/PAL_PACKET_TEMPLATE.md → 0 | read
+[dopeTask] cat src/dopetask/runners/__init__.py → 0 | read (RUNNER_ADAPTERS registry)
+[dopeTask] cat docs/specs/dopetask-clipboard-import-execute-spec.md | head -80 → 0 | read
+[dopeTask] cat docs/22_WORKFLOW_GUIDE.md | head -80 → 0 | read
+[dope-agent-system] cat docs/PROJECT_ADAPTER_CONTRACT.md | head -80 → 0 | read
+
+--- Artifact writes (allowlisted paths only) ---
+[dopeTask] mkdir -p proof/tp-dt-das-investigate-0001 docs/investigations docs/integrations → 0 | created
+[dopeTask] Write proof/tp-dt-das-investigate-0001/git_status_before.txt → 0 | created
+[dopeTask] Write proof/tp-dt-das-investigate-0001/dope_agent_system_git_status.txt → 0 | created
+[dopeTask] Write proof/tp-dt-das-investigate-0001/commands.log → (this file)
+[dopeTask] Write proof/tp-dt-das-investigate-0001/evidence_index.json → pending
+[dopeTask] Write docs/investigations/dope-agent-system-symbiosis-investigation.md → pending
+[dopeTask] Write docs/integrations/dope-agent-system-dopetask-boundary-map.md → pending
+[dopeTask] Write docs/integrations/dope-agent-system-dopetask-design-inputs.md → pending
+[dopeTask] Write proof/tp-dt-das-investigate-0001/git_status_after.txt → pending
+[dopeTask] Write proof/tp-dt-das-investigate-0001/PROOF.json → pending

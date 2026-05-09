@@ -27,6 +27,16 @@ STATE_FILENAME = "SERIES_STATE.json"
 PR_FILENAME = "SERIES_PR.json"
 CONTEXT_FILENAME = "SERIES_CONTEXT.json"
 
+RUNTIME_METADATA_KEYS = (
+    "auth_mode",
+    "bare_mode_used",
+    "permission_mode",
+    "allowed_tools",
+    "requested_model",
+    "effective_model",
+    "effective_model_source",
+)
+
 
 @dataclass(frozen=True)
 class SeriesExecResult:
@@ -256,10 +266,18 @@ def _run_shell_commands(commands: list[str], *, cwd: Path) -> list[dict[str, Any
     return results
 
 
-def _cleanup_generated_files(worktree_path: Path) -> None:
+def _is_current_tp_proof_artifact(path: Path, tp_id: str) -> bool:
+    return path.is_file() and path.name.startswith(f"{tp_id}_")
+
+
+def _cleanup_generated_files(worktree_path: Path, *, tp_id: str) -> None:
     proof_dir = worktree_path / "proof"
     if proof_dir.exists():
-        shutil.rmtree(proof_dir)
+        for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name):
+            if _is_current_tp_proof_artifact(item, tp_id):
+                item.unlink()
+        if not any(proof_dir.iterdir()):
+            proof_dir.rmdir()
     context_path = worktree_path / ".dopetask" / CONTEXT_FILENAME
     if context_path.exists():
         context_path.unlink()
@@ -268,19 +286,26 @@ def _cleanup_generated_files(worktree_path: Path) -> None:
         dopetask_dir.rmdir()
 
 
-def _copy_proof_artifacts(*, worktree_path: Path, run_dir: Path) -> Optional[Path]:
+def _copy_proof_artifacts(*, worktree_path: Path, run_dir: Path, tp_id: str) -> Optional[Path]:
     proof_dir = worktree_path / "proof"
     if not proof_dir.exists():
         return None
 
+    matching_items = [
+        item
+        for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name)
+        if _is_current_tp_proof_artifact(item, tp_id)
+    ]
+    if not matching_items:
+        return None
+
     run_dir.mkdir(parents=True, exist_ok=True)
     copied_bundle: Optional[Path] = None
-    for item in sorted(proof_dir.iterdir(), key=lambda entry: entry.name):
-        if item.is_file():
-            destination = run_dir / item.name
-            shutil.copy2(item, destination)
-            if item.name.endswith("_PROOF_BUNDLE.json"):
-                copied_bundle = destination.resolve()
+    for item in matching_items:
+        destination = run_dir / item.name
+        shutil.copy2(item, destination)
+        if item.name.endswith("_PROOF_BUNDLE.json"):
+            copied_bundle = destination.resolve()
     return copied_bundle
 
 
@@ -700,10 +725,11 @@ def exec_series_packet(
             try:
                 bundle_path = execute_task_packet(packet_path, agent=agent, model=model, working_dir=worktree_path)
             finally:
-                proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir)
+                proof_bundle = _copy_proof_artifacts(worktree_path=worktree_path, run_dir=run_dir, tp_id=tp.id)
 
-            _cleanup_generated_files(worktree_path)
+            _cleanup_generated_files(worktree_path, tp_id=tp.id)
             proof_metadata = _read_proof_metadata(run_dir=run_dir, tp_id=tp.id)
+            runtime_metadata = _exec_runtime_metadata(proof_metadata)
 
             verify_results = _run_shell_commands(tp.commit.verify, cwd=worktree_path)
             head_sha, committed_files = _stage_commit_changes(repo_root=repo_root, worktree_path=worktree_path, tp=tp)
@@ -723,6 +749,10 @@ def exec_series_packet(
                     "requested_model": proof_metadata.get("requested_model", model),
                     "effective_model": proof_metadata.get("effective_model"),
                     "effective_model_source": proof_metadata.get("effective_model_source"),
+                    "auth_mode": runtime_metadata["auth_mode"],
+                    "bare_mode_used": runtime_metadata["bare_mode_used"],
+                    "permission_mode": runtime_metadata["permission_mode"],
+                    "allowed_tools": runtime_metadata["allowed_tools"],
                     "verify": verify_results,
                     "committed_files": committed_files,
                     "context": context_payload,
@@ -782,10 +812,20 @@ def _read_proof_metadata(*, run_dir: Path, tp_id: str) -> dict[str, Any]:
     if not raw_proof_path.exists():
         return {}
     payload = _read_json(raw_proof_path)
+    return {key: payload.get(key) for key in RUNTIME_METADATA_KEYS if key in payload}
+
+
+def _exec_runtime_metadata(proof_metadata: dict[str, Any]) -> dict[str, Any]:
+    """Return explicit, non-inferred runtime metadata for EXEC.json."""
+    auth_mode = proof_metadata.get("auth_mode")
+    if auth_mode is None:
+        auth_mode = "unknown"
+
     return {
-        "requested_model": payload.get("requested_model"),
-        "effective_model": payload.get("effective_model"),
-        "effective_model_source": payload.get("effective_model_source"),
+        "auth_mode": auth_mode,
+        "bare_mode_used": proof_metadata.get("bare_mode_used"),
+        "permission_mode": proof_metadata.get("permission_mode"),
+        "allowed_tools": proof_metadata.get("allowed_tools"),
     }
 
 

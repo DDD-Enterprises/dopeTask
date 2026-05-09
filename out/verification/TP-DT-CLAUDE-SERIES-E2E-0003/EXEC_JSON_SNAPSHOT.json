@@ -1,0 +1,42 @@
+{
+  "agent": "claude_code",
+  "base_ref": "origin/main",
+  "branch": "codex/claude-series-e2e-smoke",
+  "bundle_path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/.worktrees/TP-DT-CLAUDE-SERIES-E2E-SMOKE/proof/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json",
+  "committed_files": [
+    "scratch/claude_series_e2e/SMOKE.md"
+  ],
+  "context": {
+    "dependencies": {},
+    "depends_on": [],
+    "parent_tp_id": null,
+    "schema_version": "1.0",
+    "series_id": "SERIES-DT-CLAUDE-SERIES-E2E-SMOKE",
+    "tp_id": "TP-DT-CLAUDE-SERIES-E2E-SMOKE",
+    "worktree_context": ".worktrees/TP-DT-CLAUDE-SERIES-E2E-SMOKE/.dopetask/SERIES_CONTEXT.json"
+  },
+  "copied_proof_bundle": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json",
+  "effective_model": null,
+  "effective_model_source": "agent_default",
+  "head_sha": "1bbcbd8d4230701ded29e9f9510256aac4314775",
+  "model": null,
+  "packet_path": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/task_packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE.json",
+  "requested_model": null,
+  "schema_version": "1.0",
+  "series_id": "SERIES-DT-CLAUDE-SERIES-E2E-SMOKE",
+  "tp_id": "TP-DT-CLAUDE-SERIES-E2E-SMOKE",
+  "verify": [
+    {
+      "command": "test -f scratch/claude_series_e2e/SMOKE.md",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "grep -qx CLAUDE_SERIES_E2E_VERIFIED scratch/claude_series_e2e/SMOKE.md",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

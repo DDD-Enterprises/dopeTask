@@ -1,0 +1,26 @@
+{
+  "changed_paths_after_artifact_writes": [],
+  "claude_code_generated_in_availability_yaml": true,
+  "claude_code_in_availability_template": true,
+  "claude_code_in_runner_names": true,
+  "cli_help_mentions_claude_code_for_tp_exec": true,
+  "cli_help_mentions_claude_code_for_tp_series_exec": true,
+  "docs_are_current": false,
+  "docs_tp_needed": true,
+  "implementation_tp_needed": false,
+  "minimal_followup_scope": [
+    "No routing config implementation TP is needed for AVAILABILITY_CONFIG_TEMPLATE or route planner selection; claude_code is present and selectable.",
+    "Update docs/specs that still describe low-level tp exec as gemini/codex-only or pre-Claude-adapter.",
+    "Clarify docs that route/orchestrate runner adapters remain a separate plane from the merged tp-series claude_code adapter.",
+    "Consider a narrow CLI-help cleanup for top-level `dopetask execute --agent`, which still says \"gemini or codex\" even though `tp exec` and `tp series exec` help mention claude_code."
+  ],
+  "no_dope_agent_system_mutation": true,
+  "no_primary_source_mutation": true,
+  "primary_repo_clean_start": true,
+  "primary_repo_status_after_artifact_writes": "",
+  "recommended_next_action": "routing_docs_tp_needed",
+  "route_handoff_mentions_claude_code": true,
+  "route_init_succeeded_or_not_required": true,
+  "route_plan_command_succeeded": true,
+  "route_plan_mentions_or_selects_claude_code": true
+}

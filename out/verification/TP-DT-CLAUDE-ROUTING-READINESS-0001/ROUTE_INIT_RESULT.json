@@ -1,0 +1,196 @@
+{
+  "availability_path": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask/.dopetask/runtime/availability.yaml",
+  "availability_yaml": "models:\n  gpt-5.1-mini:\n    context: medium\n    cost_tier: cheap\n    strengths:\n    - cheap\n    - docs\n    - routing\n  gpt-5.3-codex:\n    context: large\n    cost_tier: high\n    strengths:\n    - code_edit\n    - wide_edit_surface\n    - tests\n  gpt-5.4:\n    context: medium\n    cost_tier: medium\n    strengths:\n    - correctness\n    - gates\n    - finalization\n  haiku-4.5:\n    context: small\n    cost_tier: cheap\n    strengths:\n    - cheap\n    - docs\n    - summaries\n  opus-4.6:\n    context: large\n    cost_tier: high\n    strengths:\n    - reasoning\n    - correctness\n    - code_edit\n  sonnet-4.6:\n    context: large\n    cost_tier: medium\n    strengths:\n    - code_edit\n    - tests\n    - balanced\npolicy:\n  escalation_ladder:\n  - gpt-5.1-mini\n  - haiku-4.5\n  - sonnet-4.6\n  - gpt-5.3-codex\n  max_cost_tier: high\n  max_escalations: 2\n  min_total_score: 50\n  require_explain: true\n  stop_on_ambiguity: true\nrunners:\n  claude_code:\n    available: true\n    strengths:\n    - code_edit\n    - iterative_refactor\n    - tests\n  codex_desktop:\n    available: true\n    strengths:\n    - code_edit\n    - planning\n    - tests\n  copilot_cli:\n    available: true\n    strengths:\n    - quick_commands\n    - cheap_flows\n    - automation\n  google_jules:\n    available: true\n    strengths:\n    - context_awareness\n    - file_system\n    - reasoning\n",
+  "availability_yaml_present": true,
+  "claude_code_available": true,
+  "claude_code_present": true,
+  "command_used": {
+    "argv": [
+      "dopetask",
+      "route",
+      "init",
+      "--repo-root",
+      "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask"
+    ],
+    "command": "dopetask route init --repo-root /var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+    "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "\u2713 Route availability initialized\nPath: \n/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq\n4jbylv/dopeTask/.dopetask/runtime/availability.yaml\n"
+  },
+  "fallback_command": null,
+  "generated_config_matches_template": true,
+  "parsed_availability": {
+    "models": {
+      "gpt-5.1-mini": {
+        "context": "medium",
+        "cost_tier": "cheap",
+        "strengths": [
+          "cheap",
+          "docs",
+          "routing"
+        ]
+      },
+      "gpt-5.3-codex": {
+        "context": "large",
+        "cost_tier": "high",
+        "strengths": [
+          "code_edit",
+          "wide_edit_surface",
+          "tests"
+        ]
+      },
+      "gpt-5.4": {
+        "context": "medium",
+        "cost_tier": "medium",
+        "strengths": [
+          "correctness",
+          "gates",
+          "finalization"
+        ]
+      },
+      "haiku-4.5": {
+        "context": "small",
+        "cost_tier": "cheap",
+        "strengths": [
+          "cheap",
+          "docs",
+          "summaries"
+        ]
+      },
+      "opus-4.6": {
+        "context": "large",
+        "cost_tier": "high",
+        "strengths": [
+          "reasoning",
+          "correctness",
+          "code_edit"
+        ]
+      },
+      "sonnet-4.6": {
+        "context": "large",
+        "cost_tier": "medium",
+        "strengths": [
+          "code_edit",
+          "tests",
+          "balanced"
+        ]
+      }
+    },
+    "policy": {
+      "escalation_ladder": [
+        "gpt-5.1-mini",
+        "haiku-4.5",
+        "sonnet-4.6",
+        "gpt-5.3-codex"
+      ],
+      "max_cost_tier": "high",
+      "max_escalations": 2,
+      "min_total_score": 50,
+      "require_explain": true,
+      "stop_on_ambiguity": true
+    },
+    "runners": {
+      "claude_code": {
+        "available": true,
+        "strengths": [
+          "code_edit",
+          "iterative_refactor",
+          "tests"
+        ]
+      },
+      "codex_desktop": {
+        "available": true,
+        "strengths": [
+          "code_edit",
+          "planning",
+          "tests"
+        ]
+      },
+      "copilot_cli": {
+        "available": true,
+        "strengths": [
+          "quick_commands",
+          "cheap_flows",
+          "automation"
+        ]
+      },
+      "google_jules": {
+        "available": true,
+        "strengths": [
+          "context_awareness",
+          "file_system",
+          "reasoning"
+        ]
+      }
+    }
+  },
+  "returncode": 0,
+  "setup_commands": {
+    "git_checkout_main": {
+      "argv": [
+        "git",
+        "checkout",
+        "main"
+      ],
+      "command": "git checkout main",
+      "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+      "returncode": 0,
+      "stderr": "Already on 'main'\n",
+      "stdout": "Your branch is up to date with 'origin/main'.\n"
+    },
+    "git_clone": {
+      "argv": [
+        "git",
+        "clone",
+        "/Users/hue/code/dopeTask",
+        "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask"
+      ],
+      "command": "git clone /Users/hue/code/dopeTask /var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+      "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv",
+      "returncode": 0,
+      "stderr": "Cloning into '/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask'...\ndone.\n",
+      "stdout": ""
+    },
+    "git_config_email": {
+      "argv": [
+        "git",
+        "config",
+        "user.email",
+        "routing-readiness@example.invalid"
+      ],
+      "command": "git config user.email routing-readiness@example.invalid",
+      "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "git_config_name": {
+      "argv": [
+        "git",
+        "config",
+        "user.name",
+        "dopeTask Routing Readiness"
+      ],
+      "command": "git config user.name \"dopeTask Routing Readiness\"",
+      "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "git_status_after_setup": {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "command": "git status --porcelain",
+      "cwd": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "temp_repo": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+  "temp_root": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv"
+}

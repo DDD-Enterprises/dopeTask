@@ -94,6 +94,7 @@
           "enum": [
             "gemini",
             "codex",
+            "claude_code",
             "vibe",
             "shell"
           ]

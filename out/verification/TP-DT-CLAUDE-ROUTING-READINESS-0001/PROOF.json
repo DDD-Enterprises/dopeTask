@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ENVIRONMENT.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ROUTER_SOURCE_REVIEW.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/AVAILABILITY_TEMPLATE_REVIEW.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ROUTE_INIT_RESULT.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ROUTE_PLAN_RESULT.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/ROUTE_HANDOFF_RESULT.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/DOCS_REVIEW.json",
+    "out/verification/TP-DT-CLAUDE-ROUTING-READINESS-0001/VALIDATION.json"
+  ],
+  "blocking_failures": [
+    "DOCS_STALE"
+  ],
+  "primary_branch": "main",
+  "primary_head": "113bbe7ccb68f909da0996b663a811dca048ce0a",
+  "primary_repo_final_status": "",
+  "repo": "/Users/hue/code/dopeTask",
+  "status": "FAIL",
+  "summary": {
+    "claude_code_in_availability_template": true,
+    "docs_current": false,
+    "docs_needed": true,
+    "implementation_needed": false,
+    "recommended_next_action": "routing_docs_tp_needed",
+    "route_plan_selected_claude_code": true,
+    "route_plan_succeeded": true
+  },
+  "temp_repo": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dt-routing-readiness-rq4jbylv/dopeTask",
+  "tp_id": "TP-DT-CLAUDE-ROUTING-READINESS-0001"
+}

@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json",
+    "--no-session-persistence",
+    "--allowedTools",
+    "Bash,Write,Edit,Read",
+    "Create a file named SMOKE_PASS.txt in the current directory containing exactly: CLAUDE_WRITE_VERIFIED"
+  ],
+  "command": "claude -p \\\n  --permission-mode bypassPermissions \\\n  --output-format json \\\n  --no-session-persistence \\\n  --allowedTools \"Bash,Write,Edit,Read\" \\\n  \"Create a file named SMOKE_PASS.txt in the current directory containing exactly: CLAUDE_WRITE_VERIFIED\"",
+  "duration_ms": 6179,
+  "parse_error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+  "parsed_json": null,
+  "parsed_json_success": false,
+  "returncode": 1,
+  "smoke_pass_file_content": null,
+  "smoke_pass_file_content_exact_match": false,
+  "smoke_pass_file_exists": false,
+  "stderr": "Error: Input must be provided either through stdin or as a prompt argument when using --print\n",
+  "stdout": "",
+  "subprocess_stdin": "DEVNULL",
+  "temp_dir": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/claude-preflight-dxb4pvav",
+  "temp_git_status_after": "",
+  "temp_git_status_before": "",
+  "timed_out": false,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0001"
+}

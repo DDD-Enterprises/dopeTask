@@ -1,0 +1,63 @@
+{
+  "commit": {
+    "allowlist": [
+      "scratch/claude_series_e2e/SMOKE.md"
+    ],
+    "message": "test: verify claude_code series e2e smoke",
+    "verify": [
+      "test -f scratch/claude_series_e2e/SMOKE.md",
+      "grep -qx CLAUDE_SERIES_E2E_VERIFIED scratch/claude_series_e2e/SMOKE.md"
+    ]
+  },
+  "execution": {
+    "agent": "claude_code",
+    "branch": "codex/claude-series-e2e-smoke"
+  },
+  "id": "TP-DT-CLAUDE-SERIES-E2E-SMOKE",
+  "invariants": [
+    "Run only in isolated temp repo",
+    "Do not mutate primary dopeTask repo",
+    "Do not use --bare",
+    "Do not touch route/orchestrate runner plane"
+  ],
+  "pr": {
+    "base": "main",
+    "body": "Temp-only smoke packet. Do not open a real PR.",
+    "title": "Verify claude_code series e2e smoke"
+  },
+  "project": "dopetask",
+  "repo_binding": {
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "project_id": "dopetask.core",
+    "repo_marker": "pyproject.toml",
+    "require_identity_match": true
+  },
+  "series": {
+    "base_branch": "main",
+    "final_packet": true,
+    "id": "SERIES-DT-CLAUDE-SERIES-E2E-SMOKE",
+    "parent_tp_id": null
+  },
+  "steps": [
+    {
+      "commands": [],
+      "context_files": [],
+      "expected_files": [
+        "scratch/claude_series_e2e/SMOKE.md"
+      ],
+      "id": "step_1",
+      "requirements": [
+        "Create only the expected smoke file.",
+        "Do not commit.",
+        "Do not modify unrelated files.",
+        "Use exact file content."
+      ],
+      "task": "Create scratch/claude_series_e2e/SMOKE.md containing exactly: CLAUDE_SERIES_E2E_VERIFIED",
+      "validation": [
+        "test -f scratch/claude_series_e2e/SMOKE.md",
+        "grep -qx CLAUDE_SERIES_E2E_VERIFIED scratch/claude_series_e2e/SMOKE.md"
+      ]
+    }
+  ],
+  "target": "Verify claude_code works through tp series exec end-to-end."
+}

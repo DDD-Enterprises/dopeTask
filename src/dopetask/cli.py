@@ -88,6 +88,15 @@ from dopetask.ui import (
 from dopetask.ui import (
     worship as worship_impl,
 )
+from dopetask.ui.runner_health import collect_runner_health
+from dopetask.ui.report import (
+    ReportOutputRefusedError,
+    ReportSeriesNotFoundError,
+    render_series_report,
+    write_report,
+)
+from dopetask.ui.status import collect_status
+from dopetask.workspace import WorkspaceConfigError, resolve_dope_agent_system_path
 
 # Import pipeline modules (from migrated dopetask code)
 try:
@@ -198,6 +207,8 @@ neon_app = typer.Typer(help="Neon terminal cosmetics (console-only). Artifacts s
 cli.add_typer(neon_app, name="neon")
 metrics_app = typer.Typer(help="Local-only opt-in usage metrics (no telemetry).")
 cli.add_typer(metrics_app, name="metrics")
+ui_app = typer.Typer(help="Read-only UI data surfaces.", no_args_is_help=True)
+cli.add_typer(ui_app, name="ui")
 tp_app = typer.Typer(name="tp", help="Task Packet workflow commands", no_args_is_help=True)
 cli.add_typer(tp_app, name="tp")
 if tp_git_app:
@@ -553,6 +564,145 @@ def metrics_reset() -> None:
     path = resolve_metrics_path(env=os.environ, home=Path.home())
     _ = reset_metrics(path)
     typer.echo("metrics_commands_reset=1")
+
+
+@ui_app.command("runners")
+def ui_runners(
+    refresh: bool = typer.Option(
+        False,
+        "--refresh",
+        help="Write out/dopetask_ui/RUNNER_HEALTH.json after collecting runner health.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit machine-readable JSON. This is the only supported output in this TP.",
+    ),
+) -> None:
+    """Emit read-only runner health JSON."""
+
+    _ = json_output
+    payload = collect_runner_health(Path.cwd(), refresh=refresh)
+    typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+
+
+@ui_app.command("status")
+def ui_status(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit machine-readable JSON. This is the only supported output.",
+    ),
+    out: typing.Optional[Path] = typer.Option(
+        None,
+        "--out",
+        help="Write JSON to an explicit output path.",
+    ),
+    refresh_runners: bool = typer.Option(
+        False,
+        "--refresh-runners",
+        help="Refresh out/dopetask_ui/RUNNER_HEALTH.json before collecting status.",
+    ),
+    das_path: typing.Optional[Path] = typer.Option(
+        None,
+        "--das-path",
+        help="Explicit dope-agent-system path for resolver boundary checks.",
+    ),
+) -> None:
+    """Emit read-only UI status JSON."""
+
+    if not json_output:
+        typer.echo("Error: dopetask ui status currently requires --json", err=True)
+        raise typer.Exit(2)
+
+    repo_root = Path.cwd()
+    payload = collect_status(repo_root, refresh_runner_health=refresh_runners, das_path=das_path)
+    rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if out is not None:
+        _write_ui_status_output(repo_root, out, rendered, das_path=das_path)
+    typer.echo(rendered, nl=False)
+
+
+@cli.command("report")
+def report(
+    series_id: str = typer.Argument(..., help="Series id to render from UiStatus."),
+    out: typing.Optional[Path] = typer.Option(
+        None,
+        "--out",
+        help="Write markdown to an explicit output path.",
+    ),
+    refresh_runners: bool = typer.Option(
+        False,
+        "--refresh-runners",
+        help="Refresh out/dopetask_ui/RUNNER_HEALTH.json before collecting status.",
+    ),
+    das_path: typing.Optional[Path] = typer.Option(
+        None,
+        "--das-path",
+        help="Explicit dope-agent-system path for resolver boundary checks.",
+    ),
+) -> None:
+    """Render a read-only markdown report for a series."""
+
+    repo_root = Path.cwd()
+    status_payload = collect_status(repo_root, refresh_runner_health=refresh_runners, das_path=das_path)
+    try:
+        markdown = render_series_report(status_payload, series_id)
+    except ReportSeriesNotFoundError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(2) from exc
+
+    if out is None:
+        typer.echo(markdown, nl=False)
+        return
+
+    resolved_das_path = das_path
+    if resolved_das_path is None and status_payload.get("das_path") is not None:
+        resolved_das_path = Path(str(status_payload["das_path"]))
+    try:
+        write_report(out, markdown, repo_root=repo_root, das_path=resolved_das_path)
+    except ReportOutputRefusedError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(2) from exc
+    typer.echo(f"Wrote report to {out}")
+
+
+def _write_ui_status_output(
+    repo_root: Path,
+    out: Path,
+    rendered: str,
+    *,
+    das_path: typing.Optional[Path],
+) -> None:
+    resolved_repo_root = repo_root.resolve()
+    output_path = out.expanduser()
+    if not output_path.is_absolute():
+        output_path = resolved_repo_root / output_path
+    output_path = output_path.resolve()
+
+    proof_root = resolved_repo_root / "proof"
+    if _is_relative_to(output_path, proof_root):
+        typer.echo("Error: --out under proof/ is refused for UI status", err=True)
+        raise typer.Exit(2)
+
+    try:
+        resolved_das_path = resolve_dope_agent_system_path(resolved_repo_root, explicit_path=das_path)
+    except WorkspaceConfigError:
+        resolved_das_path = None
+    if resolved_das_path is not None and _is_relative_to(output_path, resolved_das_path):
+        typer.echo("Error: --out under resolved dope-agent-system path is refused", err=True)
+        raise typer.Exit(2)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(rendered, encoding="utf-8")
+
+
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+    except ValueError:
+        return False
+    return True
 
 
 def _check_repo_guard(bypass: bool, rescue_patch: typing.Optional[str] = None) -> Path:
@@ -4474,7 +4624,7 @@ cli.add_typer(case_app, name="case")
 
 @cli.command(name="execute")
 def execute_cmd(
-    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini or codex."),
+    agent: str = typer.Option("gemini", "--agent", help="Agent profile: gemini, codex, or claude_code."),
     model: typing.Optional[str] = typer.Option(None, "--model", help="Optional explicit model override."),
     repo: typing.Optional[Path] = typer.Option(None, "--repo", help="Repository path."),
 ) -> None:

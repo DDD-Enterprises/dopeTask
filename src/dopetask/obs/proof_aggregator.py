@@ -11,6 +11,17 @@ from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
+RUNTIME_METADATA_KEYS = (
+    "auth_mode",
+    "bare_mode_used",
+    "permission_mode",
+    "allowed_tools",
+    "requested_model",
+    "effective_model",
+    "effective_model_source",
+)
+
+
 class ProofAggregator:
     """Aggregates execution proofs into the canonical Dopetask Proof Bundle format.
 
@@ -127,12 +138,26 @@ class ProofAggregator:
                 "bundle_schema_version": "1.0"
             }
         }
+        runtime_metadata = self._runtime_metadata(execution_result)
+        if runtime_metadata:
+            bundle["runtime"] = runtime_metadata
 
         bundle_path = self.output_dir / f"{self.tp_id}_PROOF_BUNDLE.json"
         with open(bundle_path, "w") as f:
             json.dump(bundle, f, indent=2)
 
         return bundle_path
+
+    def _runtime_metadata(self, execution_result: dict[str, Any]) -> dict[str, Any]:
+        """Extract optional runtime metadata without inferring privileged auth state."""
+        runtime = {
+            key: execution_result[key]
+            for key in RUNTIME_METADATA_KEYS
+            if key in execution_result
+        }
+        if runtime and runtime.get("auth_mode") is None:
+            runtime["auth_mode"] = "unknown"
+        return runtime
 
     def _archive_entries(self, files_to_include: list[Path]) -> list[tuple[Path, str]]:
         """Return deterministic, collision-safe archive entry names."""

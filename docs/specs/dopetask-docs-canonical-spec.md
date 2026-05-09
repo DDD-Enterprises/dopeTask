@@ -59,7 +59,7 @@
 
 [DOCS/PLANS] The onboarding narrative also pitches broad agent portability. `docs/beginner/00A_HOW_DOPETASK_WORKS.md` names Codex, Gemini CLI, Claude Code, and Copilot CLI as implementer examples, while `docs/26_SUPERVISOR_PROMPTS.md` covers supervisor prompt application across ChatGPT, Claude, Codex CLI, Gemini CLI, Copilot CLI, Cursor, and Vibe.
 
-[CODE] Runtime execution support is not symmetrical with that product story. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `vibe`, but `src/dopetask/ops/tp_exec/engine.py` only constructs a `GeminiAdapter` and raises `ValueError` for other agents. `src/dopetask_adapters/gemini/step_runner.py` executes declared shell commands with `subprocess.run(shell=True)` rather than a provider-native multi-agent orchestration layer.
+[CODE] Runtime execution support is not fully symmetrical with that product story. `python -m dopetask tp exec --help` advertises `gemini`, `codex`, and `claude_code`, and `src/dopetask/ops/tp_exec/engine.py` constructs `GeminiAdapter`, `CodexExecutor`, and `ClaudeCodeExecutor` for those profiles. The `vibe` compiler remains compilation scaffolding without low-level executor dispatch, and route/orchestrate runner parity remains separate. `src/dopetask_adapters/gemini/step_runner.py` executes declared shell commands with `subprocess.run(shell=True)` rather than a provider-native multi-agent orchestration layer.
 
 [INFERRED] The beginner and product docs are most accurate when they promise supervisor portability and process discipline. They overpromise when they imply current parity across implementer agents.
 

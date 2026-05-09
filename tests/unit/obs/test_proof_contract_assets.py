@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 from jsonschema import validate
 
+from dopetask.obs.proof_aggregator import ProofAggregator
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
@@ -28,6 +30,22 @@ def test_standard_archive_manifest_example_matches_schema():
     example = _load_json(repo_root / "proof" / "standards" / "PROOF_ARCHIVE_EXAMPLE_MANIFEST.json")
 
     validate(example, schema)
+
+
+def test_runtime_archive_manifest_matches_standard_schema(tmp_path):
+    repo_root = _repo_root()
+    schema = _load_json(repo_root / "proof" / "standards" / "PROOF_ARCHIVE_MANIFEST_SCHEMA.json")
+    artifact = tmp_path / "artifact.json"
+    artifact.write_text("{}", encoding="utf-8")
+
+    aggregator = ProofAggregator(tp_id="TP-RUNTIME-ARCHIVE-CONTRACT", output_dir=tmp_path)
+    aggregator.create_archive([artifact])
+
+    archive_path = tmp_path / "TP-RUNTIME-ARCHIVE-CONTRACT_PROOF_ARCHIVE.zip"
+    with zipfile.ZipFile(archive_path) as archive:
+        manifest = json.loads(archive.read("PROOF_ARCHIVE_MANIFEST.json"))
+
+    validate(manifest, schema)
 
 
 def test_checked_in_proof_bundles_match_standard_schema():

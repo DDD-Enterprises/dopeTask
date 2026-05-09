@@ -1,0 +1,32 @@
+{
+  "depends_on": "TP-DT-CLAUDE-PREFLIGHT-0001",
+  "hypothesis": "Claude Code write commands with --allowedTools should receive the prompt through subprocess stdin because the previous positional-prompt command failed before producing JSON.",
+  "previous_auth_mode": "subscription_or_oauth_likely",
+  "previous_blocking_failures": [
+    "write_smoke_nonzero",
+    "write_stdout_not_parseable_json",
+    "write_smoke_file_missing_or_wrong_content"
+  ],
+  "previous_commit": "1196b1be1da663d6f696e8bcbb7048f1a8c8070f",
+  "previous_commit_is_ancestor_of_head": true,
+  "previous_model_flag_success": true,
+  "previous_no_write_parse_success": true,
+  "previous_status": "FAIL",
+  "previous_write_command": [
+    "claude",
+    "-p",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json",
+    "--no-session-persistence",
+    "--allowedTools",
+    "Bash,Write,Edit,Read",
+    "Create a file named SMOKE_PASS.txt in the current directory containing exactly: CLAUDE_WRITE_VERIFIED"
+  ],
+  "previous_write_parse_success": false,
+  "previous_write_returncode": 1,
+  "previous_write_stderr": "Error: Input must be provided either through stdin or as a prompt argument when using --print\n",
+  "previous_write_stdin_mode": "DEVNULL",
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002"
+}

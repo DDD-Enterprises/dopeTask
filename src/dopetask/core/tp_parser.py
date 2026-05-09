@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Union
 
+from dopetask.core.compilers.claude_code import ClaudeCodeCompiler
 from dopetask.core.compilers.codex import CodexCompiler
 from dopetask.core.compilers.gemini import GeminiCompiler
 from dopetask.core.compilers.vibe import VibeCompiler
@@ -56,7 +57,8 @@ class TPNormalizer:
     COMPILERS = {
         "gemini": GeminiCompiler,
         "codex": CodexCompiler,
-        "vibe": VibeCompiler
+        "claude_code": ClaudeCodeCompiler,
+        "vibe": VibeCompiler,
     }
 
     @classmethod

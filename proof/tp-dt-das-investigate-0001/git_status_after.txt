@@ -1,0 +1,29 @@
+dopeTask git status after TP-DT-DAS-INVESTIGATE-0001 work
+
+Working directory: /Users/hue/code/dopeTask
+Captured: 2026-05-06
+
+git status --porcelain output:
+?? docs/integrations/dope-agent-system-dopetask-boundary-map.md
+?? docs/integrations/dope-agent-system-dopetask-design-inputs.md
+?? docs/investigations/dope-agent-system-symbiosis-investigation.md
+
+NOTE: proof/tp-dt-das-investigate-0001/ artifacts are gitignored per .gitignore:30 (proof/*).
+They exist on disk and are accessible but will not be committed unless gitignore is adjusted.
+
+git diff --check: clean (no whitespace errors)
+
+Files created vs allowlist check:
+  docs/investigations/dope-agent-system-symbiosis-investigation.md ✅ ALLOWLISTED
+  docs/integrations/dope-agent-system-dopetask-boundary-map.md ✅ ALLOWLISTED
+  docs/integrations/dope-agent-system-dopetask-design-inputs.md ✅ ALLOWLISTED
+  proof/tp-dt-das-investigate-0001/evidence_index.json ✅ ALLOWLISTED (gitignored)
+  proof/tp-dt-das-investigate-0001/commands.log ✅ ALLOWLISTED (gitignored)
+  proof/tp-dt-das-investigate-0001/git_status_before.txt ✅ ALLOWLISTED (gitignored)
+  proof/tp-dt-das-investigate-0001/git_status_after.txt ✅ ALLOWLISTED (gitignored)
+  proof/tp-dt-das-investigate-0001/dope_agent_system_git_status.txt ✅ ALLOWLISTED (gitignored)
+  proof/tp-dt-das-investigate-0001/PROOF.json ✅ ALLOWLISTED (gitignored)
+
+Files NOT in allowlist: NONE
+dope-agent-system mutations: NONE
+dopeTask source code changes: NONE

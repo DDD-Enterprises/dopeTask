@@ -1,0 +1,119 @@
+{
+  "allowlist_check": {
+    "changed_files": [
+      "out/implementation/TP-DT-SERIES-PROOF-CLEANUP-0001/PROOF.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/ENVIRONMENT.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/EXEC_JSON_SNAPSHOT.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PACKET.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF_BUNDLE_SUMMARY.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_EXEC_RESULT.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_STATE_SNAPSHOT.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/TEMP_REPO_SETUP.json",
+      "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/VALIDATION.json",
+      "src/dopetask/ops/tp_series/logic.py",
+      "task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json",
+      "tests/unit/tp_series/test_proof_artifact_cleanup.py"
+    ],
+    "outside_allowlist": []
+  },
+  "audit_submission_head": "VERIFY_WITH_GIT_REV_PARSE_HEAD_AT_AUDIT",
+  "blocking_failures": [],
+  "chosen_fix": "Scope proof artifact copy and cleanup to current TP-prefixed proof files only.",
+  "commit": {
+    "created": true,
+    "message": "fix(tp-series): preserve tracked proof archives during cleanup",
+    "sha": "df304d72b2df18a45b2c2db48e4b20e3457539fb"
+  },
+  "commit_hash_semantics": "commit.sha and final_head record the implementation commit. A committed proof file cannot contain the hash of the same commit that writes it. audit_submission_head requires audit to run git rev-parse HEAD.",
+  "e2e_verification": {
+    "committed_files": [
+      "scratch/claude_series_e2e/SMOKE.md"
+    ],
+    "exec_json_agent": "claude_code",
+    "proof_bundle": "/private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/dopetask-claude-series-e2e-0003-b0sswfi_/dopeTask/out/tp_series/SERIES-DT-CLAUDE-SERIES-E2E-SMOKE/packets/TP-DT-CLAUDE-SERIES-E2E-SMOKE/TP-DT-CLAUDE-SERIES-E2E-SMOKE_PROOF_BUNDLE.json",
+    "series_exec_returncode": 0,
+    "series_status": "completed",
+    "smoke_file_content_matched": true,
+    "status": "PASS",
+    "tp_id": "TP-DT-CLAUDE-SERIES-E2E-0003",
+    "tracked_proof_deletions_observed": false
+  },
+  "failed_e2e_predecessor": "TP-DT-CLAUDE-SERIES-E2E-0002",
+  "files_changed": [
+    "out/implementation/TP-DT-SERIES-PROOF-CLEANUP-0001/PROOF.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/ENVIRONMENT.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/EXEC_JSON_SNAPSHOT.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PACKET.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/PROOF_BUNDLE_SUMMARY.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_EXEC_RESULT.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/SERIES_STATE_SNAPSHOT.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/TEMP_REPO_SETUP.json",
+    "out/verification/TP-DT-CLAUDE-SERIES-E2E-0003/VALIDATION.json",
+    "src/dopetask/ops/tp_series/logic.py",
+    "task-packets/TP-DT-SERIES-PROOF-CLEANUP-0001.json",
+    "tests/unit/tp_series/test_proof_artifact_cleanup.py"
+  ],
+  "final_branch": "codex/series-proof-cleanup-0001",
+  "final_head": "df304d72b2df18a45b2c2db48e4b20e3457539fb",
+  "forbidden_scope_verified": {
+    "bare_mode_used": false,
+    "claude_adapter_modified": false,
+    "dope_agent_system_modified": false,
+    "historical_proof_archives_rewritten": false,
+    "route_orchestrate_modified": false
+  },
+  "git_status_final": "clean",
+  "initial_branch": "main",
+  "initial_head": "217d353233e735389111c20df92f8dbaf8ea584e",
+  "proof_backfilled": true,
+  "repo": "/Users/hue/code/dopeTask",
+  "root_cause": "tp-series proof cleanup removed the entire worktree proof directory, causing tracked historical proof files to appear deleted and fail allowlist enforcement.",
+  "status": "PASS",
+  "tests_run": [
+    {
+      "command": "python -m compileall -q src tests",
+      "duration_ms": 198,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "pytest -q tests/unit/tp_series/test_proof_artifact_cleanup.py",
+      "duration_ms": 2825,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "         174    156     94      1     7%   18, 47-103, 123-130, 139-161, 169-191, 199-225, 230-247, 252-279, 290-291, 303-391\nsrc/dopetask/pipeline/task_runner/runner.py          59     45     14      1    21%   14-16, 45-133, 147-207, 212-246, 251-302, 307-370, 375-385\nsrc/dopetask/pipeline/task_runner/types.py           45      0      0      0   100%\nsrc/dopetask/pr/__init__.py                           2      2      0      0     0%   3-5\nsrc/dopetask/pr/open.py                             159    159     60      0     0%   3-341\nsrc/dopetask/project/__init__.py                      0      0      0      0   100%\nsrc/dopetask/project/common.py                      101    101     36      0     0%   3-174\nsrc/dopetask/project/doctor.py                      227    227     88      0     0%   3-427\nsrc/dopetask/project/init.py                         60     60     22      0     0%   3-157\nsrc/dopetask/project/mode.py                         58     58     18      0     0%   3-131\nsrc/dopetask/project/shell.py                       105    105     26      0     0%   3-213\nsrc/dopetask/project/toggles.py                      63     63     18      0     0%   3-161\nsrc/dopetask/project/upgrade.py                     140    140     34      0     0%   3-308\nsrc/dopetask/router/__init__.py                       5      5      0      0     0%   3-18\nsrc/dopetask/router/availability.py                 108    108     48      0     0%   3-260\nsrc/dopetask/router/handoff.py                       34     34     14      0     0%   3-134\nsrc/dopetask/router/planner.py                       85     85     40      0     0%   3-234\nsrc/dopetask/router/reporting.py                     41     41     14      0     0%   3-178\nsrc/dopetask/router/scoring.py                      102    102     60      0     0%   3-159\nsrc/dopetask/router/types.py                         87     87      6      0     0%   3-140\nsrc/dopetask/runners/__init__.py                      7      7      0      0     0%   3-16\nsrc/dopetask/runners/base.py                          2      2      0      0     0%   3-5\nsrc/dopetask/runners/claude_code.py                  17     17      4      0     0%   3-48\nsrc/dopetask/runners/codex_cli.py                    62     62     20      0     0%   3-177\nsrc/dopetask/runners/copilot_cli.py                  17     17      4      0     0%   3-48\nsrc/dopetask/runners/google_jules.py                 17     17      4      0     0%   3-48\nsrc/dopetask/safety/__init__.py                       2      2      0      0     0%   3-5\nsrc/dopetask/safety/wip_rescue.py                    30     30      6      0     0%   3-71\nsrc/dopetask/schemas/__init__.py                      1      0      0      0   100%\nsrc/dopetask/schemas/validator.py                    21     14      6      0    26%   9-10, 35-65\nsrc/dopetask/ui.py                                  166    166     56      0     0%   1-312\nsrc/dopetask/utils/__init__.py                        0      0      0      0   100%\nsrc/dopetask/utils/json_output.py                    83     68     16      0    15%   32-74, 90-123, 136-148, 175-200, 226-251, 267-278\nsrc/dopetask/utils/package_data.py                   12     12      0      0     0%   11-75\nsrc/dopetask/utils/repo.py                          177    147     92      0    11%   64-121, 131-143, 165-191, 214-247, 273-311, 323-339, 354-401, 409-417, 437-478\nsrc/dopetask/utils/repo_config.py                    59     33     12      0    37%   48-79, 102-136\nsrc/dopetask/utils/schema_registry.py                62     44     14      0    24%   30-31, 39-57, 68-70, 81, 95-124, 143-151, 168-170, 185, 201\nsrc/dopetask/utils/toml_compat.py                     9      2      0      0    78%   13-14\n---------------------------------------------------------------------------------------------\nTOTAL                                             10687  10046   3380      6     5%\nCoverage HTML written to dir htmlcov\nRequired test coverage of 1% reached. Total coverage: 4.71%\n"
+    },
+    {
+      "command": "pytest -q tests/unit/tp_series/test_cli.py",
+      "duration_ms": 12470,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "k/pr/open.py                             159    135     60      0    11%   52-221, 225-229, 233, 237-246, 250-261, 265-269, 273-283, 287-294, 298-341\nsrc/dopetask/project/__init__.py                      0      0      0      0   100%\nsrc/dopetask/project/common.py                      101    101     36      0     0%   3-174\nsrc/dopetask/project/doctor.py                      227    227     88      0     0%   3-427\nsrc/dopetask/project/init.py                         60     60     22      0     0%   3-157\nsrc/dopetask/project/mode.py                         58     58     18      0     0%   3-131\nsrc/dopetask/project/shell.py                       105    105     26      0     0%   3-213\nsrc/dopetask/project/toggles.py                      63     63     18      0     0%   3-161\nsrc/dopetask/project/upgrade.py                     140    140     34      0     0%   3-308\nsrc/dopetask/router/__init__.py                       5      0      0      0   100%\nsrc/dopetask/router/availability.py                 108     68     48      7    31%   19, 95-96, 101, 106-113, 118-186, 196, 206, 220-231, 237, 239, 245, 247->243, 260\nsrc/dopetask/router/handoff.py                       34     26     14      1    19%   9, 14-111, 115-116, 124-125, 133-134\nsrc/dopetask/router/planner.py                       85     72     40      1    11%   24, 29-41, 46-73, 83-162, 182, 197, 216-234\nsrc/dopetask/router/reporting.py                     41     31     14      0    18%   15, 59-110, 123-158, 169-178\nsrc/dopetask/router/scoring.py                      102     94     60      0     5%   15-56, 61-62, 66-93, 103-139, 143-151, 155-159\nsrc/dopetask/router/types.py                         87      9      6      0    84%   112-115, 118-124, 127\nsrc/dopetask/runners/__init__.py                      7      0      0      0   100%\nsrc/dopetask/runners/base.py                          2      0      0      0   100%\nsrc/dopetask/runners/claude_code.py                  17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/runners/codex_cli.py                    62     51     20      0    13%   16-18, 29-121, 133, 146-150, 154-177\nsrc/dopetask/runners/copilot_cli.py                  17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/runners/google_jules.py                 17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/safety/__init__.py                       2      2      0      0     0%   3-5\nsrc/dopetask/safety/wip_rescue.py                    30     30      6      0     0%   3-71\nsrc/dopetask/schemas/__init__.py                      1      0      0      0   100%\nsrc/dopetask/schemas/validator.py                    21      4      6      2    78%   9-10, 36, 63\nsrc/dopetask/ui.py                                  166    122     56      1    20%   13, 80, 84, 88, 92-93, 97-103, 107-123, 131-144, 148-151, 155-169, 173, 177-186, 190-211, 215-235, 239, 250-269, 287-312\nsrc/dopetask/utils/__init__.py                        0      0      0      0   100%\nsrc/dopetask/utils/json_output.py                    83     68     16      0    15%   32-74, 90-123, 136-148, 175-200, 226-251, 267-278\nsrc/dopetask/utils/package_data.py                   12     12      0      0     0%   11-75\nsrc/dopetask/utils/repo.py                          177    147     92      0    11%   64-121, 131-143, 165-191, 214-247, 273-311, 323-339, 354-401, 409-417, 437-478\nsrc/dopetask/utils/repo_config.py                    59     33     12      0    37%   48-79, 102-136\nsrc/dopetask/utils/schema_registry.py                62     14     14      3    75%   54-57, 69, 99-103, 121-124, 150-151, 185, 201\nsrc/dopetask/utils/toml_compat.py                     9      2      0      0    78%   13-14\n---------------------------------------------------------------------------------------------\nTOTAL                                             10687   8218   3380    118    19%\nCoverage HTML written to dir htmlcov\nRequired test coverage of 1% reached. Total coverage: 18.96%\n"
+    },
+    {
+      "command": "pytest -q tests/unit/dopetask/test_tp_exec_claude_code.py",
+      "duration_ms": 4126,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "/parser.py         174    156     94      1     7%   18, 47-103, 123-130, 139-161, 169-191, 199-225, 230-247, 252-279, 290-291, 303-391\nsrc/dopetask/pipeline/task_runner/runner.py          59     45     14      1    21%   14-16, 45-133, 147-207, 212-246, 251-302, 307-370, 375-385\nsrc/dopetask/pipeline/task_runner/types.py           45      0      0      0   100%\nsrc/dopetask/pr/__init__.py                           2      2      0      0     0%   3-5\nsrc/dopetask/pr/open.py                             159    159     60      0     0%   3-341\nsrc/dopetask/project/__init__.py                      0      0      0      0   100%\nsrc/dopetask/project/common.py                      101    101     36      0     0%   3-174\nsrc/dopetask/project/doctor.py                      227    227     88      0     0%   3-427\nsrc/dopetask/project/init.py                         60     60     22      0     0%   3-157\nsrc/dopetask/project/mode.py                         58     58     18      0     0%   3-131\nsrc/dopetask/project/shell.py                       105    105     26      0     0%   3-213\nsrc/dopetask/project/toggles.py                      63     63     18      0     0%   3-161\nsrc/dopetask/project/upgrade.py                     140    140     34      0     0%   3-308\nsrc/dopetask/router/__init__.py                       5      5      0      0     0%   3-18\nsrc/dopetask/router/availability.py                 108    108     48      0     0%   3-260\nsrc/dopetask/router/handoff.py                       34     34     14      0     0%   3-134\nsrc/dopetask/router/planner.py                       85     85     40      0     0%   3-234\nsrc/dopetask/router/reporting.py                     41     41     14      0     0%   3-178\nsrc/dopetask/router/scoring.py                      102    102     60      0     0%   3-159\nsrc/dopetask/router/types.py                         87     87      6      0     0%   3-140\nsrc/dopetask/runners/__init__.py                      7      7      0      0     0%   3-16\nsrc/dopetask/runners/base.py                          2      2      0      0     0%   3-5\nsrc/dopetask/runners/claude_code.py                  17     17      4      0     0%   3-48\nsrc/dopetask/runners/codex_cli.py                    62     62     20      0     0%   3-177\nsrc/dopetask/runners/copilot_cli.py                  17     17      4      0     0%   3-48\nsrc/dopetask/runners/google_jules.py                 17     17      4      0     0%   3-48\nsrc/dopetask/safety/__init__.py                       2      2      0      0     0%   3-5\nsrc/dopetask/safety/wip_rescue.py                    30     30      6      0     0%   3-71\nsrc/dopetask/schemas/__init__.py                      1      0      0      0   100%\nsrc/dopetask/schemas/validator.py                    21      7      6      2    59%   9-10, 36, 50-63\nsrc/dopetask/ui.py                                  166    166     56      0     0%   1-312\nsrc/dopetask/utils/__init__.py                        0      0      0      0   100%\nsrc/dopetask/utils/json_output.py                    83     68     16      0    15%   32-74, 90-123, 136-148, 175-200, 226-251, 267-278\nsrc/dopetask/utils/package_data.py                   12     12      0      0     0%   11-75\nsrc/dopetask/utils/repo.py                          177    147     92      0    11%   64-121, 131-143, 165-191, 214-247, 273-311, 323-339, 354-401, 409-417, 437-478\nsrc/dopetask/utils/repo_config.py                    59     33     12      0    37%   48-79, 102-136\nsrc/dopetask/utils/schema_registry.py                62     14     14      3    75%   54-57, 69, 99-103, 121-124, 150-151, 185, 201\nsrc/dopetask/utils/toml_compat.py                     9      2      0      0    78%   13-14\n---------------------------------------------------------------------------------------------\nTOTAL                                             10687   9918   3380     48     6%\nCoverage HTML written to dir htmlcov\nRequired test coverage of 1% reached. Total coverage: 6.06%\n"
+    },
+    {
+      "command": "pytest -q",
+      "duration_ms": 37446,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "src/dopetask/project/__init__.py                      0      0      0      0   100%\nsrc/dopetask/project/common.py                      101      9     36      8    88%   64-65, 71, 86, 101->103, 123, 132, 140, 167, 173\nsrc/dopetask/project/doctor.py                      227     42     88     18    78%   21, 133, 136-137, 181-189, 207->209, 209->211, 215-217, 222-224, 238, 245, 272, 290, 300, 339-341, 359-375, 378, 384-386, 418, 421->426\nsrc/dopetask/project/init.py                         60      5     22      5    88%   27, 49->52, 88, 107-108, 153\nsrc/dopetask/project/mode.py                         58      5     18      3    89%   25-26, 79, 90-91\nsrc/dopetask/project/shell.py                       105      0     26      0   100%\nsrc/dopetask/project/toggles.py                      63      4     18      4    90%   34, 74-81, 130, 156->158\nsrc/dopetask/project/upgrade.py                     140      3     34      2    97%   118-119, 199\nsrc/dopetask/router/__init__.py                       5      0      0      0   100%\nsrc/dopetask/router/availability.py                 108     17     48     18    78%   19, 108, 133, 145, 147, 153, 158, 162, 176, 196, 206, 221, 223, 228, 237, 239, 245, 247->243\nsrc/dopetask/router/handoff.py                       34      7     14      4    73%   9, 24-27, 66, 99\nsrc/dopetask/router/planner.py                       85      9     40     11    84%   24, 36->34, 40, 59, 61, 63, 65, 70->52, 218, 231, 234\nsrc/dopetask/router/reporting.py                     41     10     14      1    73%   100-108, 169-178\nsrc/dopetask/router/scoring.py                      102      5     60      3    95%   28, 119-120, 129-130\nsrc/dopetask/router/types.py                         87      3      6      3    94%   113, 115, 123\nsrc/dopetask/runners/__init__.py                      7      0      0      0   100%\nsrc/dopetask/runners/base.py                          2      0      0      0   100%\nsrc/dopetask/runners/claude_code.py                  17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/runners/codex_cli.py                    62     14     20      7    72%   56->59, 68-69, 86, 110, 148->147, 150, 161, 168-176\nsrc/dopetask/runners/copilot_cli.py                  17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/runners/google_jules.py                 17      9      4      0    38%   14-15, 23, 33, 44-48\nsrc/dopetask/safety/__init__.py                       2      0      0      0   100%\nsrc/dopetask/safety/wip_rescue.py                    30      6      6      2    72%   17-20, 32-33\nsrc/dopetask/schemas/__init__.py                      1      0      0      0   100%\nsrc/dopetask/schemas/validator.py                    21      3      6      1    85%   9-10, 36\nsrc/dopetask/ui.py                                  166     14     56      5    91%   13, 205, 219, 224, 225->227, 265-269, 291-292, 304-305, 309-310\nsrc/dopetask/utils/__init__.py                        0      0      0      0   100%\nsrc/dopetask/utils/json_output.py                    83     68     16      0    15%   32-74, 90-123, 136-148, 175-200, 226-251, 267-278\nsrc/dopetask/utils/package_data.py                   12     12      0      0     0%   11-75\nsrc/dopetask/utils/repo.py                          177    102     92      8    38%   65-74, 104->103, 112-121, 134, 136, 138, 140, 223-224, 240, 273-311, 323-339, 354-401, 409-417, 437-478\nsrc/dopetask/utils/repo_config.py                    59     33     12      0    37%   48-79, 102-136\nsrc/dopetask/utils/schema_registry.py                62      9     14      3    84%   54-57, 69, 100->103, 121-124, 150-151, 185\nsrc/dopetask/utils/toml_compat.py                     9      0      0      0   100%\n---------------------------------------------------------------------------------------------\nTOTAL                                             10687   3877   3380    588    60%\nCoverage HTML written to dir htmlcov\nRequired test coverage of 1% reached. Total coverage: 59.57%\n"
+    },
+    {
+      "command": "git diff --check",
+      "duration_ms": 12,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "tp_id": "TP-DT-SERIES-PROOF-CLEANUP-0001"
+}

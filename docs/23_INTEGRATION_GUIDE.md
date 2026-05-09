@@ -38,7 +38,7 @@ jobs:
 ## External Agent Integration
 
 The current low-level JSON TP executor is a separate specialist surface.
-Its runtime-supported execution surface now includes both `gemini` and `codex`.
+Its runtime-supported execution surface now includes `gemini`, `codex`, and `claude_code`.
 It is still a different plane from the default `tp series` workflow and from route/orchestrate runners.
 Strict repo-aware packets can adopt `dopetask_schemas/task_packet.strict.schema.json` when a repo wants mandatory `repo_binding`, `execution`, `commit.verify`, and Gemini PAL rules.
 

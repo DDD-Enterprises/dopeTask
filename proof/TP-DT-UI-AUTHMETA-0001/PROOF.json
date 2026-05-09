@@ -1,0 +1,172 @@
+{
+  "tp_id": "TP-DT-UI-AUTHMETA-0001",
+  "objective": "Add additive auth, billing, and runtime metadata to EXEC.json and proof bundle surfaces so future dopeTask report/TUI code can honestly render auth_mode, bare_mode_used, permission_mode, allowed_tools, and model routing metadata.",
+  "dependency_commit_observed": {
+    "tp_id": "TP-DT-UI-CONTRACTS-0001",
+    "commit": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+    "proof_files_present": true,
+    "proof_json_valid": true
+  },
+  "files_created": [
+    "tests/ops/test_exec_record_authmeta.py",
+    "tests/obs/test_proof_aggregator_authmeta.py",
+    "tests/adapters/test_claude_code_authmeta.py",
+    "task-packets/TP-DT-UI-AUTHMETA-0001.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+    "proof/TP-DT-UI-AUTHMETA-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/ops/tp_series/logic.py",
+    "src/dopetask/obs/proof_aggregator.py",
+    "src/dopetask_adapters/claude_code/proof_writer.py",
+    "dopetask_schemas/exec_record.schema.json",
+    "proof/standards/PROOF_BUNDLE_SCHEMA.json"
+  ],
+  "schema_updates": [
+    {
+      "file": "dopetask_schemas/exec_record.schema.json",
+      "change": "Added optional auth_mode, bare_mode_used, permission_mode, and allowed_tools properties."
+    },
+    {
+      "file": "proof/standards/PROOF_BUNDLE_SCHEMA.json",
+      "change": "Added optional runtime object with auth and model metadata properties."
+    }
+  ],
+  "runtime_updates": [
+    {
+      "file": "src/dopetask/ops/tp_series/logic.py",
+      "change": "Reads raw proof metadata and emits auth_mode, bare_mode_used, permission_mode, and allowed_tools into EXEC.json additively."
+    },
+    {
+      "file": "src/dopetask/obs/proof_aggregator.py",
+      "change": "Adds optional runtime metadata block to proof bundles when raw proof metadata exists."
+    },
+    {
+      "file": "src/dopetask_adapters/claude_code/proof_writer.py",
+      "change": "Makes Claude proof metadata pass-through explicit without changing Claude command invocation."
+    }
+  ],
+  "tests_created_or_modified": [
+    "tests/ops/test_exec_record_authmeta.py",
+    "tests/obs/test_proof_aggregator_authmeta.py",
+    "tests/adapters/test_claude_code_authmeta.py"
+  ],
+  "source_files_inspected": [
+    "src/dopetask/ops/tp_series/logic.py",
+    "src/dopetask/obs/proof_aggregator.py",
+    "src/dopetask_adapters/claude_code/proof_writer.py",
+    "src/dopetask_adapters/claude_code/executor.py",
+    "src/dopetask_adapters/gemini/proof_writer.py",
+    "src/dopetask_adapters/gemini/executor.py",
+    "src/dopetask_adapters/codex/executor.py",
+    "src/dopetask/pipeline/task_runner/executor.py",
+    "src/dopetask/pipeline/task_runner/types.py",
+    "dopetask_schemas/exec_record.schema.json",
+    "proof/standards/PROOF_BUNDLE_SCHEMA.json",
+    "proof/standards/PROOF_BUNDLE_EXAMPLE.json",
+    "tests/unit/dopetask/test_tp_exec_claude_code.py",
+    "tests/unit/obs/test_proof_aggregator.py",
+    "tests/unit/obs/test_proof_contract_assets.py",
+    "tests/schemas/test_runtime_artifact_schemas.py",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "task-packets/TP-DT-UI-CONTRACTS-0001.json",
+    "proof/TP-DT-UI-CONTRACTS-0001/PROOF.json"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool dopetask_schemas/exec_record.schema.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/standards/PROOF_BUNDLE_SCHEMA.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-AUTHMETA-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ -v -k \"authmeta or proof_aggregator or exec_record or claude_code\"",
+      "exit_code": 0,
+      "summary": "27 passed, 366 deselected"
+    },
+    {
+      "command": "python3 -m pytest tests/schemas/test_runtime_artifact_schemas.py -v",
+      "exit_code": 0,
+      "summary": "12 passed, 1 skipped"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M dopetask_schemas/exec_record.schema.json\n M proof/standards/PROOF_BUNDLE_SCHEMA.json\n M src/dopetask/obs/proof_aggregator.py\n M src/dopetask/ops/tp_series/logic.py\n M src/dopetask_adapters/claude_code/proof_writer.py\n?? task-packets/TP-DT-UI-AUTHMETA-0001.json\n?? tests/adapters/\n?? tests/obs/\n?? tests/ops/test_exec_record_authmeta.py",
+      "note": "proof/TP-DT-UI-AUTHMETA-0001 is ignored by proof/* and must be force-added."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "proof_bundle_schema_validation_result": {
+    "status": "passed",
+    "schema": "proof/standards/PROOF_BUNDLE_SCHEMA.json",
+    "evidence": "tests/obs/test_proof_aggregator_authmeta.py validates proof bundles with and without runtime auth metadata."
+  },
+  "exec_record_schema_validation_result": {
+    "status": "passed",
+    "schema": "dopetask_schemas/exec_record.schema.json",
+    "evidence": "tests/ops/test_exec_record_authmeta.py validates additive auth metadata and historical EXEC.json compatibility."
+  },
+  "git_status_before": {
+    "branch": "main",
+    "head": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "853e75b4d5a557f786808d7c8571ae4a7b29d66a",
+    "short": " M dopetask_schemas/exec_record.schema.json\n M proof/standards/PROOF_BUNDLE_SCHEMA.json\n M src/dopetask/obs/proof_aggregator.py\n M src/dopetask/ops/tp_series/logic.py\n M src/dopetask_adapters/claude_code/proof_writer.py\n?? task-packets/TP-DT-UI-AUTHMETA-0001.json\n?? tests/adapters/\n?? tests/obs/\n?? tests/ops/test_exec_record_authmeta.py",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-AUTHMETA-0001/PROOF.json",
+      "proof/TP-DT-UI-AUTHMETA-0001/IMPLEMENTER_REPORT.md"
+    ]
+  },
+  "commit_hash": "a98e5d05e8f092b0b7ed415eeb8c1ea15e60a41a",
+  "git_status_after_commit": {
+    "branch": "main",
+    "head": "a98e5d05e8f092b0b7ed415eeb8c1ea15e60a41a",
+    "short": "",
+    "note": "Observed after the first commit. This proof/report update is included by one amend, which necessarily changes the final commit SHA."
+  },
+  "proof_timing": {
+    "generated_before_commit": false,
+    "generated_after_initial_commit": true,
+    "included_by_single_amend": true,
+    "self_referential_commit_hash_caveat": "A Git commit cannot contain its own final SHA in a tracked file without changing that SHA. The commit_hash field records the observed first commit hash before the requested proof amend; the final amended commit hash is verified by git after the amend and reported in the final response."
+  },
+  "no_ui_code": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_execution_semantics_changed": true,
+  "no_bare_default_added": true,
+  "auth_values_fabricated": false,
+  "commit_ready": true,
+  "commit_message": "feat(proof): surface auth metadata for UI artifacts",
+  "blockers": []
+}

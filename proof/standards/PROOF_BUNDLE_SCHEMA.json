@@ -173,6 +173,64 @@
           "const": "1.0"
         }
       }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auth_mode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bare_mode_used": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "permission_mode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "allowed_tools": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requested_model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "effective_model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "effective_model_source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     }
   }
 }

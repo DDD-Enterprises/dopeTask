@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dopetask.dev/schemas/exec_record.schema.json",
+  "title": "dopeTask TP Series Exec Record",
+  "description": "Successful packet execution record written by src/dopetask/ops/tp_series/logic.py as EXEC.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "series_id",
+    "tp_id",
+    "branch",
+    "base_ref",
+    "packet_path",
+    "bundle_path",
+    "copied_proof_bundle",
+    "verify",
+    "committed_files",
+    "context",
+    "head_sha"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "series_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tp_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bundle_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "copied_proof_bundle": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "requested_model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "effective_model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "effective_model_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "explicit_override",
+        "route_plan",
+        "agent_default",
+        null
+      ]
+    },
+    "auth_mode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bare_mode_used": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "permission_mode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "allowed_tools": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verify": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verify_result"
+      }
+    },
+    "committed_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "context": {
+      "$ref": "#/$defs/series_context"
+    },
+    "head_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    }
+  },
+  "$defs": {
+    "verify_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "returncode",
+        "stdout",
+        "stderr"
+      ],
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "returncode": {
+          "type": "integer"
+        },
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        }
+      }
+    },
+    "series_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "series_id",
+        "tp_id",
+        "parent_tp_id",
+        "depends_on",
+        "dependencies"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "1.0"
+        },
+        "series_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tp_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_tp_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dependencies": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/dependency_record"
+          }
+        },
+        "worktree_context": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "dependency_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branch",
+        "head_sha",
+        "status",
+        "run_dir"
+      ],
+      "properties": {
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "run_dir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

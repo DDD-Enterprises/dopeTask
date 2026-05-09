@@ -1,0 +1,166 @@
+{
+  "allowed_tools_used": "Bash,Write,Edit,Read",
+  "argv": [
+    "claude",
+    "-p",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json",
+    "--no-session-persistence",
+    "--allowedTools",
+    "Bash,Write,Edit,Read"
+  ],
+  "duration_ms": 15012,
+  "parse_error": null,
+  "parsed_json": {
+    "api_error_status": null,
+    "duration_api_ms": 9623,
+    "duration_ms": 8360,
+    "fast_mode_state": "off",
+    "is_error": false,
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0,
+        "contextWindow": 200000,
+        "costUSD": 0.000429,
+        "inputTokens": 364,
+        "maxOutputTokens": 32000,
+        "outputTokens": 13,
+        "webSearchRequests": 0
+      },
+      "claude-opus-4-7[1m]": {
+        "cacheCreationInputTokens": 60777,
+        "cacheReadInputTokens": 95829,
+        "contextWindow": 1000000,
+        "costUSD": 0.43288075000000004,
+        "inputTokens": 7,
+        "maxOutputTokens": 64000,
+        "outputTokens": 203,
+        "webSearchRequests": 0
+      }
+    },
+    "num_turns": 2,
+    "permission_denials": [],
+    "result": "Created `SMOKE_PASS.txt` with the exact content.",
+    "session_id": "a8ab1f7b-11fd-42d5-966b-10c6c1922477",
+    "stop_reason": "end_turn",
+    "subtype": "success",
+    "terminal_reason": "completed",
+    "total_cost_usd": 0.43330975000000005,
+    "type": "result",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 60777,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 60777,
+      "cache_read_input_tokens": 95829,
+      "inference_geo": "",
+      "input_tokens": 7,
+      "iterations": [
+        {
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 278,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "cache_creation_input_tokens": 278,
+          "cache_read_input_tokens": 78164,
+          "input_tokens": 1,
+          "output_tokens": 26,
+          "type": "message"
+        }
+      ],
+      "output_tokens": 203,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    },
+    "uuid": "e3540d43-126a-4878-8332-eef8c94dc41b"
+  },
+  "parsed_json_success": true,
+  "permission_mode_requested": "bypassPermissions",
+  "prompt": "Create a file named SMOKE_PASS.txt in the current directory containing exactly: CLAUDE_WRITE_VERIFIED",
+  "prompt_delivery": "stdin",
+  "returncode": 0,
+  "smoke_pass_file_content": "CLAUDE_WRITE_VERIFIED",
+  "smoke_pass_file_content_exact_match": true,
+  "smoke_pass_file_exists": true,
+  "stderr": "",
+  "stdout": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"api_error_status\":null,\"duration_ms\":8360,\"duration_api_ms\":9623,\"num_turns\":2,\"result\":\"Created `SMOKE_PASS.txt` with the exact content.\",\"stop_reason\":\"end_turn\",\"session_id\":\"a8ab1f7b-11fd-42d5-966b-10c6c1922477\",\"total_cost_usd\":0.43330975000000005,\"usage\":{\"input_tokens\":7,\"cache_creation_input_tokens\":60777,\"cache_read_input_tokens\":95829,\"output_tokens\":203,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":60777,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[{\"input_tokens\":1,\"output_tokens\":26,\"cache_read_input_tokens\":78164,\"cache_creation_input_tokens\":278,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":278},\"type\":\"message\"}],\"speed\":\"standard\"},\"modelUsage\":{\"claude-haiku-4-5-20251001\":{\"inputTokens\":364,\"outputTokens\":13,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.000429,\"contextWindow\":200000,\"maxOutputTokens\":32000},\"claude-opus-4-7[1m]\":{\"inputTokens\":7,\"outputTokens\":203,\"cacheReadInputTokens\":95829,\"cacheCreationInputTokens\":60777,\"webSearchRequests\":0,\"costUSD\":0.43288075000000004,\"contextWindow\":1000000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"uuid\":\"e3540d43-126a-4878-8332-eef8c94dc41b\"}\n",
+  "temp_dir": "/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/claude-preflight-stdin-write-mt4gmh8m",
+  "temp_git_status_after": "?? SMOKE_PASS.txt\n",
+  "temp_git_status_before": "",
+  "temp_repo_setup": {
+    "git_commit_init": {
+      "argv": [
+        "git",
+        "commit",
+        "--allow-empty",
+        "-m",
+        "init"
+      ],
+      "duration_ms": 19,
+      "parse_error": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+      "parsed_json": null,
+      "parsed_json_success": false,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "[master (root-commit) 5a7c898] init\n",
+      "timed_out": false
+    },
+    "git_config_email": {
+      "argv": [
+        "git",
+        "config",
+        "user.email",
+        "preflight@example.invalid"
+      ],
+      "duration_ms": 7,
+      "parse_error": "empty stdout",
+      "parsed_json": null,
+      "parsed_json_success": false,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "timed_out": false
+    },
+    "git_config_name": {
+      "argv": [
+        "git",
+        "config",
+        "user.name",
+        "dopeTask Preflight"
+      ],
+      "duration_ms": 7,
+      "parse_error": "empty stdout",
+      "parsed_json": null,
+      "parsed_json_success": false,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "timed_out": false
+    },
+    "git_init": {
+      "argv": [
+        "git",
+        "init",
+        "."
+      ],
+      "duration_ms": 14,
+      "parse_error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "parsed_json": null,
+      "parsed_json_success": false,
+      "returncode": 0,
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n",
+      "stdout": "Initialized empty Git repository in /private/var/folders/dy/k9c_fpxn5h5cbb9hdsj3zzkm0000gn/T/claude-preflight-stdin-write-mt4gmh8m/.git/\n",
+      "timed_out": false
+    }
+  },
+  "timed_out": false,
+  "tp_id": "TP-DT-CLAUDE-PREFLIGHT-0002"
+}
