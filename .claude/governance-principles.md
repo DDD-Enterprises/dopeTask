@@ -182,41 +182,51 @@ Before changing shared artifacts determine:
 * caches
 * deprecated surfaces
 
+dopeTask is a deterministic Task Packet execution kernel. Canonical writers in this repo:
+
+* **Task Packet execution runtime**: `dopetask tp series exec` (single allowed path; refuses on invalid input)
+* **Series state**: `out/tp_series/<series-id>/SERIES_STATE.json`
+* **Per-packet artifacts**: `out/tp_series/<series-id>/packets/<tp-id>/`
+* **Proof bundles**: `proof/<TP_ID>_PROOF_BUNDLE.json`
+* **Schemas**: `dopetask_schemas/` (authoritative Task Packet shape)
+* **Bundle manifest**: `dopetask_bundle.yaml`
+* **Version pin**: `DOPETASK_VERSION.lock`
+* **CLI surface**: `pyproject.toml` entrypoint + commands defined under `src/`
+
+`AGENTS.md` in this repo is the **supervisor authority** — read its §0–§6 (PRIME DIRECTIVE, SUPERVISOR LOOP, KERNEL COMMANDS, OPERATING MODES, PACKET QUALITY BAR, PROOF REVIEW ORDER, REFUSAL RULES) before any runtime change.
+
 Do not silently fork contracts downstream. Preserve separation between:
 
-* truth vs projection
-* authority vs advisory
-* runtime vs audit
-* execution vs analysis
-
-If the project's `AGENTS.md` defines architecture boundaries (canonical writers per service / module), treat that section as authoritative. Customize this section per repo to list the project's actual canonical writers.
+* truth (artifacts under `proof/` and `out/`) vs projection (reports, summaries)
+* authority (dopeTask runtime + Task Packet schema) vs advisory (docs, working notes)
+* runtime (kernel execution path) vs audit (validation, codereview, precommit)
+* execution (single allowed path) vs analysis (`pal/*` reasoning tools)
 
 ---
 
 ## Contract-Sensitive Surfaces
 
-Treat as high-risk:
+Treat as high-risk in this repo:
 
-* schemas (JSON Schema, OpenAPI, protobuf, SQL DDL)
-* manifests (MCP server manifests, plugin manifests, package metadata)
-* migrations
-* event payloads (queues, streams, websockets)
-* serializers / deserializers
-* MCP tool input/output shapes
-* APIs (REST, GraphQL, RPC contracts)
-* proof bundles / audit artifacts
-* checkpoints / replay state
-* hook dispatchers and lifecycle scripts
+* **`dopetask_schemas/`** — authoritative Task Packet JSON Schema; any change breaks all consumers
+* **`dopetask_bundle.yaml`** — bundle manifest; controls what ships
+* **`DOPETASK_VERSION.lock`** — version pin used for deterministic execution
+* **`proof/<TP_ID>_PROOF_BUNDLE.json`** shape — operators inspect these; format drift breaks audits
+* **`out/tp_series/<series-id>/SERIES_STATE.json`** — authoritative runtime state
+* **Task Packet JSON files** (root-level `TP-*.json`, packet inputs) — bind execution scope
+* **Kernel commands** under `src/` (any `tp series *` entrypoint) — refusal logic must remain fail-closed
+* **`config/`** — operator profile, allowlists, refusal rules
+* **`ops/` and `proof/` writers** — append-only contract
 
 Before modifying any of these:
 
-1. identify the canonical writer
-2. inspect consumers
-3. inspect replay behavior
-4. validate compatibility
-5. review downstream impact
+1. identify the canonical writer (typically a single function in `src/`)
+2. inspect consumers (operator CLI, codex/claude/gemini agent paths, proof verifiers)
+3. inspect replay behavior — same TP + declared inputs + version must yield byte-identical artifacts
+4. validate compatibility (run existing TPs end-to-end)
+5. review downstream impact (other repos may consume bundle YAML or schemas)
 
-Unknown contract implications = stop and investigate.
+Unknown contract implications = stop and investigate. Determinism failures are P0.
 
 ---
 
