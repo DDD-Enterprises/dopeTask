@@ -12,7 +12,7 @@ Before any non-trivial action:
 
 * `AGENTS.md` (Truth Order, lifecycle, PAL chain rules if defined, proof-and-finality)
 * Active Task Packet (if any) — execution control and repo-changing scope
-* `TRUTH_*.md`, `RULES.md`, `ARCHITECTURE.md`, `SYSTEM_BOUNDARIES.md` and equivalents under `docs/03-reference/` or similar
+* `docs/10_ARCHITECTURE.md`, `docs/KERNEL_PRINCIPLES.md`, `docs/REFUSAL_PHILOSOPHY.md` and equivalents under the `docs/` index structure
 * `CLAUDE.md` — project doctrine layer
 * Local workflows under `.claude/` (hooks, commands, modules)
 
@@ -135,7 +135,7 @@ If authorities conflict:
 
 ## PAL Workflow Rules
 
-If the project's `AGENTS.md` defines PAL chains (e.g., a `§5 Task Packet Rules` section), **that file is canonical** — reference it, do not duplicate. Otherwise the defaults below apply.
+If the project's `AGENTS.md` defines PAL chains (e.g., a `## 4) PACKET QUALITY BAR` section), **that file is canonical** — reference it, do not duplicate. Otherwise the defaults below apply.
 
 Defaults for non-trivial work:
 
@@ -146,7 +146,7 @@ Defaults for non-trivial work:
 
 Use for unfamiliar systems, orchestration, persistence, adapters, event flows, MCP/tool routing, policy systems. Inspect runtime flow, identify invariants, canonical writers, downstream consumers, hidden coupling.
 
-### tracer
+### trace
 
 Use for workflows, queues, async systems, retries, projections, side effects, approval systems. Trace execution path, state transitions, write boundaries, replay behavior, idempotency behavior. Do not patch orchestration logic from intuition.
 
@@ -333,7 +333,7 @@ Rules:
 * `medium` means unresolved uncertainty
 * `low` means assumptions dominate
 
-Never present low-confidence reasoning as settled fact. For repo-changing work, final confidence must be `VERIFIED` (proof bundle attached).
+Never present low-confidence reasoning as settled fact. For repo-changing work, final confidence must be certain (verified with proof bundle attached).
 
 ---
 
