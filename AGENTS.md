@@ -111,3 +111,19 @@ A refusal must include:
 - the exact missing evidence
 - why it blocks correct packet generation
 - the minimum evidence required to continue
+
+---
+
+## Claude-Code Doctrine Alignment
+
+This file is the Codex-facing authority. The Claude-Code-facing companion is `CLAUDE.md`, which embeds a brief governance section and links to the full canonical module at `.claude/governance-principles.md`.
+
+The canonical module elaborates the same Truth Order and proof-and-finality regime for Claude-Code sessions, plus inspect-before-edit, minimal correct change, deterministic-systems-first, validation policy with explicit `PASS / FAIL / NOT_RUN` buckets, confidence states, and the required final response structure.
+
+If this file defines PAL workflow chains, the module references them rather than duplicating. Otherwise the module's defaults apply (`analyze → planner → codereview → precommit` for minimum work; risky/architecture variant adds challenge gates).
+
+When updating doctrine, keep these three files in sync:
+
+- `AGENTS.md` (this file) — Codex authority, lifecycle, chains (if defined), proof bundle
+- `CLAUDE.md` — Claude-Code-facing summary + non-negotiables checklist
+- `.claude/governance-principles.md` — full canonical doctrine, referenced by both
