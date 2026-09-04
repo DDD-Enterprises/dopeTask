@@ -1,0 +1,164 @@
+{
+  "packet_id": "TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001",
+  "risk_lane": "L2_MATERIAL",
+  "hard_prerequisite": {
+    "requirement": "TP-DT-C0-R2-SCHEMA-MIRROR-001-A1 merged to dopeTask main with 10/10 exact mirror hashes",
+    "status": "SATISFIED",
+    "evidence": "PR #91 squash-merged at 7ce24ae15ad3ae9ddbfa2b33577d20c924cb1da6; all ten dopetask_schemas/*.schema.json hashes re-verified byte-identical against origin/main at implementation time."
+  },
+  "base": {
+    "repo": "DDD-Enterprises/dopeTask",
+    "base_sha": "7ce24ae15ad3ae9ddbfa2b33577d20c924cb1da6",
+    "observed_baseline_sha_in_packet": "d9103f078418cbf2a8f387aee5d0e1f957a37b1a",
+    "baseline_drift": "ORDINARY_AND_CLASSIFIED_IDENTICAL_TO_ALLOWLIST",
+    "baseline_drift_detail": "origin/main advanced from the packet's observed d9103f07 to 7ce24ae1 solely via the merged C0-R2 mirror PR #91; diff --name-status between the two is exactly the mirror's 12-file allowlist. Zero overlap with this packet's scope.",
+    "branch": "feat/dt-g1-governed-grant-router-isolation-001",
+    "worktree": ".worktrees/dt-g1-governed-grant-001"
+  },
+  "changed_files": [
+    "task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json",
+    "src/dopetask/guard/governed_execution.py",
+    "src/dopetask/ops/tp_exec/engine.py",
+    "src/dopetask/ops/tp_exec/cli.py",
+    "tests/unit/dopetask/test_governed_execution.py",
+    "tests/unit/dopetask/test_tp_exec_governed.py",
+    "tests/unit/dopetask/test_tp_exec_codex.py",
+    "out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json"
+  ],
+  "changed_files_note": "test_tp_exec_codex.py edit is limited to widening the fake_execute stub signature in test_tp_exec_cli_forwards_model_override to accept the new governed/grant_path/dcp_route_authorization_path keyword arguments (with defaults matching legacy behavior) plus three added assertions confirming the legacy CLI path defaults governed=False and both paths to None. No existing assertions were weakened or removed.",
+  "forbidden_path_drift_check": {
+    "checked_globs": [
+      "router/planner.py",
+      "tp_series/logic.py",
+      "adapters/*",
+      "pipeline/task_runner/executor.py",
+      "pipeline/task_runner/types.py",
+      "dopetask_schemas/*",
+      "pyproject.toml",
+      "VERSION/release/credential/network files"
+    ],
+    "result": "NO_DRIFT",
+    "method": "git diff --name-only origin/main | grep against forbidden-path patterns"
+  },
+  "implementation_summary": {
+    "governed_execution_guard": {
+      "file": "src/dopetask/guard/governed_execution.py",
+      "not_exported_from_guard_init": true,
+      "not_exported_reason": "src/dopetask/guard/__init__.py is an explicit re-export allowlist and is not in this packet's commit.allowlist; callers import dopetask.guard.governed_execution directly.",
+      "cross_ref_validation": "referencing.Registry keyed by each mirrored schema's $id, built from SchemaRegistry.get_json() (package data, no filesystem paths), Draft7Validator(schema, registry=registry). No $id rewriting.",
+      "dcp_route_authorization_usage": "Schema-validated and SHA-256 digest-bound to grant.dcp_route_authorization_digest only. No field of the parsed DCPRouteAuthorization document is read again to influence any runner/model/routing decision — it is never treated as execution authority."
+    },
+    "engine_isolation": {
+      "file": "src/dopetask/ops/tp_exec/engine.py",
+      "build_route_plan_import_site": "Unchanged: still a lazy import inside _resolve_effective_model(), which the GOVERNED_MODE branch never calls.",
+      "governed_branch_structure": "execute_task_packet() computes governed_decision = admit_governed_execution(...) when governed=True, before TPNormalizer.compile() and before any adapter construction; the else branch (legacy) is byte-for-byte the pre-existing _resolve_effective_model() call.",
+      "new_function": "resolve_governed_admission() — repo-root/identity/binding resolution + admit_governed_execution() only, no adapter construction, no planner invocation. Shared by execute_task_packet (real run) and the CLI dry-run path so both evaluate admission identically."
+    },
+    "cli_wiring": {
+      "file": "src/dopetask/ops/tp_exec/cli.py",
+      "new_flags": ["--governed/--no-governed (default --no-governed)", "--grant PATH", "--dcp-route-authorization PATH"],
+      "dry_run_behavior": "When --dry-run --governed, resolve_governed_admission() runs and raises before TPNormalizer.compile()/typer.echo('Compiled Profile') ever executes.",
+      "tmux_propagation": "--governed, --grant <resolved path>, --dcp-route-authorization <resolved path> are appended to the reconstructed self-invocation command when present."
+    }
+  },
+  "adversarial_matrix": {
+    "schema_gates": ["Draft-07 grant validation", "Draft-07 DCPRouteAuthorization validation", "malformed/unreadable JSON"],
+    "accept": ["valid exact grant/auth/packet binding with CLI model omitted", "valid exact grant/auth/packet binding with CLI model matching ceiling exactly"],
+    "reject_reasons_covered": [
+      "GRANT_UNREADABLE",
+      "GRANT_SCHEMA_INVALID",
+      "DCP_ROUTE_AUTHORIZATION_SCHEMA_INVALID",
+      "DCP_ROUTE_AUTHORIZATION_DIGEST_MISMATCH",
+      "GRANT_ISSUER_CLASS_UNACCEPTED",
+      "GRANT_TIMESTAMP_INVALID",
+      "GRANT_NOT_YET_VALID",
+      "GRANT_EXPIRED",
+      "GRANT_REVOCATION_REF_PRESENT_NO_RESOLVER",
+      "GRANT_SUBJECT_KIND_UNSUPPORTED",
+      "TASK_PACKET_ID_MISMATCH",
+      "TASK_PACKET_SHA256_MISMATCH",
+      "GRANT_CONSUMER_MISMATCH",
+      "GRANT_PERMITTED_EXECUTION_MISMATCH",
+      "CLI_AGENT_RUNNER_MISMATCH",
+      "PACKET_AGENT_RUNNER_MISMATCH",
+      "GRANT_MODEL_CEILING_ABSENT",
+      "CLI_MODEL_MISMATCH_GRANT_CEILING",
+      "GRANT_PROJECT_MISMATCH",
+      "GRANT_REPOSITORY_MISMATCH",
+      "GRANT_WORKTREE_MISMATCH",
+      "ALLOWLIST_MISMATCH (order and superset variants)"
+    ],
+    "test_file": "tests/unit/dopetask/test_governed_execution.py",
+    "test_count": 23
+  },
+  "planner_not_called_evidence": {
+    "test": "tests/unit/dopetask/test_tp_exec_governed.py::test_governed_mode_never_calls_build_route_plan",
+    "method": "monkeypatch dopetask.router.planner.build_route_plan to raise AssertionError; run a full GOVERNED_MODE execute_task_packet() call through to a completed proof bundle; the run succeeds using the grant's model_ceiling, proving build_route_plan was never invoked.",
+    "complementary_test": "tests/unit/dopetask/test_tp_exec_governed.py::test_legacy_mode_still_calls_planner_when_no_model asserts the pre-existing LEGACY_LOCAL_MODE no-model path still calls build_route_plan exactly once, proving isolation is bidirectional (neither mode leaks into the other)."
+  },
+  "test_results": {
+    "focused": {
+      "command": "uv run pytest -q -o addopts=\"\" tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+      "result": "37 passed"
+    },
+    "relevant_complete_suites": {
+      "command": "uv run pytest -q -o addopts=\"\" tests/unit/dopetask tests/unit/tp_series",
+      "result": "267 passed"
+    },
+    "full_suite": {
+      "command": "uv run pytest -q -o addopts=\"\"",
+      "result": "1 failed, 481 passed, 7 skipped",
+      "baseline_before_any_change": "1 failed, 450 passed, 7 skipped (captured on this same worktree base 7ce24ae1 before any file was touched)",
+      "delta": "+31 passed (23 new guard tests + 8 new engine/CLI tests), 0 new failures, 0 skips changed",
+      "the_one_failure": {
+        "test": "tests/ops/test_exec_record_authmeta.py::test_exec_record_schema_still_accepts_historical_fixture_without_authmeta",
+        "cause": "FileNotFoundError for a missing fixture (out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/.../EXEC.json) that is not tracked in the repo and is unrelated to any file this packet touches.",
+        "proved_pre_existing": true
+      },
+      "methodology_note": "Both the baseline and post-change full-suite runs used `-o addopts=\"\"` to bypass this repo's pyproject.toml [tool.pytest.ini_options] addopts, which set --maxfail=1 (would mask failures after the first) and --cov-fail-under=1 (a repo-wide coverage gate irrelevant to correctness). This is the same methodology used and documented in the prior TP-DT-C0-R2-SCHEMA-MIRROR-001-A1 PROOF."
+    },
+    "ruff": {
+      "command": "uv run ruff check src/dopetask/guard/governed_execution.py src/dopetask/ops/tp_exec/engine.py src/dopetask/ops/tp_exec/cli.py tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+      "result": "PASS (All checks passed!)"
+    },
+    "compileall": "PASS",
+    "diff_check": "PASS"
+  },
+  "precommit": "NOT_RUN",
+  "precommit_note": "Repo has no .pre-commit-config.yaml (same pre-existing condition documented in the TP-DT-C0-R2-SCHEMA-MIRROR-001-A1 PROOF, merged PR #91). Not caused by this packet.",
+  "secret_scan": "PASS",
+  "secret_scan_note": "grep -RniE for AWS/PEM/GitHub-token/OpenAI/Slack token patterns over all seven changed source/test files: zero matches.",
+  "carried_unknowns": [
+    {
+      "id": "GRANT_PROJECT_ID_SEMANTICS",
+      "description": "grant.project_id is compared against packet.repo_binding.project_id (falling back to packet.project when repo_binding is absent) — the C0-R2 program's project-naming convention (e.g. 'dopetask') — not dopeTask's own internal repo-identity project_id ('dopetask.core' from .dopetask/project.json, which guard.identity.assert_repo_binding already checks separately and unconditionally for every packet, governed or not). The grant schema's field description does not pin this down further."
+    },
+    {
+      "id": "GRANT_REPOSITORY_SEMANTICS",
+      "description": "grant.repository is checked as a substring of the active repo's git origin URL (dopetask.guard.identity.extract_origin_url), reusing the same hint-substring convention as guard.identity.origin_hint_warning / repo_binding.origin_hint, but enforced fail-closed here rather than as a soft warning. The schema only types this field as a non-empty string with no pattern or enum, so an exact-match convention was also plausible; substring-of-origin-URL was chosen as the more defensible mapping given the codebase's existing origin_hint precedent."
+    },
+    {
+      "id": "NETWORK_CREDENTIAL_CLASS_ENFORCEMENT_DEPTH",
+      "description": "grant.network_policy and grant.credential_class are Draft-07 schema-validated (their 'insufficient when a grant requires an explicit class' field descriptions are informative, not machine-checkable consts) but are not cross-checked against any additional business rule beyond schema conformance, since S01's explicit requirement list does not name them. provider_ceiling is likewise schema-validated only, never enforced against CLI/packet input (only model_ceiling is, per S02's explicit requirement)."
+    },
+    {
+      "id": "WORKTREE_HEAD_SHA_NOT_CHECKED",
+      "description": "grant.worktree_binding.head_sha (nullable, optional) is not checked against the current repo HEAD. Only worktree_binding.path is verified. Checking head_sha would make every grant go stale the instant a new commit lands on the bound worktree, which is not what S01's 'worktree binding against current repo/worktree identity' requirement appears to intend."
+    }
+  ],
+  "model_audit": "NOT_RUN_BY_IMPLEMENTER",
+  "model_audit_reason": "L2_MATERIAL risk lane requires one independent, non-implementer audit on the frozen substantive head per this packet's own invariant and the DT-G1 dispatch order (audit.independence: REQUIRED, preferred AGY/Gemini). This session (Claude, the implementer) cannot serve as that auditor.",
+  "implementer": {
+    "model": "claude-sonnet-5",
+    "runtime": "Claude Code CLI"
+  },
+  "authorization": {
+    "merge_authorized": false,
+    "release_authorized": false,
+    "pin_update_authorized": false,
+    "activation_authorized": false,
+    "push_and_pr_authorized": true
+  },
+  "next_gate": "INDEPENDENT_L2_AUDIT_ON_FROZEN_DT_G1_HEAD",
+  "dt_g1_dispatch_eligible_for_dt_g2": "NO — this packet itself is DT-G1; DT-G2 remains separately gated and out of scope here."
+}

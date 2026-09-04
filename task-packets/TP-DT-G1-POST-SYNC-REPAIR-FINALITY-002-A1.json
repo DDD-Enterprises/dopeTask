@@ -1,0 +1,186 @@
+{
+  "id": "TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1",
+  "project": "dopetask",
+  "target": "Create one canonical DT-G1 successor from remote head 1bf18dea that retains the A1 Task Packet schema repair and the canonical repository-identity repair, fixes the shadowed raw-OSError entrypoint defect, eliminates duplicated repository/admission resolution, adds exactly one narrow RUNNER_INVOCATION under-grant check per operator amendment 01, preserves DT-G2 boundaries, and reaches proof-only finality.",
+  "invariants": [
+    "RISK_LANE=L3_AUTHORITY_SECURITY_BOUNDARY.",
+    "PARENT_PACKET=TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002.",
+    "PR=92.",
+    "REMOTE_CANONICAL_HEAD_AT_ISSUANCE=1bf18deae224521d82a52290da893b6a9f76cc97.",
+    "DONOR_A1_HEAD=b3de93e0accc5884b715a921d5c0c2cee039951d retained intact and unpushed.",
+    "FAILED_REPAIR_CONTENT_HEAD=951da2c005608564821fbdeeb2a71a89eb4686d0 retained intact as donor only.",
+    "FAILED_REPAIR_PROOF_HEAD=7527f0b876d43a2be5d65c993b60e7d669f9dc8c retained as historical failed-audit evidence and never rewritten into a PASS.",
+    "OPERATOR_AMENDMENT=TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1-AMENDMENT-01 supersedes section 7 only with respect to under-grant runner dispatch.",
+    "Admission requires RUNNER_INVOCATION in authority_effect.grants before any adapter, TaskExecutor or runner invocation; refusal reason AUTHORITY_UNDERGRANT_RUNNER_INVOCATION.",
+    "No generic application-layer reimplementation of authority_effect: schema-level does_not_grant handling and the MERGE/ACTIVATION/ALLOWLIST_WIDENING disposition are unchanged.",
+    "Every governed entrypoint fails through GovernedAdmissionError with a stable machine-readable reason for packet read/parse failures; raw OSError escapes must be zero.",
+    "One governed entrypoint performs exactly one admission orchestration, one repository identity load and one repository binding decision.",
+    "Repository identity is canonical owner/repository exact equality; substring and basename-only matching are forbidden in admission.",
+    "GOVERNED_MODE must never call build_route_plan; LEGACY_LOCAL_MODE preserves planner behavior and performs zero governed resolver calls.",
+    "DCPRouteAuthorization remains schema-validated, digest-bound and POLICY_ONLY; it never selects runner, provider, model, fallback or execution authority.",
+    "worktree_binding.head_sha, network_policy and credential_class runtime enforcement remain explicitly deferred to DT-G2.",
+    "No force push, rebase or history rewrite. Foreign worktree mutation is forbidden.",
+    "MERGE_AUTHORIZED=NO. RELEASE_AUTHORIZED=NO. PIN_UPDATE_AUTHORIZED=NO. ACTIVATION_AUTHORIZED=NO."
+  ],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "CONTROL-TOWER-NEXT-WAVE-2026-09-04",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002",
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "feat/dt-g1-governed-grant-router-isolation-001"
+  },
+  "commit": {
+    "message": "fix(governed): close entrypoint refusal shadow, single admission resolution, canonical repo identity, narrow under-grant check",
+    "allowlist": [
+      "src/dopetask/guard/governed_execution.py",
+      "src/dopetask/ops/tp_exec/engine.py",
+      "src/dopetask/ops/tp_exec/cli.py",
+      "tests/unit/dopetask/test_governed_execution.py",
+      "tests/unit/dopetask/test_tp_exec_governed.py",
+      "task-packets/TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001-A1.json",
+      "task-packets/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1.json",
+      "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/**"
+    ],
+    "verify": [
+      "git diff --check",
+      "ruff check src/dopetask tests",
+      "mypy src/dopetask",
+      "python -m compileall -q src tests",
+      "uv run --extra dev pytest -q",
+      "uv run --extra dev pytest -q tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py",
+      "secret scan of exact changed/proof output"
+    ]
+  },
+  "pr": {
+    "title": "feat(governed): consume execution grant and isolate router",
+    "body": "Successor repair for DT-G1 PR #92: closes the parser-shadowed governed refusal contract, collapses duplicated repository/admission resolution to one path, enforces canonical owner/repository identity, and adds one narrow RUNNER_INVOCATION under-grant check under operator amendment 01. Merge, release, pin update and activation remain operator-only.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "S00_canonical_start",
+      "task": "Prove the canonical start point and donor custody before any mutation.",
+      "requirements": [
+        "Require remote PR #92 head equals 1bf18deae224521d82a52290da893b6a9f76cc97.",
+        "Create a fresh isolated worktree and branch from that exact head inside the repository.",
+        "Require clean working tree and absence of foreign mutating writers.",
+        "Require donors b3de93e, 951da2c and 7527f0b remain intact and unpushed."
+      ],
+      "commands": [
+        "gh pr view 92 --json headRefOid",
+        "git worktree add -b feat/dt-g1-post-sync-repair-finality-002-a1 .worktrees/dt-g1-finality-002-a1 1bf18deae224521d82a52290da893b6a9f76cc97",
+        "git rev-parse HEAD",
+        "git status --porcelain"
+      ],
+      "validation": [
+        "REMOTE_START_HEAD=1bf18deae224521d82a52290da893b6a9f76cc97",
+        "WRITER_EXCLUSIVITY=PASS",
+        "DONOR_CUSTODY=INTACT"
+      ]
+    },
+    {
+      "id": "S01_donor_ledger",
+      "task": "Classify every donor hunk ADOPT, REIMPLEMENT or REJECT before semantic work begins.",
+      "requirements": [
+        "Transplant only task-packets/TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001-A1.json from b3de93e.",
+        "Do not transplant the sibling proof-bundle audit-reuse update.",
+        "Prove A1 strict schema PASS and parent-to-A1 change equals execution.base_branch removal only.",
+        "Reject the failed repair's full authority_effect ceiling implementation.",
+        "Adopt the failed repair's canonical repository identity design.",
+        "Reimplement R2 and R3 because the entrypoint shadow and duplicated resolution remain."
+      ],
+      "validation": [
+        "A1_PACKET_TRANSPLANTED=YES",
+        "A1_STALE_PROOF_TRANSPLANTED=NO",
+        "PARENT_TO_A1_CHANGED_JSON_PATHS=[execution.base_branch]",
+        "DONOR_LEDGER=COMPLETE"
+      ]
+    },
+    {
+      "id": "S02_repair",
+      "task": "Implement R1 narrow under-grant check, R2 entrypoint refusal contract, R3 single resolution and R4 canonical repository identity.",
+      "requirements": [
+        "Route every governed entrypoint through one shared governed packet loader before any generic parse that can leak OSError.",
+        "Do not create two separate exception wrappers.",
+        "Collapse repository identity load, canonical validation and binding decision to exactly one occurrence per governed execution.",
+        "Require RUNNER_INVOCATION in authority_effect.grants before runner construction or dispatch.",
+        "Do not add over-ceiling, forbidden-grant or prohibition-completeness enforcement.",
+        "Preserve legacy planner behavior and legacy path semantics unchanged."
+      ],
+      "validation": [
+        "R1_UNDERGRANT_RUNNER_INVOCATION=PASS",
+        "R2_ENGINE_ENTRYPOINT=PASS",
+        "R2_CLI_DRY_RUN_ENTRYPOINT=PASS",
+        "R2_CLI_REAL_ENTRYPOINT=PASS",
+        "RAW_OSERROR_ESCAPES=0",
+        "R3_REAL_RESOLUTION_COUNT=1",
+        "R3_DRY_RUN_RESOLUTION_COUNT=1",
+        "R3_LEGACY_RESOLUTION_COUNT=0",
+        "R4_REPOSITORY_IDENTITY=PASS"
+      ]
+    },
+    {
+      "id": "S03_validate_freeze",
+      "task": "Run full validation against the canonical start baseline and freeze one new substantive head.",
+      "requirements": [
+        "Record that the canonical start baseline in this worktree is 482 passed and 7 skipped, and that the parent packet's quoted 569 passed reflected the failed repair's added tests rather than head 1bf18dea.",
+        "Run ruff, mypy, compileall, git diff --check, focused DT-G1 tests, full pytest and a secret scan.",
+        "Treat any new failure as blocking until explained by current evidence.",
+        "Apply no semantic modification after freeze."
+      ],
+      "validation": [
+        "BASELINE_AT_START=482_PASSED_7_SKIPPED",
+        "FOCUSED_TESTS=PASS",
+        "FULL_SUITE=PASS",
+        "RUFF=PASS",
+        "MYPY=PASS",
+        "COMPILEALL=PASS",
+        "DIFF_CHECK=PASS",
+        "FROZEN_SUCCESSOR_HEAD recorded"
+      ]
+    },
+    {
+      "id": "S04_final_audit",
+      "task": "Obtain one fresh independent L3 audit bound to the frozen successor head.",
+      "requirements": [
+        "Require a different model family from the implementer, a fresh execution context and proven identity.",
+        "Auditor must instrument actual public entrypoints, not only helper functions.",
+        "Auditor must attempt to falsify repository canonicalization, host spoof handling, packet-read entrypoint shadowing, the single-resolution claim, planner isolation, DCP policy-only behavior and legacy compatibility.",
+        "The prior FAIL on 951da2c is forensic evidence only and cannot satisfy this successor.",
+        "No Clink, no API-metered audit, no repair during audit."
+      ],
+      "validation": [
+        "AUDIT_SUBJECT_HEAD=FROZEN_SUCCESSOR_HEAD",
+        "INDEPENDENCE recorded",
+        "VERDICT=PASS|PASS_WITH_RISKS|FAIL|NEEDS_SUPERVISOR",
+        "BLOCKING_FINDINGS=0 required for acceptance"
+      ]
+    },
+    {
+      "id": "S05_proof_finality",
+      "task": "Materialize proof-only finality and return merge readiness without merging.",
+      "requirements": [
+        "Bind proof to the exact frozen successor head with proof-only ancestry and path closure.",
+        "Push as an ordinary fast-forward only after reharvesting remote head 1bf18dea.",
+        "Settle review threads only after the repaired semantic head is pushed and visible.",
+        "Return UNCLASSIFIED=0 and BLOCKING=0."
+      ],
+      "validation": [
+        "PROOF_FINALITY=PASS or explicit blocker",
+        "CI=PASS or explicit blocker",
+        "REVIEW_THREADS_BLOCKING=0",
+        "MERGE_AUTHORIZED=NO",
+        "NEXT_GATE=CONTROL_TOWER_OPERATOR_MERGE_DECISION"
+      ]
+    }
+  ]
+}
