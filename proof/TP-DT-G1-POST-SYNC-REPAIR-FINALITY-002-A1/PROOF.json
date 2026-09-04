@@ -1,0 +1,158 @@
+{
+  "packet_id": "TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1",
+  "parent_packet_id": "TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002",
+  "operator_amendment": "TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1-AMENDMENT-01",
+  "risk_lane": "L3_AUTHORITY_SECURITY_BOUNDARY",
+  "pr": 92,
+  "repository": "DDD-Enterprises/dopeTask",
+  "S00_canonical_start": {
+    "REMOTE_START_HEAD": "1bf18deae224521d82a52290da893b6a9f76cc97",
+    "remote_head_matched_issuance": true,
+    "worktree": "/Users/hue/code/dopeTask/.worktrees/dt-g1-finality-002-a1",
+    "branch": "feat/dt-g1-post-sync-repair-finality-002-a1",
+    "WRITER_EXCLUSIVITY": "PASS",
+    "DONOR_CUSTODY": {
+      "b3de93e0accc5884b715a921d5c0c2cee039951d": "INTACT_UNPUSHED",
+      "951da2c005608564821fbdeeb2a71a89eb4686d0": "INTACT_UNPUSHED",
+      "7527f0b876d43a2be5d65c993b60e7d669f9dc8c": "INTACT_UNPUSHED",
+      "donor_branch_tip": "feat/dt-g1-governed-grant-router-isolation-001 @ 7527f0b876d43a2be5d65c993b60e7d669f9dc8c"
+    },
+    "note": "Donor branch left untouched and locally divergent from the successor; that divergence is local-only and never pushed."
+  },
+  "S01_donor_ledger": {
+    "A1_PACKET_TRANSPLANTED": "YES",
+    "A1_STALE_PROOF_TRANSPLANTED": "NO",
+    "a1_byte_identity_sha256": "ed56f2cb0c546adfff8a483eda1a7fd3af5ac431c6a7d4caf271b9beb1ef9965",
+    "A1_STRICT_SCHEMA_DIRECT": "PASS",
+    "A1_STRICT_SCHEMA_REPO_VALIDATOR": "PASS",
+    "PARENT_STRICT_SCHEMA": "FAIL_EXPECTED -- execution: Additional properties are not allowed ('base_branch' was unexpected)",
+    "PARENT_TO_A1_CHANGED_JSON_PATHS": [
+      "execution.base_branch"
+    ],
+    "PARENT_TO_A1_ADDED": [],
+    "PARENT_TO_A1_CHANGED_VALUES": [],
+    "change_proof_method": "Recursive flatten of both documents to leaf JSON paths; set difference. Reproduced independently in this run, not copied from the donor's proof.",
+    "parent_bytes_custody": "The strict-invalid parent packet was never committed to this repository (deliberately); its bytes were sourced from ~/Downloads/TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001.json for the delta proof only.",
+    "ledger": {
+      "951da2c authority_effect full ceiling": "REJECT -- amendment 01 authorizes only the narrow under-grant check; over-ceiling rejection, required TASK_PACKET_MUTATION_WITHIN_ALLOWLIST, and does_not_grant re-assertion are outside DO_NOT_CHANGE bounds",
+      "951da2c canonical_repository_identity": "ADOPT -- independently audit-PASS incl. host-in-path spoof; semantics unchanged",
+      "951da2c _read_raw_bytes": "ADOPT_AS_LOWER_LAYER -- correct but insufficient alone; entrypoint shadow remained",
+      "951da2c R2 tests calling admit_governed_execution directly": "REJECT_AS_INSUFFICIENT -- retained only as lower-level coverage",
+      "951da2c engine delegation": "REIMPLEMENT -- root cause of the duplicated-resolution finding",
+      "951da2c legacy agent check reordering": "ADOPT",
+      "951da2c working_dir.resolve()": "ADOPT -- required to avoid double chdir under nested _pushd",
+      "951da2c GRANT_PATHS_MISSING": "ADOPT",
+      "951da2c worktree_binding.path resolve hardening": "ADOPT -- serves RAW_OSERROR_ESCAPES=0",
+      "951da2c SCHEMA_REGISTRY_UNAVAILABLE": "REJECT -- unrelated to R1-R4",
+      "7527f0b entire commit": "REJECT_AS_CURRENT -- retained as historical failed-audit evidence, never rewritten into a PASS"
+    }
+  },
+  "S02_repair": {
+    "AUTHORITY_EFFECT_APP_REPAIR": "NARROW_RUNNER_INVOCATION_UNDERGRANT_ONLY (AMENDMENT-01)",
+    "COPILOT_AUTHORITY_EFFECT_FINDING": "SPLIT -- over-grant direction INVALID_WITH_EVIDENCE (schema const/enum); under-grant direction VALID and FIXED",
+    "authority_schema_facts_verified_at_1bf18dea": {
+      "authority_effect.additionalProperties": false,
+      "does_not_grant": "JSON Schema const, exact 10-item array incl. MERGE/ACTIVATION/ALLOWLIST_WIDENING",
+      "grants": "items.enum closed; narrowed to 2 members for SINGLE_TASK_PACKET; minItems=1; NO contains; NO maxItems",
+      "conclusion": "A grant cannot CLAIM a forbidden authority (schema closes it), but CAN omit RUNNER_INVOCATION while the engine still constructs a runner. Only the admission gate closes that direction.",
+      "AUTHORITY_SCHEMA_CONFLICT": "NOT_TRIGGERED"
+    },
+    "R1_UNDERGRANT_RUNNER_INVOCATION": "PASS",
+    "R2_ENGINE_ENTRYPOINT": "PASS",
+    "R2_CLI_DRY_RUN_ENTRYPOINT": "PASS",
+    "R2_CLI_REAL_ENTRYPOINT": "PASS",
+    "RAW_OSERROR_ESCAPES": 0,
+    "R3_REAL_RESOLUTION_COUNT": 1,
+    "R3_DRY_RUN_RESOLUTION_COUNT": 1,
+    "R3_LEGACY_RESOLUTION_COUNT": 0,
+    "R4_REPOSITORY_IDENTITY": "PASS",
+    "cli_argument_layer_note": "click.Path(exists=True) implies readable=True, so a missing or unreadable packet is pre-empted at the CLI argument layer with exit 2 and never reaches the read/parse contract. Legacy behaviour, preserved and asserted explicitly so the governed loader is not credited with Click's refusal.",
+    "dry_run_contract_note": "The under-grant check lives in admission, so a governed dry-run refuses identically to a real governed execution. Intentional: single-resolution requires one contract for both.",
+    "layer_attribution": {
+      "MACRO_PLAN_CHILD_INVOCATION": "refused by JSON Schema (SINGLE_TASK_PACKET narrows grants to 2 members), NOT by the admission gate",
+      "grants omitting RUNNER_INVOCATION": "schema-valid; refused by the admission gate only -- genuinely non-vacuous end-to-end",
+      "grant.repository substrings": "schema-valid (common_defs#/definitions/nonempty, no pattern); refused by the admission gate only -- genuinely non-vacuous end-to-end"
+    },
+    "DT_G2_BOUNDARIES": {
+      "WORKTREE_HEAD_SHA_REPLAY_RISK": "EXPLICIT_DEFERRED_RISK",
+      "NETWORK_CREDENTIAL_RUNTIME_ENFORCEMENT": "DT_G2",
+      "files_touched_outside_R1_R4": "NONE"
+    }
+  },
+  "S03_validate_freeze": {
+    "BASELINE_AT_CANONICAL_START": "482 passed / 7 skipped / 0 failed",
+    "baseline_discrepancy_note": "The parent packet quoted 569 passed / 7 skipped as the clean baseline. Measured in this worktree at 1bf18dea the count is 482/7/0. The 569 figure was the failed repair 951da2c's count, which had already added ~87 tests (the 31 -> 118 focused growth). Difference is exactly 87.",
+    "FULL_SUITE": "534 passed / 7 skipped / 0 failed",
+    "FOCUSED_TESTS": "PASS (test_governed_execution.py 63 passed; test_tp_exec_governed.py 20 passed)",
+    "PROBE_RED_AT_CANONICAL_START": "10/25 passed, 15 failed",
+    "PROBE_GREEN_AT_FROZEN_HEAD": "25/25 passed, 0 failed",
+    "RUFF": "PASS (ruff check src/dopetask -- all checks passed; 13 pre-existing findings elsewhere in tests/ are unchanged and in files not touched by this packet)",
+    "MYPY": "PASS (no issues in 142 source files)",
+    "COMPILEALL": "PASS",
+    "DIFF_CHECK": "PASS",
+    "SECRET_SCAN": "PASS (0 hits across the full changed diff)",
+    "ALLOWLIST_COMPLIANCE": "PASS (7 changed paths, 0 outside the section 5 allowlist)",
+    "interpreter_note": "All validation run through `uv run --extra dev`. A bare .venv/bin/python resolves `dopetask` to the MAIN checkout rather than this worktree, which would silently validate the wrong tree.",
+    "FROZEN_SUCCESSOR_HEAD": "93a2fe07d8bc4eed5767ac569f7cb53a8d078715",
+    "FROZEN_SUCCESSOR_TREE": "ab1d52ca7e847141c67dcfbde30b110ed9f540ce"
+  },
+  "S04_final_audit": {
+    "AUDIT_SUBJECT_HEAD": "93a2fe07d8bc4eed5767ac569f7cb53a8d078715",
+    "prior_audit_disposition": "The AGY/Gemini FAIL on 951da2c is forensic evidence only; the semantic subject changed, so it cannot satisfy this successor. It is not rewritten.",
+    "FINAL_AUDITOR_RUNNER": "AGY (Google Antigravity CLI v1.1.26)",
+    "FINAL_AUDITOR_MODEL": "gemini-3.1-pro-high",
+    "FINAL_AUDITOR_PROVIDER": "Google",
+    "INDEPENDENCE": "PROVEN",
+    "FINAL_AUDIT": "PASS",
+    "BLOCKING_FINDINGS": 0,
+    "FINAL_AUDITOR_MODEL_SELF_REPORTED": "Gemini 3.1 Pro (High)",
+    "auditor_conversation_id": "b5211bf5-22a1-472c-97ad-4ea67f21d507",
+    "auditor_num_turns": 1,
+    "auditor_duration_seconds": 410.9,
+    "independence_basis": "Different model family from the implementer (Google/Gemini vs Anthropic/Claude). Fresh single-turn conversation b5211bf5-22a1-472c-97ad-4ea67f21d507, not resumed via --continue. Model id verified present and unambiguous in `agy models` before dispatch. Auditor was given real tool access via --add-dir and recomputed every staged sha256 itself rather than accepting the manifest. Caveat recorded: the mounted worktree shares git objects with the donor branch, so the auditor could in principle read the superseded 7527f0b failed-audit blob; the prompt already disclosed that finding class explicitly, so this does not constitute undisclosed context injection.",
+    "auditor_verified_head": "YES",
+    "auditor_verified_worktree_clean": "YES",
+    "CUSTODY_HASH_RECOMPUTATION": "PASS",
+    "auditor_observed_full_suite": "534 passed, 7 skipped",
+    "auditor_probe_count": 19,
+    "auditor_probes_schema_shadowed": [
+      "cli_missing_file"
+    ],
+    "R1_SCOPE_OVERREACH": "NONE",
+    "FINDINGS": [],
+    "post_audit_integrity": "Auditor ran with --dangerously-skip-permissions. Verified after the run: HEAD unchanged at bcd46868efc48a9a8d12c6108b65aa82d6857ab0, working tree clean, zero-byte delta across src/ tests/ task-packets/ dopetask_schemas/ since the frozen semantic head, and all 8 staged sha256 digests still match."
+  },
+  "S05_proof_finality": {
+    "PROOF_FINALITY": "PASS",
+    "FINAL_PR_HEAD": "PENDING",
+    "CI": "PENDING",
+    "PR_STEWARD": "PENDING",
+    "REVIEW_THREADS_BLOCKING": "PENDING"
+  },
+  "authorization": {
+    "EXECUTION_AUTHORIZED": "YES -- operator gate AUTHORIZE_TP_DT_G1_POST_SYNC_REPAIR_FINALITY_002_A1_EXECUTION=YES",
+    "OPERATOR_AMENDMENT_01": "decision (b) -- amend section 7 to permit exactly one narrow under-grant check",
+    "MERGE_AUTHORIZED": "NO",
+    "RELEASE_AUTHORIZED": "NO",
+    "PIN_UPDATE_AUTHORIZED": "NO",
+    "ACTIVATION_AUTHORIZED": "NO",
+    "FORCE_PUSH_AUTHORIZED": "NO",
+    "REBASE_AUTHORIZED": "NO",
+    "HISTORY_REWRITE_AUTHORIZED": "NO"
+  },
+  "implementer": {
+    "IMPLEMENTER_RUNNER": "Claude Code (Opus 5, 1M context)",
+    "ROUTE_SELECTION": "Section 23 preferred runner was Codex. Codex CLI was live (codex-cli 0.152.1, gpt-5.6-sol) and was dispatched with a full brief, but returned 'You've hit your usage limit ... try again at Sep 6th, 2026' and produced ZERO edits. The section 23 fallback trigger (Codex route unavailable before work begins) therefore fired legitimately and is recorded here rather than assumed.",
+    "codex_edits_made": 0,
+    "auditor_family_separation": "Implementer Anthropic/Claude; auditor Google/Gemini via AGY. Distinct families."
+  },
+  "artifacts": [
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/REPAIR_PROBE.py",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/PROBE_RED_1bf18dea.txt",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/AUDIT_PROMPT.md",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/AUDIT_STAGING_SHA256SUMS.txt",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/AGY_AUDIT_RAW.json",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/AUDIT.md",
+    "proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/PROOF.json"
+  ]
+}
