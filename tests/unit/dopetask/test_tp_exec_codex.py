@@ -175,11 +175,23 @@ def test_tp_exec_cli_forwards_model_override(monkeypatch, tmp_path: Path) -> Non
     packet = _write_json_packet(repo / "packet.json", expected_files=[], validation=["true"])
     captured: dict[str, object] = {}
 
-    def fake_execute(tp_file: Path, *, agent: str, model: str | None = None, working_dir: Path | None = None) -> Path:
+    def fake_execute(
+        tp_file: Path,
+        *,
+        agent: str,
+        model: str | None = None,
+        working_dir: Path | None = None,
+        governed: bool = False,
+        grant_path: Path | None = None,
+        dcp_route_authorization_path: Path | None = None,
+    ) -> Path:
         captured["tp_file"] = tp_file
         captured["agent"] = agent
         captured["model"] = model
         captured["working_dir"] = working_dir
+        captured["governed"] = governed
+        captured["grant_path"] = grant_path
+        captured["dcp_route_authorization_path"] = dcp_route_authorization_path
         proof_dir = repo / "proof"
         proof_dir.mkdir(parents=True, exist_ok=True)
         bundle = proof_dir / "TP-CODEX-TEST_PROOF_BUNDLE.json"
@@ -193,6 +205,9 @@ def test_tp_exec_cli_forwards_model_override(monkeypatch, tmp_path: Path) -> Non
     assert result.exit_code == 0, result.stdout
     assert captured["agent"] == "codex"
     assert captured["model"] == "gpt-5.3-codex"
+    assert captured["governed"] is False
+    assert captured["grant_path"] is None
+    assert captured["dcp_route_authorization_path"] is None
 
 
 def test_tp_series_cli_forwards_model_override(monkeypatch, tmp_path: Path) -> None:

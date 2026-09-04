@@ -9,7 +9,9 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Optional
 
+from dopetask.core.schema import TaskPacket
 from dopetask.core.tp_parser import TPNormalizer, TPParser
+from dopetask.guard.governed_execution import GovernedAdmissionDecision, admit_governed_execution
 from dopetask.guard.identity import assert_repo_binding, assert_repo_identity, load_repo_identity
 from dopetask.obs.proof_aggregator import ProofAggregator
 from dopetask.pipeline.task_runner.executor import Adapter, TaskExecutor
@@ -33,12 +35,58 @@ def _pushd(path: Optional[Path]) -> Iterator[None]:
         os.chdir(previous)
 
 
+def resolve_governed_admission(
+    tp_file: Path,
+    tp: TaskPacket,
+    *,
+    agent: str,
+    model: Optional[str],
+    grant_path: Optional[Path],
+    dcp_route_authorization_path: Optional[Path],
+    working_dir: Optional[Path] = None,
+) -> GovernedAdmissionDecision:
+    """Resolve repo identity/binding and evaluate GOVERNED_MODE grant admission only.
+
+    Performs no adapter construction, no planner invocation, and no packet
+    execution; fails closed (raises) on any missing/invalid/mismatched grant
+    state. Shared by `execute_task_packet` (GOVERNED_MODE) and the
+    `tp exec --dry-run --governed` CLI path so both evaluate admission
+    identically before either claims a compiled governed execution.
+    """
+    from dopetask.ops.tp_git.guards import resolve_repo_root
+
+    repo_root = resolve_repo_root(working_dir or Path.cwd())
+    repo_identity = load_repo_identity(repo_root)
+
+    with _pushd(working_dir):
+        assert_repo_identity(repo_root)
+        assert_repo_binding(repo_identity, repo_root, tp.repo_binding)
+
+        if grant_path is None or dcp_route_authorization_path is None:
+            raise RuntimeError(
+                "GOVERNED_MODE requires both --grant and --dcp-route-authorization paths."
+            )
+
+        return admit_governed_execution(
+            grant_path=grant_path,
+            dcp_route_authorization_path=dcp_route_authorization_path,
+            packet_path=tp_file.resolve(),
+            tp=tp,
+            repo_root=repo_root,
+            cli_agent=agent,
+            cli_model=model,
+        )
+
+
 def execute_task_packet(
     tp_file: Path,
     *,
     agent: str = "gemini",
     model: Optional[str] = None,
     working_dir: Optional[Path] = None,
+    governed: bool = False,
+    grant_path: Optional[Path] = None,
+    dcp_route_authorization_path: Optional[Path] = None,
 ) -> Path:
     """Parse, execute, and aggregate a JSON Task Packet."""
     resolved_tp_file = tp_file.resolve()
@@ -56,13 +104,34 @@ def execute_task_packet(
             raise RuntimeError(
                 f"Task Packet execution.agent '{tp.execution.agent}' does not match selected agent '{agent}'."
             )
+
+        governed_decision: Optional[GovernedAdmissionDecision] = None
+        if governed:
+            if grant_path is None or dcp_route_authorization_path is None:
+                raise RuntimeError(
+                    "GOVERNED_MODE requires both --grant and --dcp-route-authorization paths."
+                )
+            governed_decision = admit_governed_execution(
+                grant_path=grant_path,
+                dcp_route_authorization_path=dcp_route_authorization_path,
+                packet_path=resolved_tp_file,
+                tp=tp,
+                repo_root=repo_root,
+                cli_agent=agent,
+                cli_model=model,
+            )
+
         compiled_tp = TPNormalizer.compile(tp, agent)
 
-        effective_model, effective_model_source = _resolve_effective_model(
-            repo_root=repo_root,
-            packet_path=resolved_tp_file,
-            requested_model=model,
-        )
+        if governed_decision is not None:
+            effective_model = governed_decision.effective_model
+            effective_model_source = governed_decision.model_source
+        else:
+            effective_model, effective_model_source = _resolve_effective_model(
+                repo_root=repo_root,
+                packet_path=resolved_tp_file,
+                requested_model=model,
+            )
 
         adapter: Adapter
         if agent == "gemini":
