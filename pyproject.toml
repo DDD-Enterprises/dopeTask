@@ -31,6 +31,12 @@ classifiers = [
 
 dependencies = [
     "typer>=0.9.0",
+    # click is imported directly (src/dopetask/cli.py) but recent typer
+    # releases (>=0.27) no longer declare it as a dependency of their own, so
+    # it must be declared here explicitly. click>=8.3 requires python>=3.10,
+    # so python<3.10 stays on the 8.1.x line (not affected by PYSEC-2026-2132).
+    "click>=8.3.3; python_version >= '3.10'",
+    "click>=8.1.0; python_version < '3.10'",
     "rich>=13.0.0",
     "jsonschema>=4.0.0",
     "pyyaml>=6.0.3",
@@ -115,6 +121,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*" = ["ARG", "S101", "PLR2004"]
 ".claude/hooks/**/*.py" = ["ALL"]
+"src/dopetask/ui/__init__.py" = ["F403", "F405"]
 
 [tool.mypy]
 python_version = "3.9"
@@ -135,6 +142,13 @@ module = [
     "ollama.*",
 ]
 ignore_missing_imports = true
+
+# click >=8.4 uses `match` statements in its own source (Python 3.10+ syntax),
+# which mypy cannot parse under this project's python_version = "3.9" target
+# when it follows the import for type inference.
+[[tool.mypy.overrides]]
+module = "click.*"
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

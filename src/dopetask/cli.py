@@ -88,13 +88,13 @@ from dopetask.ui import (
 from dopetask.ui import (
     worship as worship_impl,
 )
-from dopetask.ui.runner_health import collect_runner_health
 from dopetask.ui.report import (
     ReportOutputRefusedError,
     ReportSeriesNotFoundError,
     render_series_report,
     write_report,
 )
+from dopetask.ui.runner_health import collect_runner_health
 from dopetask.ui.status import collect_status
 from dopetask.workspace import WorkspaceConfigError, resolve_dope_agent_system_path
 

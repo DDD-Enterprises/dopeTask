@@ -107,13 +107,7 @@ def test_exec_record_schema_accepts_additive_auth_metadata() -> None:
 def test_exec_record_schema_still_accepts_historical_fixture_without_authmeta() -> None:
     schema = _load_json(REPO_ROOT / "dopetask_schemas" / "exec_record.schema.json")
     fixture = _load_json(
-        REPO_ROOT
-        / "out"
-        / "tp_series"
-        / "SERIES-AUDIT-057F-PROMPT-PIPELINE"
-        / "packets"
-        / "TP-AUDIT-057F-PROMPT-PIPELINE"
-        / "EXEC.json"
+        Path(__file__).resolve().parent / "fixtures" / "exec_record_historical_no_authmeta.json"
     )
 
     errors = sorted(Draft202012Validator(schema).iter_errors(fixture), key=lambda error: list(error.path))
