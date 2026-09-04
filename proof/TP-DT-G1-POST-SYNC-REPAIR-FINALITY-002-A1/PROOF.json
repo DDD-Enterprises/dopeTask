@@ -124,10 +124,27 @@
   },
   "S05_proof_finality": {
     "PROOF_FINALITY": "PASS",
-    "FINAL_PR_HEAD": "PENDING",
-    "CI": "PENDING",
-    "PR_STEWARD": "PENDING",
-    "REVIEW_THREADS_BLOCKING": "PENDING"
+    "proof_only_ancestry": "Commits after the frozen semantic head 93a2fe07 touch only proof/; verified by `git diff --stat 93a2fe07..HEAD -- src tests task-packets dopetask_schemas` returning empty.",
+    "FINAL_PR_HEAD": "65570015cbfba01825563574842f8ff127aebcfd",
+    "push_mode": "ordinary fast-forward 1bf18de..6557001; no force, no rebase, no history rewrite",
+    "remote_head_reharvested_before_push": "1bf18deae224521d82a52290da893b6a9f76cc97 (unchanged since issuance)",
+    "donor_branch_after_push": "feat/dt-g1-governed-grant-router-isolation-001 local ref still 7527f0b876d43a2be5d65c993b60e7d669f9dc8c; donors never pushed",
+    "CI": "PASS",
+    "ci_evidence": "Verified in job logs, not badges. Run 33871514413 bound to headSha 65570015; '533 passed, 8 skipped' on BOTH py3.11 and py3.12. Analyze(actions), Analyze(python), CodeQL and dependency-audit all pass.",
+    "ci_vs_local_count_reconciliation": "CI reports 533/8 where local reports 534/7. The same one-test delta exists at the canonical start head (CI 481/8 vs local 482/7): a pre-existing platform-gated test that runs on macOS and skips on Linux, untouched by this packet. Both platforms gain exactly +52 passing tests, so none of the new coverage is silently skipped in CI.",
+    "PR_STEWARD": "READY",
+    "REVIEW_THREADS_BLOCKING": 0,
+    "UNCLASSIFIED": 0,
+    "review_thread_dispositions": {
+      "PRRT_kwDORJqPac6fOFJb authority_effect": "REPLIED+RESOLVED \u2014 split: over-grant INVALID_WITH_EVIDENCE (schema const/enum), under-grant VALID and FIXED under amendment 01",
+      "PRRT_kwDORJqPac6fOFKD raw OSError": "REPLIED+RESOLVED \u2014 FIXED; original comment understated it (the shadow was at the entrypoint, not the guard)",
+      "PRRT_kwDORJqPac6fOFKX duplicated admission": "REPLIED+RESOLVED \u2014 FIXED"
+    },
+    "mergeable": "MERGEABLE",
+    "mergeStateStatus": "CLEAN",
+    "MERGE_ELIGIBLE": "YES",
+    "MERGE_AUTHORIZED": "NO",
+    "NEXT_GATE": "CONTROL_TOWER_OPERATOR_MERGE_DECISION"
   },
   "authorization": {
     "EXECUTION_AUTHORIZED": "YES -- operator gate AUTHORIZE_TP_DT_G1_POST_SYNC_REPAIR_FINALITY_002_A1_EXECUTION=YES",
