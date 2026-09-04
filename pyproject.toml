@@ -136,6 +136,13 @@ module = [
 ]
 ignore_missing_imports = true
 
+# click >=8.4 uses `match` statements in its own source (Python 3.10+ syntax),
+# which mypy cannot parse under this project's python_version = "3.9" target
+# when it follows the import for type inference.
+[[tool.mypy.overrides]]
+module = "click.*"
+follow_imports = "skip"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]

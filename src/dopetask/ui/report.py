@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Optional
 
-
 SAFETY_FOOTER = (
     "Generated from read-only UiStatus. This report is not proof by itself. "
     "Runtime proof remains in dopeTask proof/series artifacts."
