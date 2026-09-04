@@ -41,7 +41,8 @@ def render_series_report(status_payload: dict[str, Any], series_id: str) -> str:
         suffix = ", ".join(available) if available else "none"
         raise ReportSeriesNotFoundError(f"Series '{series_id}' not found. Available series ids: {suffix}")
 
-    git = status_payload.get("git") if isinstance(status_payload.get("git"), dict) else {}
+    git_raw = status_payload.get("git")
+    git = git_raw if isinstance(git_raw, dict) else {}
     lines: list[str] = [
         f"# dopeTask Series Report: {_text(series_id)}",
         "",
@@ -57,7 +58,8 @@ def render_series_report(status_payload: dict[str, Any], series_id: str) -> str:
         "",
         "## Status Summary",
     ]
-    counts = series.get("status_counts") if isinstance(series.get("status_counts"), dict) else {}
+    counts_raw = series.get("status_counts")
+    counts = counts_raw if isinstance(counts_raw, dict) else {}
     lines.extend(
         [
             "| Completed | Failed | Running | Pending | Last Updated | PR |",
@@ -146,7 +148,8 @@ def _artifact_durability_lines(series: dict[str, Any], packets: list[dict[str, A
         "| --- | --- | --- | --- | --- |",
     ]
     for packet in packets:
-        durability = packet.get("durability") if isinstance(packet.get("durability"), dict) else {}
+        durability_raw = packet.get("durability")
+        durability = durability_raw if isinstance(durability_raw, dict) else {}
         for artifact_name in ["packet_state", "series_context", "exec", "exec_error", "proof_bundle"]:
             lines.append(_packet_durability_row(packet.get("tp_id"), artifact_name, durability.get(artifact_name)))
     return lines
@@ -225,7 +228,8 @@ def _packet_durability_row(tp_id: Any, name: str, durability: Any) -> str:
 
 
 def _packet_durability_summary(packet: dict[str, Any]) -> str:
-    durability = packet.get("durability") if isinstance(packet.get("durability"), dict) else {}
+    durability_raw = packet.get("durability")
+    durability = durability_raw if isinstance(durability_raw, dict) else {}
     parts: list[str] = []
     for key in ["proof_bundle", "exec", "series_context", "exec_error"]:
         info = durability.get(key)
