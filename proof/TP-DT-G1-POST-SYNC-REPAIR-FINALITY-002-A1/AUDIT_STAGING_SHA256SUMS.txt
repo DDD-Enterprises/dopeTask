@@ -1,0 +1,8 @@
+2679feebd3c86b2603cf455e550c921c0d8f875767e11927e35fe4ce7002914b  src/dopetask/guard/governed_execution.py
+3ad6a7bbf4c3623b1e38ffd1ac1c2a5e8f77df031865b61eb3b8f1ae15370cb0  src/dopetask/ops/tp_exec/engine.py
+f54df8f6e88741f077bda36004584d8018a86e8fab608671df76e0dfdb3736e3  src/dopetask/ops/tp_exec/cli.py
+f42c4565b80aece820345a27b481a5f919b69442936d06f8ad1d12fcae8bcfe5  tests/unit/dopetask/test_governed_execution.py
+a30390206ac77f84758f9e106a5f77505cca7c4f839d3911bfd014892969ea45  tests/unit/dopetask/test_tp_exec_governed.py
+ed56f2cb0c546adfff8a483eda1a7fd3af5ac431c6a7d4caf271b9beb1ef9965  task-packets/TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001-A1.json
+7a0f163913a0a1a78d6c0a8608b097db65a4f37f579aa22933fb981d317bf7d5  task-packets/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1.json
+301632c21e9c1992f505dd8e71bb21616ec1d6515c49c38e27bc84aff9355055  proof/TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1/REPAIR_PROBE.py
