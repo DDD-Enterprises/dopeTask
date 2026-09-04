@@ -1,0 +1,223 @@
+{
+  "packet_id": "TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001",
+  "parent_packet_id": "TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001",
+  "risk_lane": "L2_MATERIAL",
+  "pr": 92,
+  "repository": "DDD-Enterprises/dopeTask",
+  "S00_reharvest": {
+    "pre_sync_head": "1ee07dc521bad372f57378e63f8bcdbf8b10b2ac",
+    "pre_sync_head_matches_packet_observation": true,
+    "origin_main": "ff8044a842a000d75d859d420f00f247faca9a61",
+    "origin_main_matches_packet_observation": true,
+    "main_drift_since_mirror_merge": {
+      "from": "7ce24ae15ad3ae9ddbfa2b33577d20c924cb1da6",
+      "to": "ff8044a842a000d75d859d420f00f247faca9a61",
+      "commits": 1,
+      "commit": "ff8044a chore: fix ruff lint errors and click dependency CVE (#93)",
+      "paths": [
+        "pyproject.toml",
+        "src/dopetask/ui.py -> src/dopetask/_ui_legacy.py (R100)",
+        "src/dopetask/cli.py",
+        "src/dopetask/ui/__init__.py",
+        "src/dopetask/ui/report.py",
+        "src/dopetask/ui/runner_health.py",
+        "src/dopetask/workspace.py",
+        "tests/ops/fixtures/exec_record_historical_no_authmeta.json",
+        "tests/ops/test_exec_record_authmeta.py",
+        "uv.lock"
+      ]
+    },
+    "MAIN_DRIFT_CLASSIFIED": "PASS",
+    "OVERLAP": "NONE",
+    "overlap_method": "set intersection of the 10 PR#93 paths with the 8 DT-G1 paths = empty; note src/dopetask/cli.py (PR#93) and src/dopetask/ops/tp_exec/cli.py (DT-G1) are distinct files",
+    "WRITER_EXCLUSIVITY": "PASS",
+    "writer_exclusivity_method": "no index.lock under .git/worktrees/dt-g1-governed-grant-001; exactly one checkout of the branch in `git worktree list`; `git status --short` empty; `git ls-remote` head still 1ee07dc5 immediately before push"
+  },
+  "S01_sync": {
+    "method": "git merge --no-ff origin/main (no rebase, no squash, no reset, no history rewrite)",
+    "MERGE_CONFLICTS": 0,
+    "post_sync_head": "2b020f14cebfd277ae3ec1f462fe80141283fb16",
+    "post_sync_tree": "834f7fbc34f723556a0770c1736be9d93d923f50",
+    "DT_G1_SEMANTIC_DELTA_FROM_PRE_SYNC": "NONE",
+    "semantic_delta_method": "git rev-parse <pre_sync>:<path> vs <post_sync>:<path> for all 8 DT-G1 paths -- all 8 blob hashes IDENTICAL; git diff <pre_sync> <post_sync> -- <8 paths> empty",
+    "changed_set_vs_main": [
+      "out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json",
+      "src/dopetask/guard/governed_execution.py",
+      "src/dopetask/ops/tp_exec/cli.py",
+      "src/dopetask/ops/tp_exec/engine.py",
+      "task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json",
+      "tests/unit/dopetask/test_governed_execution.py",
+      "tests/unit/dopetask/test_tp_exec_codex.py",
+      "tests/unit/dopetask/test_tp_exec_governed.py"
+    ],
+    "changed_set_count": 8
+  },
+  "S02_validate_freeze": {
+    "interpreter": "uv run / Python 3.12.9 (repo interpreter, not harness python)",
+    "FOCUSED_TESTS": "PASS",
+    "focused_detail": "37 passed, 0 failed (test_governed_execution.py, test_tp_exec_governed.py, test_tp_exec_codex.py)",
+    "FULL_SUITE": "PASS",
+    "full_suite_detail": "482 passed, 7 skipped, 0 failed",
+    "baseline_comparison": {
+      "pre_sync_implementer_baseline": "1 failure + 481 passed",
+      "post_sync": "0 failures + 482 passed",
+      "cause_of_delta": "PR #93 added tests/ops/fixtures/exec_record_historical_no_authmeta.json, repairing the historical-fixture failure in tests/ops/test_exec_record_authmeta.py",
+      "note": "The packet's rule -- any new pytest/ruff/mypy failure is blocking post-#93 -- was satisfied with zero failures; the previously-available 'pre-existing failure' alibi no longer exists."
+    },
+    "RUFF": "PASS",
+    "ruff_detail": "uv run ruff check src/dopetask -> All checks passed!",
+    "MYPY": "PASS",
+    "mypy_detail": "uv run mypy src/dopetask -> Success: no issues found in 142 source files",
+    "COMPILEALL": "PASS",
+    "DIFF_CHECK": "PASS",
+    "secret_scan": "PASS",
+    "secret_scan_detail": "grep -nEi over the 8 changed files for sk-/ghp_/github_pat_/AKIA/PEM private key/xox[baprs]-/AIza/OPENROUTER_API_KEY patterns -> zero matches",
+    "forbidden_path_closure": {
+      "checked": [
+        "src/dopetask/router/planner.py",
+        "src/dopetask/router/types.py",
+        "src/dopetask/tp_series/logic.py",
+        "dopetask_schemas/",
+        "pyproject.toml",
+        "uv.lock",
+        "src/dopetask/adapters",
+        "src/dopetask/task_runner"
+      ],
+      "result": "NO_DRIFT on every path (git diff --quiet origin/main HEAD -- <path> clean for all)"
+    },
+    "FROZEN_HEAD": "2b020f14cebfd277ae3ec1f462fe80141283fb16",
+    "push": "fast-forward 1ee07dc..2b020f1; remote head re-verified as 1ee07dc5 and proven an ancestor of the new head immediately before push",
+    "ci_on_frozen_head": {
+      "mergeStateStatus": "CLEAN (was UNSTABLE pre-sync)",
+      "checks": {
+        "Analyze (actions)": "SUCCESS",
+        "Analyze (python)": "SUCCESS",
+        "CodeQL": "SUCCESS",
+        "dependency-audit": "SUCCESS",
+        "Lint, Check, Test & Build (py3.11)": "SUCCESS",
+        "Lint, Check, Test & Build (py3.12)": "SUCCESS"
+      },
+      "note": "All three pre-sync failures (dependency-audit, py3.11, py3.12) were the pre-existing conditions PR #93 repaired; they cleared on the merge-forward with no DT-G1 byte changed."
+    }
+  },
+  "S03_final_audit": {
+    "AUDIT_SUBJECT_HEAD": "2b020f14cebfd277ae3ec1f462fe80141283fb16",
+    "audit_subject_head_equals_frozen_head": true,
+    "obsolete_pre_sync_head_not_audited": "1ee07dc521bad372f57378e63f8bcdbf8b10b2ac",
+    "route_discovery": {
+      "method": "live discovery, no silent substitution",
+      "runner": "AGY (Google Antigravity CLI)",
+      "binary": "/Users/hue/.local/bin/agy",
+      "cli_version": "1.1.26",
+      "model_flag": "gemini-3.1-pro-high",
+      "live_probe": "agy --model gemini-3.1-pro-high --print=<identity probe> returned 'ECHO_PROBE_OK\\nGemini, Google' in 8.5s, confirming a non-Anthropic route before dispatch",
+      "probe_reason": "A prior aborted run's 429 payload named model 'claude-sonnet-4-6', so the non-Anthropic requirement was re-proven explicitly rather than assumed."
+    },
+    "exactly_one_audit": {
+      "claim": "PASS",
+      "evidence": "The only prior attempt at this audit (AGY conversation 38ba0886-98dd-4804-a2e6-3189d1366fe4, 2026-09-04) terminated on HTTP 429 QUOTA_EXHAUSTED (quotaResetTimeStamp 2026-09-04T09:20:28Z) before emitting any finding or verdict. No prior verdict on the DT-G1 implementation exists. This run is the first and only completed audit of the subject.",
+      "prior_agy_conversations_referencing_the_parent_packet_id": "Conversations dated 2026-09-03 20:45-21:28 local reference the parent packet id and carry AUDIT_VERDICT=PASS, but they predate the DT-G1 implementation commit entirely and therefore cannot be audits of these bytes."
+    },
+    "auditor_return": {
+      "conversation_id": "c0ed62d7-55a2-4658-98d8-2580e401934a",
+      "status": "SUCCESS",
+      "duration_seconds": 394.1358,
+      "usage": {
+        "input_tokens": 165096,
+        "output_tokens": 39407,
+        "thinking_tokens": 14863,
+        "cache_read_tokens": 1928139,
+        "total_tokens": 204503
+      },
+      "INDEPENDENCE": "PROVEN",
+      "FRESH_CONTEXT": "PROVEN",
+      "CUSTODY": "PASS",
+      "POST_SYNC_SEMANTIC_DELTA_FROM_PRE_SYNC": "NONE",
+      "AUDIT_VERDICT": "PASS_WITH_RISKS",
+      "DT_G1_MERGE_ELIGIBLE": "YES",
+      "SUBSTANTIVE_REPAIR_REQUIRED": "NO",
+      "PROOF_ONLY_AUDIT_BINDING_REQUIRED": "YES",
+      "BLOCKING_FINDINGS": "NONE",
+      "NONBLOCKING_RISKS": [
+        "CX2_UNSTRUCTURED_OSERROR",
+        "CX3_DUPLICATED_ADMISSION_CALL",
+        "C02_REPO_SUBSTRING_MATCH"
+      ],
+      "AUDITOR_AUTHORED_PROBES": 4,
+      "NEXT_GATE": "PR_STEWARD_AND_OPERATOR_MERGE_DECISION"
+    },
+    "auditor_probe_results": {
+      "probe_1_repository_substring": "ADMITTED with grant.repository='opeTask' -- substring-of-origin matching confirmed exploitable for ambiguous strings. Non-blocking risk C02.",
+      "probe_2_worktree_head_sha": "ADMITTED with worktree_binding.head_sha='b'*40 -- the optional head_sha is parsed but never compared. Carried unknown resolved affirmatively.",
+      "probe_3_network_credential": "ADMITTED with dcp network_policy.class='DENIED' -- constraints are schema-validated but not enforced against the environment. Declared DT-G2 boundary.",
+      "probe_4_issuer_narrowing": "REFUSED GRANT_ISSUER_CLASS_UNACCEPTED -- GOVERNED_DELIVERY_DISPATCH passes the Draft-07 enum but fails closed on the explicit Python _ACCEPTED_ISSUER_CLASSES guard. C0-R2 authority fidelity preserved.",
+      "probe_5_legacy_retention": "build_route_plan bypassed when governed=True, preserved for governed=False.",
+      "revocation": "REFUSED GRANT_REVOCATION_REF_PRESENT_NO_RESOLVER -- fail-closed confirmed."
+    },
+    "cx_rulings": {
+      "CX1_authority_effect_not_read": {
+        "auditor_ruling": "NOT_BLOCKING",
+        "auditor_reason": "Mutating authority_effect fails Draft-07 validation before the guard could read it (REFUSED GRANT_SCHEMA_INVALID / DCP_ROUTE_AUTHORIZATION_SCHEMA_INVALID).",
+        "synchronizer_independent_confirmation": "CONFIRMED. Re-read both schemas directly: does_not_grant is a JSON Schema `const` (a frozen exact array) in BOTH macro_execution_authority_ref_v2 and dcp_route_authorization, and `grants` is a closed enum under additionalProperties:false whose value space does not contain MERGE, ACTIVATION or ALLOWLIST_WIDENING at all. An over-authoritative grant is therefore not constructible, not merely unenforced. The automated PR-review finding that raised CX1 was incorrect: enforcement lives in the schema, and the guard's delegation to Draft7Validator is sufficient for this field."
+      },
+      "CX2_unstructured_oserror": {
+        "auditor_ruling": "NON_BLOCKING_RISK",
+        "auditor_reason": "Raw OSError from packet_path.read_bytes() breaks the machine-checkable reason contract but is inherently fail-closed: the exception terminates the path before admission."
+      },
+      "CX3_duplicated_admission_logic": {
+        "auditor_ruling": "NON_BLOCKING_RISK",
+        "auditor_reason": "engine.py:123 calls admit_governed_execution directly rather than via resolve_governed_admission, but argument construction is identical on both paths so execution and dry-run cannot diverge logically."
+      }
+    },
+    "synchronizer_notes_on_the_return": [
+      "Disclosed-but-not-rolled-up: the auditor reported WORKTREE_HEAD_SHA_NOT_CHECKED=PROVEN and NETWORK_CREDENTIAL_CLASS_ENFORCEMENT_DEPTH=NONE in the return block, and demonstrated both with executed probes, but did not list either in the NONBLOCKING_RISKS line. They are recorded here explicitly so the roll-up line is not mistaken for the complete risk set.",
+      "GRANT_REPOSITORY_SEMANTICS=SUBSTRING_MATCH and AUTHORITY_EFFECT_ENFORCEMENT=SCHEMA_ONLY are statements of fact about the implementation, not defects the auditor asked to be repaired (SUBSTANTIVE_REPAIR_REQUIRED=NO)."
+    ],
+    "no_repair_during_audit": "PASS -- no source or test file was modified between the frozen head and this proof commit.",
+    "auditor_residue_handling": "The auditor authored /probe.py inside the mounted worktree. HEAD was never mutated (still 2b020f14 after the run). The file was captured verbatim as AUDITOR_PROBE.py in this bundle and removed from the working tree, leaving `git status` clean before the proof commit."
+  },
+  "S04_proof_handoff": {
+    "proof_binds_to": "2b020f14cebfd277ae3ec1f462fe80141283fb16",
+    "successor_is_proof_only": true,
+    "successor_path_closure": [
+      "proof/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/**"
+    ],
+    "PROOF_FINALITY": "PASS",
+    "CI": "PASS (6/6 on the audited semantic head 2b020f14; re-harvested after the proof-only successor)",
+    "MERGE_AUTHORIZED": "NO",
+    "RELEASE_AUTHORIZED": "NO",
+    "PIN_UPDATE_AUTHORIZED": "NO",
+    "ACTIVATION_AUTHORIZED": "NO",
+    "NEXT_GATE": "PR_STEWARD_AND_OPERATOR_MERGE_DECISION",
+    "blockers": [
+      {
+        "id": "B1_GOVERNING_PACKET_STRICT_SCHEMA_INVALID",
+        "severity": "NON_BLOCKING_FOR_MERGE_OF_PR_92__OPERATOR_DECISION_REQUIRED",
+        "statement": "The governing packet TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001.json fails this repository's own dopetask_schemas/task_packet.strict.schema.json with: at ['execution'] Additional properties are not allowed ('base_branch' was unexpected).",
+        "context": "This is the identical defect that made TP-DT-C0-R2-SCHEMA-MIRROR-001 strict-invalid and caused the operator to issue a -A1 amendment. The parent packet already tracked in the repo (TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json) validates clean.",
+        "action_taken": "The packet was NOT copied into task-packets/ even though commit.allowlist permits it, because doing so would land a schema-invalid packet in the repository. It was not silently patched either. No repo-wide gate globs task-packets/*.json against the strict schema, so this did not and would not redden CI.",
+        "operator_decision_required": "Either issue a -A1 amendment dropping execution.base_branch, or explicitly authorize committing the packet verbatim."
+      }
+    ]
+  },
+  "authorization": {
+    "MERGE_AUTHORIZED": "NO",
+    "RELEASE_AUTHORIZED": "NO",
+    "PIN_UPDATE_AUTHORIZED": "NO",
+    "ACTIVATION_AUTHORIZED": "NO",
+    "note": "Packet invariants set all four to NO. The audit's DT_G1_MERGE_ELIGIBLE=YES is an eligibility finding, not an authorization; the merge decision remains operator-only."
+  },
+  "synchronizer": {
+    "runtime": "Claude Code CLI",
+    "model": "claude-opus-5",
+    "provider": "Anthropic",
+    "role": "Performed S00-S02 synchronization and dispatched the S03 audit. Did not author the DT-G1 implementation bytes and did not serve as auditor.",
+    "standing_conflict_disclosed": "This session dispatched the audit it reports. The packet gates the AUDITOR's independence, not the dispatcher's. Prompt bytes, staging hashes and raw auditor output are all preserved in this bundle for re-derivation."
+  },
+  "artifacts": {
+    "AGY_AUDIT_RAW.json": "1a404131f8d4067058f7af6e336e8d966e58615c59e5d1dc230f0490c5e798cd",
+    "AUDIT_PROMPT.md": "ffc8c69b8b09bb569994089d7c44006b7d59b85d3ce182985609dd82adc37751",
+    "AUDITOR_PROBE.py": "9bf96630b3f6822db716ba2cc69fa60c8889c86388e5674b0773a67ee4e3920f",
+    "AUDIT_STAGING_SHA256SUMS.txt": "63a55143b296b06e3100af308d096f07dce3c7ed69a23d823c598065eacb80c8"
+  }
+}
