@@ -122,6 +122,9 @@ def write_report(path: Path, markdown: str, *, repo_root: Path, das_path: Option
 
     output_path = _resolve_under_caller(path, repo_root)
     resolved_repo_root = repo_root.resolve()
+    if not _is_relative_to(output_path, resolved_repo_root):
+        raise ReportOutputRefusedError("--out outside repository root is refused for report output")
+
     proof_root = resolved_repo_root / "proof"
     if _is_relative_to(output_path, proof_root):
         raise ReportOutputRefusedError("--out under proof/ is refused for report output")

@@ -1,0 +1,163 @@
+{
+  "id": "TP-DT-UI-REPORT-FENCE-0001",
+  "project": "dopetask",
+  "target": "Harden report and UI status explicit output path handling so resolved --out paths must remain inside the repository root while preserving proof/ and resolved dope-agent-system refusals. Repo binding: /Users/hue/code/dopeTask. Dependency observed: PR #84 merged into main at 44e6cf6f121040a6946978de634dce3c29dfdcf2. Accepted risk closed: dopetask report --out lacked a general repo-root-only output fence.",
+  "invariants": [
+    "dopeTask remains runtime authority.",
+    "dope-agent-system remains asset/template/reference authority only.",
+    "PAL/clink remains planning/context only and is not used as execution transport.",
+    "No cockpit, Asset Library UI, DAS listing/preview, mutating launchers, audit panes, route/orchestrate Claude runner, textual dependency, runner implementation changes, adapter changes, routing scoring changes, pyproject.toml changes, or uv.lock changes.",
+    "No dopetask doctor, dopetask route plan, or Task Packet execution is invoked.",
+    "No writes to dope-agent-system and no proof/ writes except proof/TP-DT-UI-REPORT-FENCE-0001 artifacts.",
+    "Resolved output paths outside repo_root are refused before writes; proof/ and resolved dope-agent-system refusals remain intact.",
+    "Markdown report content, stdout behavior, and UiStatus schema remain unchanged."
+  ],
+  "depends_on": [
+    "TP-DT-UI-REPORT-0001",
+    "PR-84-44e6cf6f121040a6946978de634dce3c29dfdcf2"
+  ],
+  "series": {
+    "id": "SERIES-DT-UI-REPORT-FENCE",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-UI-REPORT-0001",
+    "final_packet": true
+  },
+  "commit": {
+    "message": "fix(ui): fence report output paths",
+    "allowlist": [
+      "src/dopetask/ui/report.py",
+      "src/dopetask/ui/status.py",
+      "src/dopetask/cli.py",
+      "tests/ui/test_report.py",
+      "tests/ui/test_status.py",
+      "task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+      "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+      "proof/TP-DT-UI-REPORT-FENCE-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "verify": [
+      "python3 -m json.tool task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+      "python3 -m pytest tests/ui/test_report.py -v",
+      "python3 -m pytest tests/ui/test_status.py -v",
+      "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "python3 -m pytest tests/test_workspace.py -v",
+      "python3 -m compileall -q src tests",
+      "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE >/tmp/dopetask_report_fence_smoke.md",
+      "test -s /tmp/dopetask_report_fence_smoke.md",
+      "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out out/reports/tp-dt-ui-report-fence-smoke.md",
+      "test -s out/reports/tp-dt-ui-report-fence-smoke.md",
+      "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out ../../dopetask_report_should_refuse.md ; test $? -ne 0",
+      "test ! -f ../../dopetask_report_should_refuse.md",
+      "git diff --check",
+      "git status --short",
+      "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true"
+    ]
+  },
+  "steps": [
+    {
+      "id": "inspect_authority",
+      "task": "Inspect report/status implementation, CLI wiring, existing tests, task packet schema, prior report proof, and available audit notes before modification.",
+      "requirements": [
+        "Treat runtime code as authority over docs.",
+        "Identify the canonical writer for report --out and status --out before editing."
+      ],
+      "context_files": [
+        "src/dopetask/ui/report.py",
+        "src/dopetask/ui/status.py",
+        "src/dopetask/cli.py",
+        "tests/ui/test_report.py",
+        "tests/ui/test_status.py",
+        "docs/schemas/task_packet.schema.json",
+        "proof/TP-DT-UI-REPORT-0001/PROOF.json"
+      ],
+      "validation": [
+        "test -f src/dopetask/ui/report.py",
+        "test -f src/dopetask/ui/status.py",
+        "test -f src/dopetask/cli.py"
+      ]
+    },
+    {
+      "id": "harden_output_fences",
+      "task": "Add resolved repo-root output fences for report --out and, because the same gap exists, ui status --json --out while preserving existing proof/ and resolved DAS refusals.",
+      "requirements": [
+        "Use Path.resolve() semantics for repo_root and output path.",
+        "Check order is resolved output path, outside repo_root refusal, proof/ refusal, resolved DAS refusal when known.",
+        "Report refusal continues to use ReportOutputRefusedError.",
+        "Status refusal remains a Typer exit consistent with existing status output refusals.",
+        "Do not change stdout behavior, markdown content, UiStatus schema, dependencies, runner implementations, adapters, or routing scoring."
+      ],
+      "expected_files": [
+        "src/dopetask/ui/report.py",
+        "src/dopetask/cli.py"
+      ],
+      "validation": [
+        "python3 -m pytest tests/ui/test_report.py -v",
+        "python3 -m pytest tests/ui/test_status.py -v"
+      ]
+    },
+    {
+      "id": "expand_tests",
+      "task": "Add focused tests for outside-repo output refusals, valid repo-local output, existing proof and DAS refusals, symlink traversal, stdout report rendering, status JSON output, and forbidden dependency/command strings.",
+      "requirements": [
+        "Use tmp_path and monkeypatched collectors where practical.",
+        "Do not create a new series or execute Task Packets.",
+        "Assert refused outputs do not create the requested file."
+      ],
+      "expected_files": [
+        "tests/ui/test_report.py",
+        "tests/ui/test_status.py"
+      ],
+      "validation": [
+        "python3 -m pytest tests/ui/test_report.py -v",
+        "python3 -m pytest tests/ui/test_status.py -v"
+      ]
+    },
+    {
+      "id": "write_proof",
+      "task": "Create proof artifacts documenting observed authority, implementation, validation, safety boundaries, allowlist drift, and commit readiness.",
+      "requirements": [
+        "Do not embed a self-referential final commit hash in committed proof.",
+        "Record validation commands with exit codes.",
+        "Record that src/dopetask/cli.py was necessary for status --out hardening even though the user-provided commit allowlist omitted it."
+      ],
+      "expected_files": [
+        "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+        "proof/TP-DT-UI-REPORT-FENCE-0001/IMPLEMENTER_REPORT.md"
+      ],
+      "validation": [
+        "python3 -m json.tool proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json"
+      ]
+    },
+    {
+      "id": "validate_and_commit",
+      "task": "Run required validation, remove uncommitted smoke output if visible, stage only task-scope files, and commit with the requested message if validations pass.",
+      "requirements": [
+        "Do not create a PR or merge.",
+        "Do not amend proof to include the final commit SHA.",
+        "Final working tree must be clean except ignored runtime artifacts may exist invisibly under out/."
+      ],
+      "validation": [
+        "python3 -m json.tool task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+        "python3 -m pytest tests/ui/test_report.py -v",
+        "python3 -m pytest tests/ui/test_status.py -v",
+        "python3 -m pytest tests/ui/test_runner_health.py -v",
+        "python3 -m pytest tests/test_workspace.py -v",
+        "python3 -m compileall -q src tests",
+        "python3 -m dopetask ui status --json | python3 -m json.tool",
+        "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE >/tmp/dopetask_report_fence_smoke.md",
+        "test -s /tmp/dopetask_report_fence_smoke.md",
+        "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out out/reports/tp-dt-ui-report-fence-smoke.md",
+        "test -s out/reports/tp-dt-ui-report-fence-smoke.md",
+        "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out ../../dopetask_report_should_refuse.md ; test $? -ne 0",
+        "test ! -f ../../dopetask_report_should_refuse.md",
+        "git diff --check",
+        "git status --short",
+        "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+        "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true"
+      ]
+    }
+  ]
+}

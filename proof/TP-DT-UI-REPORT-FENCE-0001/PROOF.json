@@ -1,0 +1,179 @@
+{
+  "tp_id": "TP-DT-UI-REPORT-FENCE-0001",
+  "objective": "Harden explicit report/status output paths so resolved --out targets outside the repository root are refused while preserving proof/ and resolved dope-agent-system refusals.",
+  "dependency_commits_observed": [
+    {
+      "commit": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+      "description": "PR #84 merge commit supplied by task objective",
+      "observed_as_head_before_changes": true,
+      "ancestor_of_working_head": true
+    }
+  ],
+  "accepted_risk_closed": "dopetask report --out previously refused proof/ and resolved DAS paths but lacked a general repo-root-only output fence. The same outside-repo gap was observed in dopetask ui status --json --out and was hardened at the CLI writer.",
+  "files_created": [
+    "task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+    "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+    "proof/TP-DT-UI-REPORT-FENCE-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/ui/report.py",
+    "src/dopetask/cli.py",
+    "tests/ui/test_report.py",
+    "tests/ui/test_status.py"
+  ],
+  "path_fence_behavior": {
+    "order": [
+      "resolve output path",
+      "refuse outside repository root",
+      "refuse under proof/",
+      "refuse under resolved dope-agent-system path when known"
+    ],
+    "report": "write_report resolves repo_root/output and raises ReportOutputRefusedError before creating parent directories or writing when the output path is outside repo_root, under proof/, or under resolved DAS.",
+    "status": "_write_ui_status_output resolves repo_root/output and raises typer.Exit(2) before creating parent directories or writing when the output path is outside repo_root, under proof/, or under resolved DAS."
+  },
+  "status_out_hardened": true,
+  "report_out_hardened": true,
+  "symlink_checks": {
+    "report_symlink_to_outside_refused": true,
+    "report_symlink_to_proof_refused": true,
+    "report_symlink_to_das_refused_when_das_supplied": true,
+    "status_symlink_to_outside_refused": true,
+    "status_symlink_to_proof_refused": true,
+    "status_symlink_to_das_refused_when_das_supplied": true
+  },
+  "tests_created_or_modified": [
+    "tests/ui/test_report.py",
+    "tests/ui/test_status.py"
+  ],
+  "source_files_inspected": [
+    "AGENTS.md",
+    "src/dopetask/ui/report.py",
+    "src/dopetask/ui/status.py",
+    "src/dopetask/cli.py",
+    "tests/ui/test_report.py",
+    "tests/ui/test_status.py",
+    "docs/schemas/task_packet.schema.json",
+    "proof/TP-DT-UI-REPORT-0001/PROOF.json"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_report.py -v",
+      "exit_code": 0,
+      "summary": "22 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_status.py -v",
+      "exit_code": 0,
+      "summary": "24 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_runner_health.py -v",
+      "exit_code": 0,
+      "summary": "13 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/test_workspace.py -v",
+      "exit_code": 0,
+      "summary": "16 passed; pytest emitted a temporary-directory cleanup warning after tests completed"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask ui status --json | python3 -m json.tool",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE >/tmp/dopetask_report_fence_smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_report_fence_smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out out/reports/tp-dt-ui-report-fence-smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s out/reports/tp-dt-ui-report-fence-smoke.md",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask report SERIES-AUDIT-057B-PROMPT-PIPELINE --out ../../dopetask_report_should_refuse.md ; test $? -ne 0",
+      "exit_code": 0,
+      "summary": "report command refused with: Error: --out outside repository root is refused for report output"
+    },
+    {
+      "command": "test ! -f ../../dopetask_report_should_refuse.md",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M src/dopetask/cli.py\n M src/dopetask/ui/report.py\n M tests/ui/test_report.py\n M tests/ui/test_status.py\n?? task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+      "note": "proof/TP-DT-UI-REPORT-FENCE-0001 is ignored by proof/* and must be force-added before commit."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "git_status_before": {
+    "branch": "main",
+    "head": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+    "short": ""
+  },
+  "git_status_after_pre_commit": {
+    "branch": "main",
+    "head": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+    "short": " M src/dopetask/cli.py\n M src/dopetask/ui/report.py\n M tests/ui/test_report.py\n M tests/ui/test_status.py\n?? task-packets/TP-DT-UI-REPORT-FENCE-0001.json",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+      "proof/TP-DT-UI-REPORT-FENCE-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "ignored_runtime_output": "out/reports/tp-dt-ui-report-fence-smoke.md",
+    "explicit_tmp_output": "/tmp/dopetask_report_fence_smoke.md"
+  },
+  "allowlist_drift": {
+    "outside_user_commit_allowlist": [
+      "src/dopetask/cli.py"
+    ],
+    "reason": "The status --out writer is implemented in src/dopetask/cli.py, so hardening dopetask ui status --json --out required a minimal CLI guard. The task also required status hardening if the gap existed."
+  },
+  "no_cockpit": true,
+  "no_asset_library": true,
+  "no_mutating_launchers": true,
+  "no_audit_panes": true,
+  "no_route_orchestrate_runner": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_textual_added": true,
+  "commit_ready": true,
+  "commit_message": "fix(ui): fence report output paths",
+  "commit_hash": "self_referential_unavailable",
+  "self_referential_commit_hash_caveat": "The final commit hash is not embedded in this proof because changing the committed proof would change the hash. Final HEAD is verified after commit.",
+  "blockers": []
+}

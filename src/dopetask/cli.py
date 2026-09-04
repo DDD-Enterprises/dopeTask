@@ -88,6 +88,7 @@ from dopetask.ui import (
 from dopetask.ui import (
     worship as worship_impl,
 )
+from dopetask.ui.cockpit import run_cockpit
 from dopetask.ui.runner_health import collect_runner_health
 from dopetask.ui.report import (
     ReportOutputRefusedError,
@@ -240,6 +241,19 @@ class FinishMode(StrEnum):
     REBASE_FF = "rebase-ff"
 
 
+class CockpitView(StrEnum):
+    """Supported read-only cockpit views."""
+
+    SERIES_OVERVIEW = "series-overview"
+    SERIES_DETAIL = "series-detail"
+    PACKET_DETAIL = "packet-detail"
+    RUNNER_HEALTH = "runner-health"
+    REPO_HEALTH = "repo-health"
+    ASSET_LIBRARY = "asset-library"
+    AUTHORITY_DIFF = "authority-diff"
+    ALL = "all"
+
+
 def _version_option_callback(value: bool) -> None:
     """Handle eager --version option."""
     if value:
@@ -321,6 +335,52 @@ def _check_import_shadowing() -> None:
 def worship() -> None:
     """Console-only easter egg (no artifacts)."""
     worship_impl()
+
+
+@cli.command("cockpit")
+def cockpit(
+    view: CockpitView = typer.Option(
+        CockpitView.SERIES_OVERVIEW,
+        "--view",
+        help="Read-only cockpit view to render.",
+    ),
+    series_id: typing.Optional[str] = typer.Option(
+        None,
+        "--series-id",
+        help="Series id for detail views.",
+    ),
+    tp_id: typing.Optional[str] = typer.Option(
+        None,
+        "--tp-id",
+        help="Task Packet id for packet detail.",
+    ),
+    refresh_runners: bool = typer.Option(
+        False,
+        "--refresh-runners",
+        help="Refresh runner health before rendering. This may write RUNNER_HEALTH.json.",
+    ),
+    das_path: typing.Optional[Path] = typer.Option(
+        None,
+        "--das-path",
+        help="Explicit dope-agent-system path for resolver boundary checks.",
+    ),
+    no_color: bool = typer.Option(
+        False,
+        "--no-color",
+        help="Disable rich color in cockpit output.",
+    ),
+) -> None:
+    """Render the read-only rich cockpit and exit."""
+
+    run_cockpit(
+        repo_root=Path.cwd(),
+        view=str(view),
+        series_id=series_id,
+        tp_id=tp_id,
+        refresh_runners=refresh_runners,
+        das_path=das_path,
+        no_color=no_color,
+    )
 
 
 @neon_app.callback(invoke_without_command=True)
@@ -679,6 +739,10 @@ def _write_ui_status_output(
     if not output_path.is_absolute():
         output_path = resolved_repo_root / output_path
     output_path = output_path.resolve()
+
+    if not _is_relative_to(output_path, resolved_repo_root):
+        typer.echo("Error: --out outside repository root is refused for UI status", err=True)
+        raise typer.Exit(2)
 
     proof_root = resolved_repo_root / "proof"
     if _is_relative_to(output_path, proof_root):

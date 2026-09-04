@@ -1,0 +1,189 @@
+{
+  "id": "TP-DT-UI-COCKPIT-0001",
+  "project": "dopetask",
+  "target": "Add a read-only rich-only dopetask cockpit command with seven deterministic views backed by collect_status(). Repo binding: /Users/hue/code/dopeTask. Execution agent: codex. Dependency observed: TP-DT-UI-REPORT-FENCE-0001 at 9c93356ce662ed0c76bcd744545d3e5b827460ee and PR #84 merge 44e6cf6f121040a6946978de634dce3c29dfdcf2. Accepted design references: out/design/TP-DT-TUI-OPUS-DESIGN-0001/*.md.",
+  "invariants": [
+    "dopeTask remains runtime authority.",
+    "dope-agent-system remains asset/template/reference authority only.",
+    "PAL/clink remains planning/context only and is not execution transport.",
+    "Cockpit is read-only and must not write files by default.",
+    "Cockpit views consume one collect_status() payload passed from src/dopetask/ui/cockpit.py.",
+    "View modules do not directly parse runtime artifacts.",
+    "No Textual, prompt_toolkit, urwid, blessed, dependency, pyproject.toml, or uv.lock changes.",
+    "No mutating launchers, tp series exec/cleanup/finalize launch buttons, route/orchestrate Claude runner, DAS execution, install, run, apply, sync, source-bundle actions, audit panes, DAS listing/preview, runner implementation changes, adapter behavior changes, routing scoring changes, dopetask doctor invocation, route planning invocation, Task Packet execution, dope-agent-system writes, or runtime artifact writes.",
+    "Proof writes are limited to proof/TP-DT-UI-COCKPIT-0001/."
+  ],
+  "depends_on": [
+    "TP-DT-UI-REPORT-FENCE-0001",
+    "TP-DT-UI-FOUNDATION-PR-0001",
+    "PR-84-44e6cf6f121040a6946978de634dce3c29dfdcf2",
+    "commit-9c93356ce662ed0c76bcd744545d3e5b827460ee"
+  ],
+  "series": {
+    "id": "SERIES-DT-UI-COCKPIT",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-UI-REPORT-FENCE-0001",
+    "final_packet": true
+  },
+  "commit": {
+    "message": "feat(ui): add read-only cockpit",
+    "allowlist": [
+      "src/dopetask/ui/cockpit.py",
+      "src/dopetask/ui/views/__init__.py",
+      "src/dopetask/ui/views/series_overview.py",
+      "src/dopetask/ui/views/series_detail.py",
+      "src/dopetask/ui/views/packet_detail.py",
+      "src/dopetask/ui/views/runner_health.py",
+      "src/dopetask/ui/views/repo_health.py",
+      "src/dopetask/ui/views/asset_library.py",
+      "src/dopetask/ui/views/authority_diff.py",
+      "src/dopetask/ui/widgets/__init__.py",
+      "src/dopetask/ui/widgets/banners.py",
+      "src/dopetask/ui/__init__.py",
+      "src/dopetask/cli.py",
+      "tests/ui/cockpit/test_cockpit_views.py",
+      "tests/ui/cockpit/test_banners.py",
+      "task-packets/TP-DT-UI-COCKPIT-0001.json",
+      "proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+      "proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md"
+    ],
+    "verify": [
+      "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-0001.json",
+      "python3 -m json.tool proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+      "python3 -m pytest tests/ui/cockpit/ -v",
+      "python3 -m pytest tests/ui/test_report.py tests/ui/test_status.py tests/ui/test_runner_health.py tests/test_workspace.py -v",
+      "python3 -m compileall -q src tests",
+      "python3 -m dopetask cockpit --help",
+      "python3 -m dopetask cockpit --view series-overview >/tmp/dopetask_cockpit_series_overview.txt",
+      "test -s /tmp/dopetask_cockpit_series_overview.txt",
+      "python3 -m dopetask cockpit --view runner-health >/tmp/dopetask_cockpit_runner_health.txt",
+      "test -s /tmp/dopetask_cockpit_runner_health.txt",
+      "python3 -m dopetask cockpit --view all >/tmp/dopetask_cockpit_all.txt",
+      "test -s /tmp/dopetask_cockpit_all.txt",
+      "grep -n \"Runtime / Execution Authority\" /tmp/dopetask_cockpit_all.txt",
+      "grep -n \"ASSET / TEMPLATE PLANE\" /tmp/dopetask_cockpit_all.txt",
+      "grep -n \"Reference\" /tmp/dopetask_cockpit_all.txt",
+      "git diff --check",
+      "git status --short",
+      "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true"
+    ]
+  },
+  "steps": [
+    {
+      "id": "inspect_authority",
+      "task": "Inspect accepted UiStatus, report, runner health, workspace, CLI, schemas, task packet conventions, and TUI design artifacts before implementation.",
+      "requirements": [
+        "Use src/dopetask/ui/status.py collect_status() as the data authority for cockpit views.",
+        "Treat design files under out/design/TP-DT-TUI-OPUS-DESIGN-0001 as accepted design references, not runtime authority.",
+        "Confirm dependencies 44e6cf6f121040a6946978de634dce3c29dfdcf2 and 9c93356ce662ed0c76bcd744545d3e5b827460ee are ancestors of HEAD."
+      ],
+      "context_files": [
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_PRODUCT_ARCHITECTURE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+        "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md",
+        "src/dopetask/ui/status.py",
+        "src/dopetask/ui/report.py",
+        "src/dopetask/ui/runner_health.py",
+        "src/dopetask/workspace.py",
+        "src/dopetask/cli.py"
+      ],
+      "validation": [
+        "git merge-base --is-ancestor 44e6cf6f121040a6946978de634dce3c29dfdcf2 HEAD",
+        "git merge-base --is-ancestor 9c93356ce662ed0c76bcd744545d3e5b827460ee HEAD"
+      ]
+    },
+    {
+      "id": "implement_cockpit",
+      "task": "Implement src/dopetask/ui/cockpit.py, seven view modules, and authority-plane banner widgets using only rich renderables and one collect_status() payload.",
+      "requirements": [
+        "Default view is series-overview.",
+        "--view all renders all seven views in deterministic order.",
+        "Missing data renders unknown, missing, not configured, or warning text instead of crashing.",
+        "Asset Library and Authority Diff are placeholders only and expose no execution/apply affordance.",
+        "No view module reads files or invokes collect_status()."
+      ],
+      "expected_files": [
+        "src/dopetask/ui/cockpit.py",
+        "src/dopetask/ui/views/__init__.py",
+        "src/dopetask/ui/views/series_overview.py",
+        "src/dopetask/ui/views/series_detail.py",
+        "src/dopetask/ui/views/packet_detail.py",
+        "src/dopetask/ui/views/runner_health.py",
+        "src/dopetask/ui/views/repo_health.py",
+        "src/dopetask/ui/views/asset_library.py",
+        "src/dopetask/ui/views/authority_diff.py",
+        "src/dopetask/ui/widgets/__init__.py",
+        "src/dopetask/ui/widgets/banners.py"
+      ],
+      "validation": [
+        "python3 -m pytest tests/ui/cockpit/ -v"
+      ]
+    },
+    {
+      "id": "wire_cli",
+      "task": "Register dopetask cockpit with view, series-id, tp-id, refresh-runners, das-path, and no-color options.",
+      "requirements": [
+        "Do not break existing dopetask.ui legacy imports used by CLI.",
+        "Default command writes only stdout/stderr.",
+        "Do not add Textual or any dependency."
+      ],
+      "expected_files": [
+        "src/dopetask/cli.py"
+      ],
+      "validation": [
+        "python3 -m dopetask cockpit --help",
+        "python3 -m dopetask cockpit --view series-overview >/tmp/dopetask_cockpit_series_overview.txt",
+        "test -s /tmp/dopetask_cockpit_series_overview.txt"
+      ]
+    },
+    {
+      "id": "test_and_prove",
+      "task": "Add deterministic cockpit tests and proof artifacts, then run required validations.",
+      "requirements": [
+        "Tests monkeypatch collect_status() where practical.",
+        "No smoke output files are committed.",
+        "PROOF.json records validation exit codes and safety boundary confirmations.",
+        "Do not amend proof to include a self-referential commit hash."
+      ],
+      "expected_files": [
+        "tests/ui/cockpit/test_cockpit_views.py",
+        "tests/ui/cockpit/test_banners.py",
+        "proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+        "proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md"
+      ],
+      "validation": [
+        "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-0001.json",
+        "python3 -m json.tool proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+        "python3 -m pytest tests/ui/cockpit/ -v",
+        "python3 -m pytest tests/ui/test_report.py tests/ui/test_status.py tests/ui/test_runner_health.py tests/test_workspace.py -v",
+        "python3 -m compileall -q src tests",
+        "git diff --check",
+        "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+        "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true"
+      ]
+    },
+    {
+      "id": "commit_closeout",
+      "task": "If validations pass and status contains only allowlisted paths, stage only allowlisted files and commit with feat(ui): add read-only cockpit.",
+      "requirements": [
+        "Final working tree must be clean except ignored runtime artifacts may exist invisibly under out/.",
+        "Run post-commit closeout commands and report their outputs.",
+        "Do not create a PR or start follow-on work."
+      ],
+      "validation": [
+        "git rev-parse --abbrev-ref HEAD",
+        "git rev-parse HEAD",
+        "git log -1 --pretty=%s",
+        "git status --short",
+        "git cat-file -e HEAD:proof/TP-DT-UI-COCKPIT-0001/PROOF.json && echo yes",
+        "git cat-file -e HEAD:proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md && echo yes",
+        "git show --name-only --format=oneline HEAD"
+      ]
+    }
+  ]
+}

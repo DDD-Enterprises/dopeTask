@@ -1,0 +1,216 @@
+{
+  "tp_id": "TP-DT-UI-COCKPIT-0001",
+  "objective": "Add a read-only rich-only dopetask cockpit command with seven deterministic views powered by one collect_status() UiStatus payload.",
+  "dependency_commits_observed": [
+    {
+      "commit": "44e6cf6f121040a6946978de634dce3c29dfdcf2",
+      "description": "UI foundation PR #84 merge commit",
+      "ancestor_of_working_head": true
+    },
+    {
+      "commit": "9c93356ce662ed0c76bcd744545d3e5b827460ee",
+      "description": "TP-DT-UI-REPORT-FENCE-0001 accepted report/status output fence",
+      "observed_as_starting_head": true,
+      "ancestor_of_working_head": true
+    }
+  ],
+  "files_created": [
+    "src/dopetask/ui/cockpit.py",
+    "src/dopetask/ui/views/__init__.py",
+    "src/dopetask/ui/views/series_overview.py",
+    "src/dopetask/ui/views/series_detail.py",
+    "src/dopetask/ui/views/packet_detail.py",
+    "src/dopetask/ui/views/runner_health.py",
+    "src/dopetask/ui/views/repo_health.py",
+    "src/dopetask/ui/views/asset_library.py",
+    "src/dopetask/ui/views/authority_diff.py",
+    "src/dopetask/ui/widgets/__init__.py",
+    "src/dopetask/ui/widgets/banners.py",
+    "tests/ui/cockpit/test_cockpit_views.py",
+    "tests/ui/cockpit/test_banners.py",
+    "task-packets/TP-DT-UI-COCKPIT-0001.json",
+    "proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+    "proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md"
+  ],
+  "files_modified": [
+    "src/dopetask/cli.py"
+  ],
+  "cli_surface_added": {
+    "command": "dopetask cockpit",
+    "default_view": "series-overview",
+    "options": [
+      "--view <series-overview|series-detail|packet-detail|runner-health|repo-health|asset-library|authority-diff|all>",
+      "--series-id <series_id>",
+      "--tp-id <tp_id>",
+      "--refresh-runners",
+      "--das-path <path>",
+      "--no-color"
+    ]
+  },
+  "cockpit_views_implemented": [
+    "series-overview",
+    "series-detail",
+    "packet-detail",
+    "runner-health",
+    "repo-health",
+    "asset-library",
+    "authority-diff",
+    "all"
+  ],
+  "banner_strings_verified": [
+    "[Runtime / Execution Authority \u2014 dopeTask]",
+    "ASSET / TEMPLATE PLANE \u2014 dope-agent-system",
+    "NOT runtime authority. Cannot authorize execution.",
+    "[Reference \u2014 read-only, cannot override runtime]",
+    "[Planning Plane \u2014 PAL/clink output. Not proof. Not authority.]"
+  ],
+  "tests_created_or_modified": [
+    "tests/ui/cockpit/test_cockpit_views.py",
+    "tests/ui/cockpit/test_banners.py"
+  ],
+  "source_files_inspected": [
+    "AGENTS.md",
+    "src/dopetask/cli.py",
+    "src/dopetask/ui/__init__.py",
+    "src/dopetask/ui/status.py",
+    "src/dopetask/ui/durability.py",
+    "src/dopetask/ui/report.py",
+    "src/dopetask/ui/runner_health.py",
+    "src/dopetask/workspace.py",
+    "dopetask_schemas/ui_status.schema.json",
+    "dopetask_schemas/runner_health.schema.json",
+    "dopetask_schemas/workspace.schema.json",
+    "docs/schemas/task_packet.schema.json",
+    "proof/TP-DT-UI-REPORT-FENCE-0001/PROOF.json",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/OPUS_TUI_DESIGN_VERDICT.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_PRODUCT_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_DATA_ARCHITECTURE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_AUTHORITY_AND_SAFETY_MODEL.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_IMPLEMENTATION_PLAN.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_TP_SEQUENCE.md",
+    "out/design/TP-DT-TUI-OPUS-DESIGN-0001/TUI_RED_TEAM_REVIEW.md"
+  ],
+  "validation_commands": [
+    {
+      "command": "python3 -m json.tool task-packets/TP-DT-UI-COCKPIT-0001.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m json.tool proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest tests/ui/cockpit/ -v",
+      "exit_code": 0,
+      "summary": "20 passed"
+    },
+    {
+      "command": "python3 -m pytest tests/ui/test_report.py tests/ui/test_status.py tests/ui/test_runner_health.py tests/test_workspace.py -v",
+      "exit_code": 0,
+      "summary": "75 passed"
+    },
+    {
+      "command": "python3 -m compileall -q src tests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask cockpit --help",
+      "exit_code": 0,
+      "stdout_path": "/tmp/dopetask_cockpit_help.txt"
+    },
+    {
+      "command": "python3 -m dopetask cockpit --view series-overview >/tmp/dopetask_cockpit_series_overview.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_cockpit_series_overview.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask cockpit --view runner-health >/tmp/dopetask_cockpit_runner_health.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_cockpit_runner_health.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m dopetask cockpit --view all >/tmp/dopetask_cockpit_all.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "test -s /tmp/dopetask_cockpit_all.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n \"Runtime / Execution Authority\" /tmp/dopetask_cockpit_all.txt",
+      "exit_code": 0,
+      "summary": "Runtime banner found on multiple rendered views"
+    },
+    {
+      "command": "grep -n \"ASSET / TEMPLATE PLANE\" /tmp/dopetask_cockpit_all.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n \"Reference\" /tmp/dopetask_cockpit_all.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "stdout": " M src/dopetask/cli.py\n?? src/dopetask/ui/cockpit.py\n?? src/dopetask/ui/views/\n?? src/dopetask/ui/widgets/\n?? task-packets/TP-DT-UI-COCKPIT-0001.json\n?? tests/ui/cockpit/",
+      "note": "proof/TP-DT-UI-COCKPIT-0001 is ignored by proof/* and must be force-added before commit."
+    },
+    {
+      "command": "grep -R \"import textual\\|from textual\" src/dopetask tests || true",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "grep -R \"dopetask doctor\\|route plan\\|tp series exec\" src/dopetask/ui tests/ui || true",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "smoke_outputs": [
+    "/tmp/dopetask_cockpit_help.txt",
+    "/tmp/dopetask_cockpit_series_overview.txt",
+    "/tmp/dopetask_cockpit_runner_health.txt",
+    "/tmp/dopetask_cockpit_all.txt"
+  ],
+  "git_status_before": {
+    "branch": "codex/tp-dt-ui-cockpit-0001",
+    "head": "9c93356ce662ed0c76bcd744545d3e5b827460ee",
+    "short": " M src/dopetask/cli.py\n?? src/dopetask/ui/cockpit.py\n?? src/dopetask/ui/views/\n?? src/dopetask/ui/widgets/\n?? task-packets/TP-DT-UI-COCKPIT-0001.json\n?? tests/ui/cockpit/",
+    "note": "Task-scope cockpit files were already present as untracked/modified work at the start of this turn; they were inspected and completed."
+  },
+  "git_status_after_pre_commit": {
+    "branch": "codex/tp-dt-ui-cockpit-0001",
+    "head": "9c93356ce662ed0c76bcd744545d3e5b827460ee",
+    "short": " M src/dopetask/cli.py\n?? src/dopetask/ui/cockpit.py\n?? src/dopetask/ui/views/\n?? src/dopetask/ui/widgets/\n?? task-packets/TP-DT-UI-COCKPIT-0001.json\n?? tests/ui/cockpit/",
+    "ignored_proof_paths": [
+      "proof/TP-DT-UI-COCKPIT-0001/PROOF.json",
+      "proof/TP-DT-UI-COCKPIT-0001/IMPLEMENTER_REPORT.md"
+    ]
+  },
+  "no_textual_added": true,
+  "no_dependency_changes": true,
+  "no_das_writes": true,
+  "no_doctor_invocation": true,
+  "no_route_plan_invocation": true,
+  "no_task_execution": true,
+  "no_mutating_launchers": true,
+  "no_asset_execution": true,
+  "no_audit_panes": true,
+  "consumes_collect_status": true,
+  "view_modules_do_not_parse_runtime_artifacts_directly": true,
+  "commit_ready": true,
+  "commit_message": "feat(ui): add read-only cockpit",
+  "commit_hash": "self_referential_unavailable",
+  "self_referential_commit_hash_caveat": "The final commit hash is not embedded in this proof because changing the committed proof would change the hash. Final HEAD is verified after commit.",
+  "blockers": []
+}
