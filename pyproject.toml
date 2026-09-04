@@ -31,6 +31,12 @@ classifiers = [
 
 dependencies = [
     "typer>=0.9.0",
+    # click is imported directly (src/dopetask/cli.py) but recent typer
+    # releases (>=0.27) no longer declare it as a dependency of their own, so
+    # it must be declared here explicitly. click>=8.3 requires python>=3.10,
+    # so python<3.10 stays on the 8.1.x line (not affected by PYSEC-2026-2132).
+    "click>=8.3.3; python_version >= '3.10'",
+    "click>=8.1.0; python_version < '3.10'",
     "rich>=13.0.0",
     "jsonschema>=4.0.0",
     "pyyaml>=6.0.3",
