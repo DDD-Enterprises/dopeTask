@@ -10,7 +10,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from dopetask.router.availability import AvailabilityError, availability_path_for_repo, load_availability
+from dopetask.router.availability import (
+    AvailabilityError,
+    availability_path_for_repo,
+    load_availability,
+)
 from dopetask.router.types import RUNNER_NAMES
 from dopetask.runners import RUNNER_ADAPTERS
 
@@ -110,7 +114,7 @@ def _configured_states(repo_root: Path) -> tuple[dict[str, bool | str], dict[str
     availability_path = availability_path_for_repo(repo_root)
     if not availability_path.exists():
         return (
-            {runner_name: "missing-config" for runner_name in KNOWN_RUNNERS},
+            dict.fromkeys(KNOWN_RUNNERS, "missing-config"),
             {
                 runner_name: [f"availability config missing at {availability_path}"]
                 for runner_name in KNOWN_RUNNERS
@@ -121,7 +125,7 @@ def _configured_states(repo_root: Path) -> tuple[dict[str, bool | str], dict[str
         availability = load_availability(repo_root)
     except AvailabilityError as exc:
         return (
-            {runner_name: False for runner_name in KNOWN_RUNNERS},
+            dict.fromkeys(KNOWN_RUNNERS, False),
             {
                 runner_name: [f"availability config invalid: {exc.reason_code}: {exc}"]
                 for runner_name in KNOWN_RUNNERS
