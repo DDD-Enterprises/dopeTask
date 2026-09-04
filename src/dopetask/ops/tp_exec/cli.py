@@ -9,6 +9,7 @@ from pathlib import Path
 import typer
 
 from dopetask.core.tp_parser import TPNormalizer, TPParser
+from dopetask.guard.governed_execution import load_governed_task_packet
 from dopetask.ops.tp_exec.engine import execute_task_packet, resolve_governed_admission
 from dopetask.ops.tp_tmux.tmux_manager import TmuxManager
 
@@ -74,7 +75,18 @@ def register(tp_app: typer.Typer) -> None:
         """Execute a Task Packet using a specific agent profile."""
         try:
             resolved_tp_file = tp_file.resolve()
-            tp = TPParser.parse_file(resolved_tp_file)
+            # On the governed path the packet is read and parsed through the
+            # shared governed loader, so a malformed/unreadable packet refuses
+            # as a GovernedAdmissionError with a stable reason rather than
+            # surfacing a raw parse error through the generic handler below.
+            # (A missing or unreadable file is already pre-empted one layer up
+            # by the `exists=True` Click argument, which also implies
+            # `readable=True`; that legacy behaviour is left untouched.)
+            packet_raw: bytes | None = None
+            if governed:
+                packet_raw, tp = load_governed_task_packet(resolved_tp_file)
+            else:
+                tp = TPParser.parse_file(resolved_tp_file)
 
             if use_tmux:
                 manager = TmuxManager()
@@ -111,6 +123,7 @@ def register(tp_app: typer.Typer) -> None:
                         model=model,
                         grant_path=grant,
                         dcp_route_authorization_path=dcp_route_authorization,
+                        packet_raw=packet_raw,
                     )
                 typer.echo(f"--- Compiled Profile: {agent} ---")
                 typer.echo(json.dumps(TPNormalizer.compile(tp, agent), indent=2))

@@ -193,7 +193,7 @@ def _valid_grant(
         },
         "workflow": {"mode": "NONE", "to_mutation_allowed": False},
         "authority_effect": {
-            "grants": ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"],
+            "grants": ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST", "RUNNER_INVOCATION"],
             "does_not_grant": [
                 "WORKFLOW_LEGALITY",
                 "MERGE",
@@ -454,3 +454,299 @@ def test_dry_run_governed_valid_grant_succeeds(monkeypatch, tmp_path: Path) -> N
 
     assert result.exit_code == 0, result.stdout
     assert "Compiled Profile" in result.stdout
+
+
+# ---------------------------------------------------------------------------
+# R2 -- the governed refusal contract at the REAL public entrypoints.
+#
+# The previous repair guarded `_read_raw_bytes` inside the admission guard,
+# which was correct but unreachable: `TPParser.parse_file` ran first in both
+# `execute_task_packet` and the CLI, so a raw OSError still escaped. Tests that
+# call `admit_governed_execution` directly cannot detect that. These drive the
+# public entrypoints instead.
+# ---------------------------------------------------------------------------
+
+
+def test_engine_governed_missing_packet_refuses_as_governed_error(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    packet.unlink()
+
+    from dopetask.guard.governed_execution import GovernedAdmissionError
+
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        execute_task_packet(
+            packet,
+            agent="codex",
+            working_dir=repo,
+            governed=True,
+            grant_path=grant_path,
+            dcp_route_authorization_path=dcp_path,
+        )
+    assert excinfo.value.reason == "TASK_PACKET_UNREADABLE"
+
+
+def test_engine_governed_unreadable_packet_refuses_as_governed_error(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    packet.chmod(0o000)
+
+    from dopetask.guard.governed_execution import GovernedAdmissionError
+
+    try:
+        with pytest.raises(GovernedAdmissionError) as excinfo:
+            execute_task_packet(
+                packet,
+                agent="codex",
+                working_dir=repo,
+                governed=True,
+                grant_path=grant_path,
+                dcp_route_authorization_path=dcp_path,
+            )
+        assert excinfo.value.reason == "TASK_PACKET_UNREADABLE"
+    finally:
+        packet.chmod(0o600)
+
+
+def test_engine_governed_malformed_packet_refuses_as_governed_error(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    packet.write_text("{not json", encoding="utf-8")
+
+    from dopetask.guard.governed_execution import GovernedAdmissionError
+
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        execute_task_packet(
+            packet,
+            agent="codex",
+            working_dir=repo,
+            governed=True,
+            grant_path=grant_path,
+            dcp_route_authorization_path=dcp_path,
+        )
+    assert excinfo.value.reason == "TASK_PACKET_PARSE_INVALID"
+
+
+def test_legacy_malformed_packet_keeps_legacy_error(tmp_path: Path) -> None:
+    """LEGACY_LOCAL_MODE behaviour is unchanged -- no governed contract there."""
+    repo = _init_repo(tmp_path / "repo")
+    packet = _write_json_packet(repo / "packet.json", allowlist=["generated.txt"])
+    packet.write_text("{not json", encoding="utf-8")
+
+    from dopetask.guard.governed_execution import GovernedAdmissionError
+
+    with pytest.raises(json.JSONDecodeError) as excinfo:
+        execute_task_packet(packet, agent="codex", working_dir=repo)
+    assert not isinstance(excinfo.value, GovernedAdmissionError)
+
+
+@pytest.mark.parametrize("dry_run", [True, False])
+def test_cli_governed_malformed_packet_refuses_with_stable_reason(
+    monkeypatch, tmp_path: Path, dry_run: bool
+) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    packet.write_text("{not json", encoding="utf-8")
+
+    monkeypatch.chdir(repo)
+    argv = ["tp", "exec", str(packet), "--agent", "codex"]
+    if dry_run:
+        argv.append("--dry-run")
+    argv += ["--governed", "--grant", str(grant_path), "--dcp-route-authorization", str(dcp_path)]
+
+    result = CliRunner().invoke(cli, argv)
+
+    assert result.exit_code == 1
+    assert "GOVERNED_MODE REFUSAL" in result.output
+    assert "TASK_PACKET_PARSE_INVALID" in result.output
+    assert "Compiled Profile" not in result.output
+
+
+def test_cli_missing_packet_is_pre_empted_at_argument_layer(tmp_path: Path, monkeypatch) -> None:
+    """`tp_file` uses click.Path(exists=True), which also implies readable=True.
+
+    A missing (or unreadable) packet is therefore refused by the argument layer
+    with exit code 2 and never reaches the read/parse contract. Recorded so the
+    governed loader is not credited with a refusal Click actually produced.
+    """
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    packet.unlink()
+
+    monkeypatch.chdir(repo)
+    result = CliRunner().invoke(
+        cli,
+        ["tp", "exec", str(packet), "--agent", "codex", "--governed",
+         "--grant", str(grant_path), "--dcp-route-authorization", str(dcp_path)],
+    )
+    assert result.exit_code == 2
+
+
+# ---------------------------------------------------------------------------
+# R1 -- under-granted grants never reach a runner (operator amendment 01)
+# ---------------------------------------------------------------------------
+
+
+def test_undergranted_packet_never_constructs_a_runner(monkeypatch, tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+
+    grant = json.loads(grant_path.read_text(encoding="utf-8"))
+    grant["authority_effect"]["grants"] = ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"]
+    grant_path.write_text(json.dumps(grant, indent=2) + "\n", encoding="utf-8")
+
+    constructed: list[str] = []
+
+    def spy_task_executor(*args: Any, **kwargs: Any):
+        constructed.append("TaskExecutor")
+        raise AssertionError("runner must never be constructed on an under-granted grant")
+
+    monkeypatch.setattr("dopetask.ops.tp_exec.engine.TaskExecutor", spy_task_executor)
+
+    from dopetask.guard.governed_execution import GovernedAdmissionError
+
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        execute_task_packet(
+            packet,
+            agent="codex",
+            working_dir=repo,
+            governed=True,
+            grant_path=grant_path,
+            dcp_route_authorization_path=dcp_path,
+        )
+    assert excinfo.value.reason == "AUTHORITY_UNDERGRANT_RUNNER_INVOCATION"
+    assert constructed == []
+    assert not (repo / "generated.txt").exists()
+
+
+def test_undergranted_dry_run_refuses_identically(monkeypatch, tmp_path: Path) -> None:
+    """Dry-run and real execution deliberately share one admission contract."""
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+
+    grant = json.loads(grant_path.read_text(encoding="utf-8"))
+    grant["authority_effect"]["grants"] = ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"]
+    grant_path.write_text(json.dumps(grant, indent=2) + "\n", encoding="utf-8")
+
+    monkeypatch.chdir(repo)
+    result = CliRunner().invoke(
+        cli,
+        ["tp", "exec", str(packet), "--agent", "codex", "--dry-run", "--governed",
+         "--grant", str(grant_path), "--dcp-route-authorization", str(dcp_path)],
+    )
+    assert result.exit_code == 1
+    assert "AUTHORITY_UNDERGRANT_RUNNER_INVOCATION" in result.output
+    assert "Compiled Profile" not in result.output
+
+
+# ---------------------------------------------------------------------------
+# R3 -- exactly one authoritative resolution per governed entrypoint
+# ---------------------------------------------------------------------------
+
+
+def _install_resolution_counters(monkeypatch) -> dict[str, int]:
+    """Count each authoritative resolution in the namespace where it is CALLED.
+
+    `canonical_repository_identity` is deliberately not counted: it runs twice
+    per admission by design, once for the grant and once for the origin URL.
+    Two calls on two different inputs is not duplicated resolution.
+    """
+    import dopetask.guard.governed_execution as guard_mod
+    import dopetask.ops.tp_exec.engine as engine_mod
+    import dopetask.ops.tp_git.guards as git_guards
+
+    counts: dict[str, int] = {}
+
+    def wrap(mod: Any, attr: str) -> None:
+        original = getattr(mod, attr)
+
+        def counted(*args: Any, **kwargs: Any):
+            counts[attr] = counts.get(attr, 0) + 1
+            return original(*args, **kwargs)
+
+        monkeypatch.setattr(mod, attr, counted)
+
+    wrap(engine_mod, "load_repo_identity")
+    wrap(engine_mod, "assert_repo_identity")
+    wrap(engine_mod, "assert_repo_binding")
+    wrap(git_guards, "resolve_repo_root")
+    wrap(guard_mod, "extract_origin_url")
+    return counts
+
+
+_SINGLE = ("load_repo_identity", "assert_repo_identity", "assert_repo_binding", "extract_origin_url")
+
+
+def test_real_governed_execution_resolves_exactly_once(monkeypatch, tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(
+        repo / "packet.json", allowlist=allowlist, expected_files=["generated.txt"],
+        validation=["test -f generated.txt"],
+    )
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    monkeypatch.setattr("dopetask_adapters.codex.executor.subprocess.run", _fake_codex_run(repo))
+    counts = _install_resolution_counters(monkeypatch)
+
+    execute_task_packet(
+        packet, agent="codex", working_dir=repo, governed=True,
+        grant_path=grant_path, dcp_route_authorization_path=dcp_path,
+    )
+
+    for name in _SINGLE:
+        assert counts.get(name) == 1, f"{name} ran {counts.get(name)} times, expected exactly 1: {counts}"
+
+
+def test_governed_dry_run_resolves_exactly_once(monkeypatch, tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    allowlist = ["generated.txt"]
+    packet = _write_json_packet(repo / "packet.json", allowlist=allowlist)
+    grant_path, dcp_path = _write_governed_fixture(repo, allowlist=allowlist, packet_path=packet)
+    monkeypatch.chdir(repo)
+    counts = _install_resolution_counters(monkeypatch)
+
+    result = CliRunner().invoke(
+        cli,
+        ["tp", "exec", str(packet), "--agent", "codex", "--dry-run", "--governed",
+         "--grant", str(grant_path), "--dcp-route-authorization", str(dcp_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    for name in _SINGLE:
+        assert counts.get(name) == 1, f"{name} ran {counts.get(name)} times, expected exactly 1: {counts}"
+
+
+def test_legacy_path_never_calls_the_governed_resolver(monkeypatch, tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path / "repo")
+    packet = _write_json_packet(
+        repo / "packet.json", allowlist=["generated.txt"], expected_files=["generated.txt"],
+        validation=["test -f generated.txt"],
+    )
+    calls: list[str] = []
+    monkeypatch.setattr(
+        "dopetask.ops.tp_exec.engine.resolve_governed_admission",
+        lambda *a, **k: calls.append("resolve"),
+    )
+    monkeypatch.setattr(
+        "dopetask.guard.governed_execution.admit_governed_execution",
+        lambda *a, **k: calls.append("admit"),
+    )
+    monkeypatch.setattr("dopetask_adapters.codex.executor.subprocess.run", _fake_codex_run(repo))
+
+    execute_task_packet(packet, agent="codex", working_dir=repo)
+
+    assert calls == []

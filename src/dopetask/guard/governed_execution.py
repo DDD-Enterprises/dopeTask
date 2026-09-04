@@ -7,6 +7,14 @@ expired, or mismatched grant state. Never imports or calls
 agent or model. `DCPRouteAuthorization` is policy-only: it is schema-validated
 and digest-checked but never consulted for routing/model decisions here.
 
+Admission compares repository identity canonically (never by substring) and
+requires the one positive capability a governed single-TP run actually
+exercises: `RUNNER_INVOCATION`. Because that check lives in admission, a
+governed *dry-run* refuses an under-granted grant exactly as a real governed
+execution does -- dry-run and real execution deliberately share one contract.
+Every refusal raised here is a `GovernedAdmissionError` carrying a stable
+machine-readable `reason`; a raw `OSError` is never the public refusal contract.
+
 This module adds no persistent authority store. Grant acceptance is
 at-most-once by contract (`acceptance_semantics`); durable receipt/acceptance
 state is out of scope and deferred to a successor packet.
@@ -16,10 +24,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
+from urllib.parse import urlsplit
 
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import ValidationError
@@ -59,6 +69,28 @@ _REQUIRED_SUBJECT_KIND = "SINGLE_TASK_PACKET"
 # family lineage) but is explicitly "not authorized by C0" per the grant schema's
 # own field description. DT-G1 narrows by refusing it rather than accepting it.
 _ACCEPTED_ISSUER_CLASSES = frozenset({"OPERATOR", "CONTROL_TOWER"})
+
+# --- DT-G1 under-grant check (operator amendment 01) -------------------------
+#
+# `authority_effect.grants` is enum-narrowed by the ratified C0-R2 grant schema,
+# but it carries `minItems: 1` and no `contains`, so a *fully schema-valid* grant
+# may omit `RUNNER_INVOCATION` while GOVERNED_MODE goes on to construct a runner.
+# Schema `const`/`enum` closes "the grant claims an authority it must not have";
+# nothing in the schema closes "the grant omits an authority the code then
+# exercises". This single positive capability check closes exactly that, and
+# nothing else: no over-ceiling check, no prohibition re-assertion, no generic
+# `authority_effect` validator.
+_REQUIRED_RUNNER_GRANT = "RUNNER_INVOCATION"
+
+# --- canonical repository identity -------------------------------------------
+#
+# Only hosts whose `owner/repository` identity can be proven from the identifier
+# alone are supported. Anything else fails closed rather than being guessed at.
+_CANONICAL_REPOSITORY_HOSTS = frozenset({"github.com"})
+_CANONICAL_REPOSITORY_SCHEMES = frozenset({"https", "http", "ssh", "git"})
+_CANONICAL_REPOSITORY_SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+_SCP_LIKE_REMOTE = re.compile(r"^(?:[^@/]+@)?(?P<host>[^:/@]+):(?P<path>.+)$")
+_GIT_SUFFIX = ".git"
 
 
 class GovernedAdmissionError(RuntimeError):
@@ -113,11 +145,21 @@ def _validate_against_schema(
         ) from exc
 
 
-def _read_raw_and_parse(path: Path, *, label: str, reject_reason: str) -> tuple[bytes, Any]:
+def _read_raw_bytes(path: Path, *, label: str, reject_reason: str) -> bytes:
+    """Read a governed-admission input, converting every read failure to a refusal.
+
+    File-not-found, permission, directory-instead-of-file and unreadable-bytes
+    failures all surface as `GovernedAdmissionError` with a stable reason code;
+    a raw `OSError` is never the public refusal contract.
+    """
     try:
-        raw = path.read_bytes()
+        return path.read_bytes()
     except OSError as exc:
         raise GovernedAdmissionError(reject_reason, f"{label} could not be read at {path}: {exc}") from exc
+
+
+def _read_raw_and_parse(path: Path, *, label: str, reject_reason: str) -> tuple[bytes, Any]:
+    raw = _read_raw_bytes(path, label=label, reject_reason=reject_reason)
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError as exc:
@@ -144,6 +186,132 @@ def _parse_iso8601(value: str, *, field: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def load_governed_task_packet(path: Path) -> tuple[bytes, TaskPacket]:
+    """Read and parse a Task Packet under the governed refusal contract.
+
+    This is the **single** governed packet loader. Every governed entrypoint --
+    `execute_task_packet(governed=True)` and the `tp exec --governed` CLI, dry
+    run or not -- must call it *before* any generic `TPParser.parse_file`, or a
+    read/parse failure escapes as a raw `OSError`/`ValueError` and the governed
+    refusal contract never applies. Guarding only the guard layer is not enough
+    when an earlier unguarded parse on the same path can raise first.
+
+    Returns the exact bytes that were parsed alongside the packet, so the
+    subject digest is computed over the bytes admission actually saw rather
+    than over a second, independent re-read.
+    """
+    from dopetask.core.tp_parser import TPParser
+
+    raw = _read_raw_bytes(path, label="Task Packet", reject_reason="TASK_PACKET_UNREADABLE")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise GovernedAdmissionError(
+            "TASK_PACKET_PARSE_INVALID", f"Task Packet at {path} is not valid JSON: {exc}"
+        ) from exc
+    try:
+        return raw, TPParser.parse_dict(data)
+    except GovernedAdmissionError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - refusal contract must stay closed
+        raise GovernedAdmissionError(
+            "TASK_PACKET_PARSE_INVALID",
+            f"Task Packet at {path} could not be parsed: {type(exc).__name__}: {exc}",
+        ) from exc
+
+
+def assert_runner_invocation_granted(authority_effect: Any) -> None:
+    """Fail closed unless the grant confers the runner authority the run exercises.
+
+    Scope is deliberately one positive capability. This does not police
+    over-granting, does not re-assert `does_not_grant`, and does not validate
+    `authority_effect` generally -- the ratified schema already closes those
+    directions with a `const` prohibition list and a closed `grants` enum.
+
+    Raises `GovernedAdmissionError`; returns `None` on acceptance.
+    """
+    grants = authority_effect.get("grants") if isinstance(authority_effect, dict) else None
+    if not isinstance(grants, list) or _REQUIRED_RUNNER_GRANT not in grants:
+        raise GovernedAdmissionError(
+            "AUTHORITY_UNDERGRANT_RUNNER_INVOCATION",
+            f"grant.authority_effect.grants {grants!r} does not confer "
+            f"'{_REQUIRED_RUNNER_GRANT}'; GOVERNED_MODE would otherwise invoke a runner on "
+            "authority the grant never conferred. A DCPRouteAuthorization cannot supply it: "
+            "its own authority_effect vocabulary is disjoint and policy-only.",
+        )
+
+
+def canonical_repository_identity(value: Optional[str]) -> Optional[str]:
+    """Map a supported repository identifier to a canonical `owner/repository`.
+
+    Supported inputs, all resolving to the same canonical identity:
+
+        https://github.com/DDD-Enterprises/dopeTask.git
+        git@github.com:DDD-Enterprises/dopeTask.git
+        ssh://git@github.com/DDD-Enterprises/dopeTask
+        DDD-Enterprises/dopeTask
+
+    The canonical form is lowercased: GitHub repository identity is
+    case-insensitive, so an owner/repository differing only in case denotes the
+    *same* repository and must not be read as a different one.
+
+    Returns `None` -- never a guess -- when the identifier is empty, malformed,
+    ambiguous (wrong segment count), or names a host whose `owner/repository`
+    identity cannot be proven from the identifier alone. A host-in-path spoof
+    such as `https://evil.com/github.com/owner/repo` therefore yields `None`
+    because the real host is not allowlisted. Callers must treat `None` as
+    fail-closed; this function never performs substring matching.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text:
+        return None
+
+    host: Optional[str]
+    if "://" in text:
+        try:
+            parsed = urlsplit(text)
+        except ValueError:
+            return None
+        if parsed.scheme.lower() not in _CANONICAL_REPOSITORY_SCHEMES:
+            return None
+        try:
+            hostname = parsed.hostname
+        except ValueError:
+            return None
+        host = (hostname or "").lower()
+        path = parsed.path
+    else:
+        scp_match = _SCP_LIKE_REMOTE.match(text)
+        if scp_match is not None:
+            host = scp_match.group("host").lower()
+            path = scp_match.group("path")
+        elif "@" in text or ":" in text:
+            # Credential-ish or transport-ish shape we cannot canonicalize.
+            return None
+        else:
+            host = None
+            path = text
+
+    if host is not None and host not in _CANONICAL_REPOSITORY_HOSTS:
+        return None
+
+    path = path.strip("/")
+    if path.endswith(_GIT_SUFFIX):
+        path = path[: -len(_GIT_SUFFIX)]
+
+    segments = path.split("/")
+    if len(segments) != 2:
+        return None
+    owner, repository = segments
+    if not _CANONICAL_REPOSITORY_SEGMENT.match(owner):
+        return None
+    if not _CANONICAL_REPOSITORY_SEGMENT.match(repository):
+        return None
+    return f"{owner.lower()}/{repository.lower()}"
+
+
 def admit_governed_execution(
     *,
     grant_path: Path,
@@ -153,6 +321,7 @@ def admit_governed_execution(
     repo_root: Path,
     cli_agent: str,
     cli_model: Optional[str],
+    packet_raw: Optional[bytes] = None,
     now: Optional[datetime] = None,
 ) -> GovernedAdmissionDecision:
     """Evaluate GOVERNED_MODE admission for one Task Packet.
@@ -248,7 +417,12 @@ def admit_governed_execution(
             "MACRO_PLAN subjects are out of scope for this admission path.",
         )
 
-    packet_raw = packet_path.read_bytes()
+    assert_runner_invocation_granted(grant.get("authority_effect"))
+
+    if packet_raw is None:
+        packet_raw = _read_raw_bytes(
+            packet_path, label="Task Packet", reject_reason="TASK_PACKET_UNREADABLE"
+        )
     packet_sha256 = _sha256_hex(packet_raw)
     if subject.get("task_packet_id") != tp.id:
         raise GovernedAdmissionError(
@@ -327,23 +501,40 @@ def admit_governed_execution(
             f"'{expected_project_id}'.",
         )
 
-    # `grant.repository` is checked against the active repo's actual git
-    # remote, reusing the same hint-substring semantics as
-    # guard.identity.origin_hint_warning (repo_binding.origin_hint), but
-    # enforced fail-closed here rather than as a soft warning.
+    # `grant.repository` is compared to the active repo's actual git remote by
+    # canonical `owner/repository` identity and exact equality. Substring
+    # matching is deliberately NOT used: it would admit a grant naming a bare
+    # `dopeTask`, `DDD-Enterprises`, `github.com` or even `e`. The soft
+    # substring warning in guard.identity.origin_hint_warning is a separate,
+    # non-admission signal and is intentionally left unchanged.
     origin_url = extract_origin_url(repo_root)
     grant_repository = grant.get("repository")
-    if not grant_repository or origin_url is None or grant_repository not in origin_url:
+    grant_repository_identity = canonical_repository_identity(grant_repository)
+    origin_repository_identity = canonical_repository_identity(origin_url)
+    if grant_repository_identity is None or origin_repository_identity is None:
+        raise GovernedAdmissionError(
+            "GRANT_REPOSITORY_UNCANONICALIZABLE",
+            f"repository identity could not be canonicalized: grant.repository {grant_repository!r} -> "
+            f"{grant_repository_identity!r}; origin URL {origin_url!r} -> {origin_repository_identity!r}. "
+            "Admission fails closed rather than falling back to substring matching.",
+        )
+    if grant_repository_identity != origin_repository_identity:
         raise GovernedAdmissionError(
             "GRANT_REPOSITORY_MISMATCH",
-            f"grant.repository '{grant_repository}' is not found in the active repo's origin URL "
-            f"'{origin_url}'.",
+            f"grant.repository '{grant_repository}' canonicalizes to '{grant_repository_identity}', which "
+            f"is not the active repo's origin '{origin_url}' -> '{origin_repository_identity}'.",
         )
 
     worktree_binding = grant.get("worktree_binding") or {}
     resolved_repo_root = str(repo_root.resolve())
     grant_worktree_path = worktree_binding.get("path")
-    if grant_worktree_path is None or str(Path(grant_worktree_path).resolve()) != resolved_repo_root:
+    resolved_grant_worktree: Optional[str] = None
+    if isinstance(grant_worktree_path, str):
+        try:
+            resolved_grant_worktree = str(Path(grant_worktree_path).resolve())
+        except (OSError, ValueError):
+            resolved_grant_worktree = None
+    if resolved_grant_worktree is None or resolved_grant_worktree != resolved_repo_root:
         raise GovernedAdmissionError(
             "GRANT_WORKTREE_MISMATCH",
             f"grant.worktree_binding.path '{grant_worktree_path}' does not resolve to the active repo root "

@@ -18,7 +18,12 @@ from typing import Any
 import pytest
 
 from dopetask.core.schema import TaskPacket, TPCommit, TPRepoBinding
-from dopetask.guard.governed_execution import GovernedAdmissionError, admit_governed_execution
+from dopetask.guard.governed_execution import (
+    GovernedAdmissionError,
+    admit_governed_execution,
+    canonical_repository_identity,
+    load_governed_task_packet,
+)
 
 ORIGIN_URL = "git@github.com:DDD-Enterprises/dopeTask.git"
 PACKET_ID = "TP-GOVERNED-TEST"
@@ -181,7 +186,7 @@ def _valid_grant(
         "credential_class": {"class": "RUNNER_HOST_DEFAULT", "origin_id": "test"},
         "repair": {"attempts_per_subject_max": 0, "successor_grant_required_for_repair": False},
         "authority_effect": {
-            "grants": ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"],
+            "grants": ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST", "RUNNER_INVOCATION"],
             "does_not_grant": [
                 "WORKFLOW_LEGALITY",
                 "MERGE",
@@ -477,3 +482,218 @@ def test_missing_grant_file_rejects(scenario) -> None:
             cli_model=None,
         )
     assert excinfo.value.reason == "GRANT_UNREADABLE"
+
+
+# ---------------------------------------------------------------------------
+# R4 -- canonical repository identity (exact equality, never substring)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("identifier", "expected"),
+    [
+        ("DDD-Enterprises/dopeTask", "ddd-enterprises/dopetask"),
+        ("https://github.com/DDD-Enterprises/dopeTask", "ddd-enterprises/dopetask"),
+        ("https://github.com/DDD-Enterprises/dopeTask.git", "ddd-enterprises/dopetask"),
+        ("git@github.com:DDD-Enterprises/dopeTask.git", "ddd-enterprises/dopetask"),
+        ("ssh://git@github.com/DDD-Enterprises/dopeTask", "ddd-enterprises/dopetask"),
+        # Not canonicalizable -- must be None, never a guess.
+        ("e", None),
+        ("dopeTask", None),
+        ("DDD-Enterprises", None),
+        ("github.com", None),
+        ("", None),
+        (None, None),
+        ("DDD-Enterprises/dopeTask/extra", None),
+        # Host-in-path spoof: the real host is not allowlisted.
+        ("https://evil.com/github.com/DDD-Enterprises/dopeTask", None),
+        ("https://gitlab.com/DDD-Enterprises/dopeTask", None),
+    ],
+)
+def test_canonical_repository_identity(identifier, expected) -> None:
+    assert canonical_repository_identity(identifier) == expected
+
+
+@pytest.mark.parametrize(
+    "repository",
+    ["e", "dopeTask", "opeTask", "DDD-Enterprises", "github.com", "DDD-Enterprises/dopeTask/x"],
+)
+def test_repository_substring_and_basename_rejected(scenario, repository) -> None:
+    """A bare substring of the origin URL must never admit a governed grant."""
+    grant = copy.deepcopy(scenario["grant"])
+    grant["repository"] = repository
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "GRANT_REPOSITORY_UNCANONICALIZABLE"
+
+
+@pytest.mark.parametrize(
+    "repository", ["wrong-owner/dopeTask", "DDD-Enterprises/dopeTask-extra", "DDD-Enterprises/dope"]
+)
+def test_repository_wrong_canonical_identity_rejected(scenario, repository) -> None:
+    grant = copy.deepcopy(scenario["grant"])
+    grant["repository"] = repository
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "GRANT_REPOSITORY_MISMATCH"
+
+
+@pytest.mark.parametrize(
+    "repository",
+    [
+        "DDD-Enterprises/dopeTask",
+        "https://github.com/DDD-Enterprises/dopeTask",
+        "https://github.com/DDD-Enterprises/dopeTask.git",
+        "git@github.com:DDD-Enterprises/dopeTask.git",
+    ],
+)
+def test_repository_equivalent_forms_accepted(scenario, repository) -> None:
+    """Every supported spelling of the same repository is one identity."""
+    grant = copy.deepcopy(scenario["grant"])
+    grant["repository"] = repository
+    assert _admit(scenario, grant=grant).effective_runner == "codex"
+
+
+def test_repository_host_in_path_spoof_rejected(scenario) -> None:
+    grant = copy.deepcopy(scenario["grant"])
+    grant["repository"] = "https://evil.com/github.com/DDD-Enterprises/dopeTask"
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "GRANT_REPOSITORY_UNCANONICALIZABLE"
+
+
+# ---------------------------------------------------------------------------
+# R1 -- narrow RUNNER_INVOCATION under-grant check (operator amendment 01)
+# ---------------------------------------------------------------------------
+
+
+def test_grant_without_runner_invocation_rejected(scenario) -> None:
+    """A schema-valid grant that omits RUNNER_INVOCATION may not run a runner.
+
+    `grants` carries minItems=1 and no `contains`, so this shape passes schema
+    validation; only the admission gate can refuse it.
+    """
+    grant = copy.deepcopy(scenario["grant"])
+    grant["authority_effect"]["grants"] = ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"]
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "AUTHORITY_UNDERGRANT_RUNNER_INVOCATION"
+
+
+def test_macro_plan_child_invocation_is_refused_by_schema_not_admission(scenario) -> None:
+    """Layer attribution: this one is closed by the schema, not by the gate.
+
+    For a SINGLE_TASK_PACKET subject the grant schema narrows
+    `authority_effect.grants` to a two-member enum, so MACRO_PLAN_CHILD_INVOCATION
+    cannot appear in a schema-valid governed single-TP grant at all. Recorded
+    explicitly so the under-grant gate is not credited with a refusal that
+    schema validation actually produced.
+    """
+    grant = copy.deepcopy(scenario["grant"])
+    grant["authority_effect"]["grants"] = ["MACRO_PLAN_CHILD_INVOCATION"]
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "GRANT_SCHEMA_INVALID"
+
+
+@pytest.mark.parametrize(
+    "grants",
+    [
+        ["RUNNER_INVOCATION"],
+        ["RUNNER_INVOCATION", "TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"],
+        ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST", "RUNNER_INVOCATION"],
+    ],
+)
+def test_grant_with_runner_invocation_accepted(scenario, grants) -> None:
+    """The check is one positive capability -- it must not police anything else."""
+    grant = copy.deepcopy(scenario["grant"])
+    grant["authority_effect"]["grants"] = grants
+    assert _admit(scenario, grant=grant).effective_runner == "codex"
+
+
+def test_undergrant_check_is_direct_not_schema_vacuous(scenario) -> None:
+    """The under-granted shape really is schema-valid; only admission refuses it."""
+    from dopetask.utils.schema_registry import SchemaRegistry
+
+    grant = copy.deepcopy(scenario["grant"])
+    grant["authority_effect"]["grants"] = ["TASK_PACKET_MUTATION_WITHIN_ALLOWLIST"]
+    schema = SchemaRegistry().get_json("macro_execution_authority_ref_v2")
+    grants_schema = schema["properties"]["authority_effect"]["properties"]["grants"]
+    assert grants_schema.get("minItems") == 1
+    assert "contains" not in grants_schema
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        _admit(scenario, grant=grant)
+    assert excinfo.value.reason == "AUTHORITY_UNDERGRANT_RUNNER_INVOCATION"
+
+
+# ---------------------------------------------------------------------------
+# R2 -- the shared governed packet loader
+# ---------------------------------------------------------------------------
+
+
+def test_governed_loader_missing_packet_refuses(tmp_path: Path) -> None:
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        load_governed_task_packet(tmp_path / "absent.json")
+    assert excinfo.value.reason == "TASK_PACKET_UNREADABLE"
+
+
+def test_governed_loader_unreadable_packet_refuses(tmp_path: Path) -> None:
+    packet = tmp_path / "packet.json"
+    packet.write_text("{}", encoding="utf-8")
+    packet.chmod(0o000)
+    try:
+        with pytest.raises(GovernedAdmissionError) as excinfo:
+            load_governed_task_packet(packet)
+        assert excinfo.value.reason == "TASK_PACKET_UNREADABLE"
+    finally:
+        packet.chmod(0o600)
+
+
+def test_governed_loader_directory_refuses(tmp_path: Path) -> None:
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        load_governed_task_packet(tmp_path)
+    assert excinfo.value.reason == "TASK_PACKET_UNREADABLE"
+
+
+def test_governed_loader_malformed_json_refuses(tmp_path: Path) -> None:
+    packet = tmp_path / "packet.json"
+    packet.write_text("{not json", encoding="utf-8")
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        load_governed_task_packet(packet)
+    assert excinfo.value.reason == "TASK_PACKET_PARSE_INVALID"
+
+
+def test_governed_loader_schema_invalid_packet_refuses(tmp_path: Path) -> None:
+    packet = tmp_path / "packet.json"
+    packet.write_text(json.dumps({"not": "a task packet"}), encoding="utf-8")
+    with pytest.raises(GovernedAdmissionError) as excinfo:
+        load_governed_task_packet(packet)
+    assert excinfo.value.reason == "TASK_PACKET_PARSE_INVALID"
+
+
+def test_governed_loader_returns_bytes_that_were_parsed(tmp_path: Path) -> None:
+    """Admission must hash the bytes it parsed, not a second independent re-read."""
+    packet = tmp_path / "packet.json"
+    packet.write_text(
+        json.dumps(
+            {
+                "id": PACKET_ID,
+                "target": "governed loader byte identity",
+                "project": "dopetask",
+                "repo_binding": {
+                    "project_id": "dopetask",
+                    "repo_marker": ".dopetaskroot",
+                    "require_identity_match": True,
+                },
+                "commit": {"message": "m", "allowlist": ["generated.txt"]},
+                "steps": [{"id": "S1", "task": "t", "validation": ["true"]}],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    raw, tp = load_governed_task_packet(packet)
+    assert raw == packet.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == _packet_sha256(packet)
+    assert tp.id == PACKET_ID
