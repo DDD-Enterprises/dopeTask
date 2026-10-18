@@ -139,8 +139,10 @@ def test_project_upgrade_runs_packs_doctor(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
 
     instructions_root = repo_root / ".dopetask" / "instructions"
-    for name in ["PROJECT_INSTRUCTIONS.md", "CLAUDE.md", "CODEX.md", "AGENTS.md"]:
+    for name in ["CLAUDE.md", "AGENTS.md"]:
         assert (instructions_root / name).exists()
+    for name in ["PROJECT_INSTRUCTIONS.md", "CODEX.md"]:
+        assert not (instructions_root / name).exists()
 
     agents_text = (instructions_root / "AGENTS.md").read_text(encoding="utf-8")
     assert "<!-- DOPETASK:BEGIN -->" in agents_text

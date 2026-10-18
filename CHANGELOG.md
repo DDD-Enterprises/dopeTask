@@ -12,7 +12,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ### Changed
 
-- N/A
+- Restricted `dopetask project` managed instruction files to `CLAUDE.md` and `AGENTS.md`; `init`, `enable`/`disable`, `mode`, and `doctor` no longer create, update, or require `PROJECT_INSTRUCTIONS.md` or `CODEX.md`, and their unused templates were removed. Existing copies of those files are left untouched.
 
 ### Fixed
 
