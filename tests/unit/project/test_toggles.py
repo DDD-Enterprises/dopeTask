@@ -37,15 +37,15 @@ def test_apply_pack_appends_missing_block_without_clobber(tmp_path: Path) -> Non
 def test_enable_disable_toggle_only_block_content(tmp_path: Path) -> None:
     """Enable/disable should only change target block content."""
     init_project(out_dir=tmp_path, preset="none")
-    original = (tmp_path / "CODEX.md").read_text(encoding="utf-8")
+    original = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
 
     enable_pack(project_dir=tmp_path, pack_name="dopetask")
-    enabled = (tmp_path / "CODEX.md").read_text(encoding="utf-8")
+    enabled = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
     assert _mask_block(original, "dopetask") == _mask_block(enabled, "dopetask")
     assert extract_block_content(enabled, "dopetask") != "(disabled)"
 
     disable_pack(project_dir=tmp_path, pack_name="dopetask")
-    disabled = (tmp_path / "CODEX.md").read_text(encoding="utf-8")
+    disabled = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
     assert _mask_block(enabled, "dopetask") == _mask_block(disabled, "dopetask")
     assert extract_block_content(disabled, "dopetask") == "(disabled)"
     assert (tmp_path / "PROJECT_PATCH_REPORT.md").exists()
@@ -58,7 +58,7 @@ def test_project_status_reports_enabled_and_disabled(tmp_path: Path) -> None:
 
     status = project_status(project_dir=tmp_path)
 
-    assert len(status["files"]) == 4
+    assert len(status["files"]) == 2
     for file_status in status["files"]:
         assert file_status["exists"] is True
         assert file_status["packs"]["dopetask"] is False
