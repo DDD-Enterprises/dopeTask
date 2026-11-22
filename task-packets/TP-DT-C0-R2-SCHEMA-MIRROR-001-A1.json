@@ -1,0 +1,163 @@
+{
+  "id": "TP-DT-C0-R2-SCHEMA-MIRROR-001-A1",
+  "project": "dopetask",
+  "target": "Publish the ten ratified C0-R2 schemas into dopeTask packaged schema data as byte-identical non-authoritative mirrors, correcting only the prior packet's strict-schema-invalid execution metadata. No runtime behavior change.",
+  "invariants": [
+    "RISK_LANE=L0_DETERMINISTIC_MIRROR.",
+    "OBSERVED_DOPETASK_MAIN=d9103f078418cbf2a8f387aee5d0e1f957a37b1a; reharvest at execution and overlap-classify ordinary movement.",
+    "C0_R2_SUBJECT_SHA256=a9d51a5b19170589cff38fee951fd611436e65711af4a8bbfcff4084ab884c19.",
+    "SOURCE_PUBLICATION_COMMIT=2b00c648e62c2aeb74b690b45bf058bd687fb4ec.",
+    "This packet repairs the prior mirror packet's admission/schema shape only; it does not change mirror semantics.",
+    "All ten mirrored schema bytes must exactly match the pinned upstream hashes; no parsing/reformatting/$id/$ref rewrite.",
+    "Mirror files are packaged runtime inputs in dopeTask but remain subordinate copies of the ratified C0-R2 contract authority.",
+    "Do not modify SchemaRegistry, runtime code, routing, execution, adapters, packaging config, release metadata, or dependency pins.",
+    "If current SchemaRegistry/package-data behavior cannot load root dopetask_schemas/*.schema.json without code/config changes, STOP.",
+    "MODEL_AUDIT=NOT_REQUIRED for exact-byte L0 mirror.",
+    "MERGE_AUTHORIZED=NO; RELEASE_AUTHORIZED=NO; PIN_UPDATE_AUTHORIZED=NO; ACTIVATION_AUTHORIZED=NO."
+  ],
+  "depends_on": [],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": ".dopetaskroot",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "DT-C0R2-MIRROR-001-A1",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "chore/dt-c0-r2-schema-mirror-001-a1"
+  },
+  "commit": {
+    "message": "chore(schemas): mirror ratified C0-R2 contracts",
+    "allowlist": [
+      "task-packets/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1.json",
+      "dopetask_schemas/common_defs.schema.json",
+      "dopetask_schemas/dcp_route_authorization.schema.json",
+      "dopetask_schemas/dopetask_governed_execution_profile.schema.json",
+      "dopetask_schemas/governed_execution_receipt.schema.json",
+      "dopetask_schemas/macro_execution_authority_ref_v2.schema.json",
+      "dopetask_schemas/model_transport_receipt.schema.json",
+      "dopetask_schemas/tool_intent.schema.json",
+      "dopetask_schemas/uag_compatibility_certification.schema.json",
+      "dopetask_schemas/uag_transport_request.schema.json",
+      "dopetask_schemas/uag_transport_result.schema.json",
+      "out/implementation/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1/PROOF.json"
+    ],
+    "verify": [
+      "git diff --check",
+      "python -m pytest -q tests/unit/test_schema_registry.py tests/unit/utils/test_schema_loading_new.py",
+      "python -m compileall -q src tests",
+      "pre-commit run --files task-packets/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1.json dopetask_schemas/common_defs.schema.json dopetask_schemas/dcp_route_authorization.schema.json dopetask_schemas/dopetask_governed_execution_profile.schema.json dopetask_schemas/governed_execution_receipt.schema.json dopetask_schemas/macro_execution_authority_ref_v2.schema.json dopetask_schemas/model_transport_receipt.schema.json dopetask_schemas/tool_intent.schema.json dopetask_schemas/uag_compatibility_certification.schema.json dopetask_schemas/uag_transport_request.schema.json dopetask_schemas/uag_transport_result.schema.json out/implementation/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1/PROOF.json",
+      "changed-file allowlist closure",
+      "secret scan packet/proof outputs"
+    ]
+  },
+  "pr": {
+    "title": "chore(schemas): mirror ratified C0-R2 contracts",
+    "body": "L0 deterministic exact-byte mirror of the ten ratified C0-R2 contracts into dopeTask packaged schema data. No runtime semantics, release, pin, or activation change. Merge remains operator-only.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "S00_PREFLIGHT",
+      "task": "Reharvest dopeTask main, exact upstream C0-R2 publication custody, destination vacancy, and schema-registry/package-data behavior before mutation.",
+      "requirements": [
+        "Observed dopeTask baseline is d9103f078418cbf2a8f387aee5d0e1f957a37b1a tree cded064343b6166ea830361e23bbf82b4599c294; if main moved, classify changed paths against this packet allowlist.",
+        "Verify dopemux-mvp commit 2b00c648e62c2aeb74b690b45bf058bd687fb4ec contains the exact ten source schema hashes.",
+        "Verify ratified C0-R2 subject identity remains a9d51a5b19170589cff38fee951fd611436e65711af4a8bbfcff4084ab884c19.",
+        "Confirm no current dopeTask main/PR already publishes conflicting destination bytes.",
+        "Confirm current SchemaRegistry directly discovers root dopetask_schemas/*.schema.json and packaging includes them.",
+        "Any CONFLICTING or UNKNOWN overlap stops before mutation."
+      ],
+      "commands": [
+        "git fetch origin main --prune",
+        "git rev-parse HEAD",
+        "git rev-parse origin/main",
+        "git status --short"
+      ],
+      "validation": [
+        "Repo identity and clean isolated series worktree proven.",
+        "Source custody and ten expected hashes proven.",
+        "Destination classification has zero CONFLICTING/UNKNOWN entries."
+      ],
+      "context_files": [
+        "src/dopetask/utils/schema_registry.py",
+        "tests/unit/test_schema_registry.py",
+        "tests/unit/utils/test_schema_loading_new.py",
+        "dopetask_schemas/__init__.py"
+      ]
+    },
+    {
+      "id": "S01_MIRROR",
+      "task": "Copy the ten exact upstream C0-R2 schema blobs into dopetask_schemas/ without transformation.",
+      "requirements": [
+        "Use raw Git blob/file bytes from the merged dopemux-mvp C0-R2 publication.",
+        "Do not parse and reserialize JSON.",
+        "Do not change any source/runtime/config file.",
+        "Required hashes: common_defs.schema.json=769abe60377ec0725acb883b901677d8189245a4b1f5c1e963a9d23285dfd48f; dcp_route_authorization.schema.json=997b57f4e62affc1c418335ee4c6193122ed03566b13becb95dce419f6336391; dopetask_governed_execution_profile.schema.json=1b492736585afbc02ba22b1a6136c310f329be7a51c3b16e77e2110c7dc8ed69; governed_execution_receipt.schema.json=e7e4eef88f331461a585eb0c565d0871a3de134bbd791d02f1eee761e7dfd433; macro_execution_authority_ref_v2.schema.json=1d73d78e80585bedc997286116f52964bb6f5b96dfe53fcd80fb494181249a9a; model_transport_receipt.schema.json=03334b78d14c7e9a4cf9e08e7740cba8eca64fc42edbd42745bf4fe66a3ab930; tool_intent.schema.json=3ee4c5ef8cf0fa94ea6d0e141624610d3135b14e2573c0be0ec3f917f3871e0a; uag_compatibility_certification.schema.json=81e152fadb1ef014d25cb6e96f18241b52f9337771dcfe3b680a7794a3f6339d; uag_transport_request.schema.json=ee34216b4d99d56710690f474de76b2d9eea4c39282de3c5f1d4de1875f778c1; uag_transport_result.schema.json=64595c5ed1e9bfd46cfd41b18a8808963ebbda6de64c3dd654ed672e2553197e"
+      ],
+      "expected_files": [
+        "dopetask_schemas/common_defs.schema.json",
+        "dopetask_schemas/dcp_route_authorization.schema.json",
+        "dopetask_schemas/dopetask_governed_execution_profile.schema.json",
+        "dopetask_schemas/governed_execution_receipt.schema.json",
+        "dopetask_schemas/macro_execution_authority_ref_v2.schema.json",
+        "dopetask_schemas/model_transport_receipt.schema.json",
+        "dopetask_schemas/tool_intent.schema.json",
+        "dopetask_schemas/uag_compatibility_certification.schema.json",
+        "dopetask_schemas/uag_transport_request.schema.json",
+        "dopetask_schemas/uag_transport_result.schema.json"
+      ],
+      "validation": [
+        "Exactly ten mirror files exist.",
+        "10/10 SHA-256 values equal pinned upstream hashes."
+      ]
+    },
+    {
+      "id": "S02_VALIDATE",
+      "task": "Prove Draft-07 validity, reference closure, runtime registry discovery, package-data inclusion, and changed-file closure deterministically.",
+      "requirements": [
+        "Validate all ten schemas as Draft-07.",
+        "Resolve every relative file $ref and JSON Pointer against the ten-file mirror.",
+        "Require SchemaRegistry.available and get_json() to expose all ten files.",
+        "Prove built/installable package data contains all ten files without editing packaging config."
+      ],
+      "commands": [
+        "python -m pytest -q tests/unit/test_schema_registry.py tests/unit/utils/test_schema_loading_new.py",
+        "python -m compileall -q src tests",
+        "git diff --check"
+      ],
+      "validation": [
+        "DRAFT7=PASS_10_OF_10.",
+        "REF_CLOSURE=PASS_10_OF_10.",
+        "REGISTRY_DISCOVERY=PASS_10_OF_10.",
+        "PACKAGE_DATA=PASS_10_OF_10.",
+        "No file outside allowlist changed."
+      ]
+    },
+    {
+      "id": "S03_PROOF",
+      "task": "Write deterministic proof and leave the packet ready for series finalization/PR without merging.",
+      "requirements": [
+        "Write out/implementation/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1/PROOF.json with source and destination hash pairs and all validation results.",
+        "Commit the controlling packet at task-packets/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1.json.",
+        "Do not merge, release, pin, or activate.",
+        "DT-G1 remains blocked until this mirror PR is merged and merged dopeTask main is reharvested."
+      ],
+      "expected_files": [
+        "task-packets/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1.json",
+        "out/implementation/TP-DT-C0-R2-SCHEMA-MIRROR-001-A1/PROOF.json"
+      ],
+      "validation": [
+        "Proof says BYTE_IDENTICAL_COUNT=10.",
+        "MODEL_AUDIT=NOT_REQUIRED.",
+        "NEXT_GATE=OPERATOR_MIRROR_PR_MERGE_DECISION_AFTER_CI."
+      ]
+    }
+  ]
+}

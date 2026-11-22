@@ -1,0 +1,28 @@
+{
+  "base_ref": "origin/main",
+  "branch": "tp/TP-AUDIT-057F-PROMPT-PIPELINE-audit-dopetask-0-5-7-prompt-pipeline-and-generate-audit-document",
+  "bundle_path": "proof/TP-AUDIT-057F-PROMPT-PIPELINE_PROOF_BUNDLE.json",
+  "committed_files": [
+    "docs/audits/prompt_pipeline_audit.md",
+    "proof/standards/PROOF_ARCHIVE_EXAMPLE_MANIFEST.json",
+    "proof/standards/PROOF_ARCHIVE_MANIFEST_SCHEMA.json",
+    "proof/standards/PROOF_BUNDLE_EXAMPLE.json",
+    "proof/standards/PROOF_BUNDLE_SCHEMA.json"
+  ],
+  "context": {
+    "dependencies": {},
+    "depends_on": [],
+    "parent_tp_id": null,
+    "schema_version": "1.0",
+    "series_id": "SERIES-AUDIT-057F-PROMPT-PIPELINE",
+    "tp_id": "TP-AUDIT-057F-PROMPT-PIPELINE",
+    "worktree_context": ".worktrees/TP-AUDIT-057F-PROMPT-PIPELINE/.dopetask/SERIES_CONTEXT.json"
+  },
+  "copied_proof_bundle": "out/tp_series/SERIES-AUDIT-057F-PROMPT-PIPELINE/packets/TP-AUDIT-057F-PROMPT-PIPELINE/TP-AUDIT-057F-PROMPT-PIPELINE_PROOF_BUNDLE.json",
+  "head_sha": "115c2482a0c9b38d502e65789905471547e643d2",
+  "packet_path": "llm-plans/TP-AUDIT-057F-PROMPT-PIPELINE.json",
+  "schema_version": "1.0",
+  "series_id": "SERIES-AUDIT-057F-PROMPT-PIPELINE",
+  "tp_id": "TP-AUDIT-057F-PROMPT-PIPELINE",
+  "verify": []
+}

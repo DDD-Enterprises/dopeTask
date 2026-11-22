@@ -18,7 +18,8 @@ def test_project_init_command(tmp_path: Path) -> None:
     )
 
     assert result.exit_code == 0
-    assert (project_dir / "PROJECT_INSTRUCTIONS.md").exists()
+    assert (project_dir / "CLAUDE.md").exists()
+    assert (project_dir / "AGENTS.md").exists()
     assert (project_dir / "PROJECT_INIT_REPORT.md").exists()
 
 

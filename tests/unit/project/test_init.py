@@ -13,17 +13,16 @@ def test_init_creates_files_when_missing(tmp_path: Path) -> None:
     result = init_project(out_dir=out_dir, preset="both")
 
     expected_files = {
-        "PROJECT_INSTRUCTIONS.md",
         "CLAUDE.md",
-        "CODEX.md",
         "AGENTS.md",
         "dopetask_bundle.yaml",
         "PROJECT_INIT_REPORT.md",
     }
     assert expected_files.issubset({path.name for path in out_dir.iterdir()})
+    assert not {"PROJECT_INSTRUCTIONS.md", "CODEX.md"} & {path.name for path in out_dir.iterdir()}
     assert Path(result["report_path"]).exists()
 
-    for filename in ("PROJECT_INSTRUCTIONS.md", "CLAUDE.md", "CODEX.md", "AGENTS.md"):
+    for filename in ("CLAUDE.md", "AGENTS.md"):
         text = (out_dir / filename).read_text(encoding="utf-8")
         assert "strict repo-aware Task Packet contract" in text
         assert "repo_binding" in text
@@ -65,8 +64,8 @@ def test_init_appends_missing_blocks_without_clobbering_content(tmp_path: Path) 
     out_dir = tmp_path / "project"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    original = "# CODEX\n\nCustom project notes.\n"
-    target = out_dir / "CODEX.md"
+    original = "# AGENTS\n\nCustom project notes.\n"
+    target = out_dir / "AGENTS.md"
     target.write_text(original, encoding="utf-8")
 
     init_project(out_dir=out_dir, preset="none")
