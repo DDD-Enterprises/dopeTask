@@ -8,16 +8,12 @@ from hashlib import sha256
 from importlib.resources import files
 
 MANAGED_FILES: tuple[str, ...] = (
-    "PROJECT_INSTRUCTIONS.md",
     "CLAUDE.md",
-    "CODEX.md",
     "AGENTS.md",
 )
 
 MANAGED_TEMPLATE_FILES: dict[str, str] = {
-    "PROJECT_INSTRUCTIONS.md": "PROJECT_INSTRUCTIONS.template.md",
     "CLAUDE.md": "CLAUDE.template.md",
-    "CODEX.md": "CODEX.template.md",
     "AGENTS.md": "AGENTS.template.md",
 }
 
