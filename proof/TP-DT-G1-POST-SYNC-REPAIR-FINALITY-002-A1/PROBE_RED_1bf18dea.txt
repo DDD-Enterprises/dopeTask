@@ -1,0 +1,57 @@
+==============================================================================
+TP-DT-G1-POST-SYNC-REPAIR-FINALITY-002-A1 -- adversarial entrypoint probe
+repo: /Users/hue/code/dopeTask/.worktrees/dt-g1-finality-002-a1
+head: 1bf18deae224521d82a52290da893b6a9f76cc97
+==============================================================================
+
+R2 -- governed entrypoint refusal contract (packet read/parse)
+  [FAIL] R2a engine missing-packet -- RAW FileNotFoundError escaped
+  [FAIL] R2b engine unreadable-packet -- RAW PermissionError escaped
+  [FAIL] R2c engine malformed-json -- non-governed JSONDecodeError
+  [FAIL] R2d CLI dry-run malformed-json -- exit=1 governed=False compiled=False
+  [FAIL] R2e CLI real malformed-json -- exit=1 governed=False compiled=False
+  [PASS] R2f CLI missing-packet pre-empted by Click (exit 2) -- exit=2
+
+R3 -- single admission / repository resolution
+  [PASS] R3a real governed resolution counts -- {"assert_repo_binding": 1, "assert_repo_identity": 1, "extract_origin_url": 1, "load_repo_identity": 1, "resolve_repo_root": 1}
+  [PASS] R3b dry-run governed resolution counts -- {"assert_repo_binding": 1, "assert_repo_identity": 1, "extract_origin_url": 1, "load_repo_identity": 1, "resolve_repo_root": 1}
+  [PASS] R3c legacy governed-resolver calls == 0 -- calls=[]
+
+R4 -- canonical repository identity (no substring, no basename)
+  [FAIL] R4 repository='e' -> reject -- ADMITTED
+  [FAIL] R4 repository='dopeTask' -> reject -- ADMITTED
+  [FAIL] R4 repository='DDD-Enterprises' -> reject -- ADMITTED
+  [FAIL] R4 repository='github.com' -> reject -- ADMITTED
+  [FAIL] R4 repository='opeTask' -> reject -- ADMITTED
+  [PASS] R4 repository='wrong-owner/dopeTask' -> reject -- GRANT_REPOSITORY_MISMATCH
+  [PASS] R4 repository='DDD-Enterprises/dopeTask-extra' -> reject -- GRANT_REPOSITORY_MISMATCH
+  [PASS] R4 repository='DDD-Enterprises/dopeTask' -> admit -- ADMITTED
+  [FAIL] R4 repository='https://github.com/DDD-Enterprises/dopeTask' -> admit -- GRANT_REPOSITORY_MISMATCH
+  [FAIL] R4 repository='https://github.com/DDD-Enterprises/dopeTask.git' -> admit -- GRANT_REPOSITORY_MISMATCH
+  [PASS] R4 repository='git@github.com:DDD-Enterprises/dopeTask.git' -> admit -- ADMITTED
+  [PASS] R4 repository='https://evil.com/github.com/DDD-Enterprises/dopeTask' -> reject -- GRANT_REPOSITORY_MISMATCH
+
+R1 -- RUNNER_INVOCATION under-grant check (amendment 01)
+  [FAIL] R1a under-grant refused -- non-governed RuntimeError
+  [FAIL] R1b runner calls == 0 when under-granted -- constructed=['TaskExecutor']
+  [PASS] R1c correctly-granted admitted
+  [FAIL] R1d valid DCP cannot supply RUNNER_INVOCATION -- ADMITTED; dcp_enum_disjoint=True
+
+==============================================================================
+PROBE RESULT: 10/25 passed, 15 failed
+  FAILING: R2a engine missing-packet -- RAW FileNotFoundError escaped
+  FAILING: R2b engine unreadable-packet -- RAW PermissionError escaped
+  FAILING: R2c engine malformed-json -- non-governed JSONDecodeError
+  FAILING: R2d CLI dry-run malformed-json -- exit=1 governed=False compiled=False
+  FAILING: R2e CLI real malformed-json -- exit=1 governed=False compiled=False
+  FAILING: R4 repository='e' -> reject -- ADMITTED
+  FAILING: R4 repository='dopeTask' -> reject -- ADMITTED
+  FAILING: R4 repository='DDD-Enterprises' -> reject -- ADMITTED
+  FAILING: R4 repository='github.com' -> reject -- ADMITTED
+  FAILING: R4 repository='opeTask' -> reject -- ADMITTED
+  FAILING: R4 repository='https://github.com/DDD-Enterprises/dopeTask' -> admit -- GRANT_REPOSITORY_MISMATCH
+  FAILING: R4 repository='https://github.com/DDD-Enterprises/dopeTask.git' -> admit -- GRANT_REPOSITORY_MISMATCH
+  FAILING: R1a under-grant refused -- non-governed RuntimeError
+  FAILING: R1b runner calls == 0 when under-granted -- constructed=['TaskExecutor']
+  FAILING: R1d valid DCP cannot supply RUNNER_INVOCATION -- ADMITTED; dcp_enum_disjoint=True
+==============================================================================

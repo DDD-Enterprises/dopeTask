@@ -1,0 +1,155 @@
+{
+  "id": "TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001",
+  "project": "dopetask",
+  "target": "Synchronize DT-G1 PR #92 onto the cleaned post-PR-93 dopeTask main, prove no semantic overlap, rerun the now-green repository baseline, freeze the post-sync head, and perform exactly one final independent L2 audit before merge consideration.",
+  "invariants": [
+    "RISK_LANE=L2_MATERIAL.",
+    "PARENT_PACKET=TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.",
+    "PR=92.",
+    "OBSERVED_PRE_SYNC_HEAD=1ee07dc521bad372f57378e63f8bcdbf8b10b2ac.",
+    "OBSERVED_CURRENT_MAIN=ff8044a842a000d75d859d420f00f247faca9a61.",
+    "OBSERVED_PATH_OVERLAP_WITH_PR93=NONE.",
+    "Use merge-from-main, not rebase, squash, reset or history rewrite.",
+    "Any conflict or material DT-G1 file change during main synchronization stops before repair.",
+    "GOVERNED_MODE must never call build_route_plan as an execution decision path; LEGACY_LOCAL_MODE preserves planner behavior.",
+    "DCPRouteAuthorization remains policy-only and never grants execution authority.",
+    "CLI or Task Packet inputs may narrow but never widen the DCP model ceiling.",
+    "Revocation without a resolver remains fail-closed.",
+    "Do not audit the obsolete pre-sync head. Run exactly one final independent L2 audit after post-sync freeze.",
+    "MERGE_AUTHORIZED=NO. RELEASE_AUTHORIZED=NO. PIN_UPDATE_AUTHORIZED=NO. ACTIVATION_AUTHORIZED=NO."
+  ],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": "pyproject.toml",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "CONTROL-TOWER-NEXT-WAVE-2026-09-04",
+    "base_branch": "main",
+    "parent_tp_id": "TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001",
+    "final_packet": false
+  },
+  "execution": {
+    "agent": "shell",
+    "branch": "feat/dt-g1-governed-grant-router-isolation-001"
+  },
+  "commit": {
+    "message": "merge main into DT-G1 finalization",
+    "allowlist": [
+      "task-packets/TP-DT-G1-POST-BASELINE-SYNC-FINAL-AUDIT-001.json",
+      "out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json",
+      "src/dopetask/guard/governed_execution.py",
+      "src/dopetask/ops/tp_exec/cli.py",
+      "src/dopetask/ops/tp_exec/engine.py",
+      "task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json",
+      "tests/unit/dopetask/test_governed_execution.py",
+      "tests/unit/dopetask/test_tp_exec_codex.py",
+      "tests/unit/dopetask/test_tp_exec_governed.py",
+      "proof/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/**"
+    ],
+    "verify": [
+      "git diff --check",
+      "ruff check src/dopetask",
+      "mypy src/dopetask",
+      "python -m compileall -q src tests",
+      "pytest -q",
+      "pytest -q tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+      "secret scan of exact changed/proof output"
+    ]
+  },
+  "pr": {
+    "title": "feat(governed): consume execution grant and isolate router",
+    "body": "Post-#93 baseline synchronization and final exact-head L2 audit for existing DT-G1 PR #92. Merge/release/activation remain operator-only.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "S00_reharvest",
+      "task": "Reharvest current dopeTask main and recompute DT-G1 overlap before mutation.",
+      "requirements": [
+        "Require ff8044a842a000d75d859d420f00f247faca9a61 is an ancestor of current origin/main or classify later drift by paths.",
+        "Recompute #92 changed paths and main delta since 7ce24ae15ad3ae9ddbfa2b33577d20c924cb1da6.",
+        "Require no CONFLICTING or UNKNOWN overlap with DT-G1 semantic files.",
+        "Require isolated worktree and no foreign mutating writer."
+      ],
+      "commands": [
+        "git fetch origin main",
+        "git rev-parse HEAD",
+        "git rev-parse origin/main",
+        "git status --short",
+        "git diff --name-status 7ce24ae15ad3ae9ddbfa2b33577d20c924cb1da6..origin/main"
+      ],
+      "validation": [
+        "MAIN_DRIFT_CLASSIFIED",
+        "OVERLAP=NONE|COMPATIBLE",
+        "WRITER_EXCLUSIVITY=PASS"
+      ]
+    },
+    {
+      "id": "S01_sync",
+      "task": "Merge current origin/main into the DT-G1 branch without rebasing.",
+      "requirements": [
+        "Use git merge --no-ff origin/main -m 'merge main into DT-G1 finalization'.",
+        "If any conflict occurs, abort and stop NEEDS_SUPERVISOR.",
+        "After merge, require DT-G1 semantic file contents are unchanged from pre-sync head 1ee07dc521bad372f57378e63f8bcdbf8b10b2ac."
+      ],
+      "commands": [
+        "git merge --no-ff origin/main -m 'merge main into DT-G1 finalization'"
+      ],
+      "validation": [
+        "MERGE_CONFLICTS=0",
+        "DT_G1_SEMANTIC_DELTA_FROM_PRE_SYNC=NONE",
+        "POST_SYNC_HEAD recorded"
+      ]
+    },
+    {
+      "id": "S02_validate_freeze",
+      "task": "Run post-#93 clean baseline validation and freeze the exact post-sync DT-G1 head.",
+      "requirements": [
+        "Run focused governed-execution tests and full pytest.",
+        "Because PR #93 fixed the historical fixture/lint/type baseline, any new pytest/ruff/mypy failure is blocking unless proven as new unrelated main drift.",
+        "Run ruff, mypy, compileall, git diff --check and secret scan.",
+        "Verify router/planner.py, tp_series/logic.py, adapters, task-runner executor/types, schemas and packaging have no DT-G1-authored drift."
+      ],
+      "validation": [
+        "FOCUSED_TESTS=PASS",
+        "FULL_SUITE=PASS",
+        "RUFF=PASS",
+        "MYPY=PASS",
+        "COMPILEALL=PASS",
+        "DIFF_CHECK=PASS",
+        "FROZEN_HEAD recorded"
+      ]
+    },
+    {
+      "id": "S03_final_audit",
+      "task": "Run one fresh independent L2 audit on the exact frozen post-sync head.",
+      "requirements": [
+        "Live-discover a non-implementer independent route; prefer AGY/Gemini if available, with no silent substitution.",
+        "Challenge planner isolation, legacy planner retention, policy-vs-execution authority, grant issuer narrowing, TP ID/digest binding, exact ordered allowlist equality, expiry, model ceiling, revocation fail-closed behavior, schema registry substitution, dry-run semantics, tmux propagation and forbidden-path closure.",
+        "No repair during audit."
+      ],
+      "validation": [
+        "AUDIT_SUBJECT_HEAD=FROZEN_HEAD",
+        "INDEPENDENCE recorded",
+        "VERDICT=PASS|PASS_WITH_RISKS|FAIL|NEEDS_SUPERVISOR"
+      ]
+    },
+    {
+      "id": "S04_proof_handoff",
+      "task": "Materialize audit evidence as proof-only closure and return merge readiness without merging.",
+      "requirements": [
+        "Bind proof to the exact audited post-sync head.",
+        "Any successor after the audited semantic head must be proof-only.",
+        "Validate proof schema, ancestry, path closure and secret scan.",
+        "Reharvest CI/reviews and return merge readiness only when current exact head, CI and audit agree."
+      ],
+      "validation": [
+        "PROOF_FINALITY=PASS or explicit blocker",
+        "CI=PASS or explicit blocker",
+        "MERGE_AUTHORIZED=NO"
+      ]
+    }
+  ]
+}

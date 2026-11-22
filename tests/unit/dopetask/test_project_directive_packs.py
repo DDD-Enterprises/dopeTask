@@ -8,9 +8,7 @@ from dopetask.project.toggles import project_status
 
 RUNNER = CliRunner()
 INSTRUCTION_FILES = (
-    "PROJECT_INSTRUCTIONS.md",
     "CLAUDE.md",
-    "CODEX.md",
     "AGENTS.md",
 )
 
@@ -122,7 +120,7 @@ def test_project_status_reports_correctly(tmp_path: Path) -> None:
     _init_none(project_dir)
 
     initial_status = project_status(project_dir)
-    assert len(initial_status["files"]) == 4
+    assert len(initial_status["files"]) == 2
     assert all(not item["packs"]["dopetask"] for item in initial_status["files"])
     assert all(not item["packs"]["chatx"] for item in initial_status["files"])
 
@@ -138,6 +136,6 @@ def test_project_status_reports_correctly(tmp_path: Path) -> None:
     assert enable_chatx.exit_code == 0, enable_chatx.output
 
     final_status = project_status(project_dir)
-    assert len(final_status["files"]) == 4
+    assert len(final_status["files"]) == 2
     assert all(item["packs"]["dopetask"] for item in final_status["files"])
     assert all(item["packs"]["chatx"] for item in final_status["files"])

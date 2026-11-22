@@ -58,7 +58,7 @@ def test_doctor_detects_missing_sentinels(tmp_path: Path) -> None:
     project_dir = tmp_path / "proj"
     init_project(out_dir=project_dir, preset="none")
 
-    target = project_dir / "CODEX.md"
+    target = project_dir / "AGENTS.md"
     text = target.read_text(encoding="utf-8")
     begin_marker, end_marker = SENTINELS["chatx"]
     start = text.find(begin_marker)
@@ -72,13 +72,13 @@ def test_doctor_detects_missing_sentinels(tmp_path: Path) -> None:
 
     assert report["status"] == "fail"
     assert checks["sentinel_integrity"]["status"] == "fail"
-    assert "CODEX.md" in checks["sentinel_integrity"]["files"]
+    assert "AGENTS.md" in checks["sentinel_integrity"]["files"]
 
 
 def test_doctor_fix_creates_files_and_prompts(tmp_path: Path) -> None:
     project_dir = tmp_path / "proj"
     init_project(out_dir=project_dir, preset="none")
-    (project_dir / "PROJECT_INSTRUCTIONS.md").unlink()
+    (project_dir / "CLAUDE.md").unlink()
 
     report = fix_project(project_dir, mode="both")
     checks = _check_ids(report)
