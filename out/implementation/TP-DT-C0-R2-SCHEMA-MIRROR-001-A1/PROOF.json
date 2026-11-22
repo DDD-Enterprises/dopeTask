@@ -1,0 +1,83 @@
+{
+  "packet_id": "TP-DT-C0-R2-SCHEMA-MIRROR-001-A1",
+  "supersedes": "TP-DT-C0-R2-SCHEMA-MIRROR-001",
+  "supersedes_reason": "Base packet's execution object failed dopeTask's own dopetask_schemas/task_packet.strict.schema.json (additionalProperties violation: base_branch, stacked_because). Verified locally before execution; A1 corrects packet shape only, mirror semantics/hashes unchanged.",
+  "risk_lane": "L0_DETERMINISTIC_MIRROR",
+  "source_authority": {
+    "c0_r2_subject_sha256": "a9d51a5b19170589cff38fee951fd611436e65711af4a8bbfcff4084ab884c19",
+    "source_publication_commit": "2b00c648e62c2aeb74b690b45bf058bd687fb4ec",
+    "source_publication_commit_subject": "chore(dcp): publish ratified C0-R2 schemas (#1307)",
+    "source_publication_ancestor_of_dopemux_mvp_origin_main": true
+  },
+  "dopetask_base": {
+    "observed_baseline_sha": "d9103f078418cbf2a8f387aee5d0e1f957a37b1a",
+    "observed_baseline_tree": "cded064343b6166ea830361e23bbf82b4599c294",
+    "fetched_origin_main_sha": "d9103f078418cbf2a8f387aee5d0e1f957a37b1a",
+    "fetched_origin_main_tree": "cded064343b6166ea830361e23bbf82b4599c294",
+    "baseline_drift": "NONE",
+    "branch": "chore/dt-c0-r2-schema-mirror-001-a1",
+    "worktree": ".worktrees/dt-c0-r2-schema-mirror-001-a1"
+  },
+  "destination_preflight": {
+    "existing_conflicting_files": 0,
+    "existing_identical_files": 0,
+    "new_files": 10,
+    "open_prs_touching_destination_paths": 0,
+    "existing_branch_collision": false
+  },
+  "mirror": {
+    "byte_identical_count": 10,
+    "total_expected": 10,
+    "files": [
+      {"name": "common_defs.schema.json", "sha256": "769abe60377ec0725acb883b901677d8189245a4b1f5c1e963a9d23285dfd48f", "status": "MATCH"},
+      {"name": "dcp_route_authorization.schema.json", "sha256": "997b57f4e62affc1c418335ee4c6193122ed03566b13becb95dce419f6336391", "status": "MATCH"},
+      {"name": "dopetask_governed_execution_profile.schema.json", "sha256": "1b492736585afbc02ba22b1a6136c310f329be7a51c3b16e77e2110c7dc8ed69", "status": "MATCH"},
+      {"name": "governed_execution_receipt.schema.json", "sha256": "e7e4eef88f331461a585eb0c565d0871a3de134bbd791d02f1eee761e7dfd433", "status": "MATCH"},
+      {"name": "macro_execution_authority_ref_v2.schema.json", "sha256": "1d73d78e80585bedc997286116f52964bb6f5b96dfe53fcd80fb494181249a9a", "status": "MATCH"},
+      {"name": "model_transport_receipt.schema.json", "sha256": "03334b78d14c7e9a4cf9e08e7740cba8eca64fc42edbd42745bf4fe66a3ab930", "status": "MATCH"},
+      {"name": "tool_intent.schema.json", "sha256": "3ee4c5ef8cf0fa94ea6d0e141624610d3135b14e2573c0be0ec3f917f3871e0a", "status": "MATCH"},
+      {"name": "uag_compatibility_certification.schema.json", "sha256": "81e152fadb1ef014d25cb6e96f18241b52f9337771dcfe3b680a7794a3f6339d", "status": "MATCH"},
+      {"name": "uag_transport_request.schema.json", "sha256": "ee34216b4d99d56710690f474de76b2d9eea4c39282de3c5f1d4de1875f778c1", "status": "MATCH"},
+      {"name": "uag_transport_result.schema.json", "sha256": "64595c5ed1e9bfd46cfd41b18a8808963ebbda6de64c3dd654ed672e2553197e", "status": "MATCH"}
+    ],
+    "copy_method": "git cat-file -p <source_commit>:schemas/dcp/<name> (raw blob bytes, no parse/reserialize)"
+  },
+  "validation": {
+    "draft7_validation": "PASS_10_OF_10",
+    "ref_closure": "PASS_10_OF_10",
+    "ref_closure_note": "All $ref targets among the ten mirrored schemas resolve within the mirrored set; no refs to non-mirrored schemas/dcp/* files.",
+    "registry_discovery": "PASS_10_OF_10",
+    "registry_discovery_note": "SchemaRegistry.available includes all ten canonical names via existing glob-based iterdir() discovery; no registry code change made.",
+    "registry_get_json": "PASS_10_OF_10",
+    "package_data": "PASS_10_OF_10",
+    "package_data_note": "uv build --wheel produced dopetask-0.5.7-py3-none-any.whl containing all ten dopetask_schemas/*.schema.json entries; pyproject.toml unedited.",
+    "existing_schema_registry_tests": {
+      "command": "uv run pytest -q tests/unit/test_schema_registry.py tests/unit/utils/test_schema_loading_new.py",
+      "individual_tests_passed": 7,
+      "individual_tests_failed": 0,
+      "command_exit_code": 1,
+      "command_exit_reason": "Repo-wide --cov-fail-under=1 gate (pyproject [tool.pytest.ini_options] addopts) fails when only 2 of the test files run, because coverage is measured against the whole dopetask package (11202 stmts). All 7 individual tests in the two target files PASS with zero failures/errors; the exit code reflects the unrelated global coverage gate, not a regression from this mirror.",
+      "verdict": "PASS_WITH_CAVEAT"
+    },
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "precommit": "NOT_RUN",
+    "precommit_note": "Repo has no .pre-commit-config.yaml; pre-commit run fails with InvalidConfigError before evaluating any hook. This is a pre-existing repository condition, not caused by this mirror. Recorded as NOT_RUN, not PASS.",
+    "secret_scan": "PASS",
+    "secret_scan_note": "grep -RniE for AWS/PEM/GitHub-token/OpenAI/Slack token patterns over all allowlisted files: zero matches.",
+    "allowlist_closure": "PASS",
+    "allowlist_closure_note": "git status --short showed exactly the 10 schema files + packet file as untracked before this proof was written; no source/runtime/config/pyproject/lockfile changed."
+  },
+  "model_audit": "NOT_REQUIRED",
+  "model_audit_reason": "Exact-byte L0 mirror per packet invariant; all validation above is deterministic.",
+  "authorization": {
+    "merge_authorized": false,
+    "release_authorized": false,
+    "pin_update_authorized": false,
+    "activation_authorized": false,
+    "push_and_pr_authorized": true
+  },
+  "next_gate": "OPERATOR_MIRROR_PR_MERGE_DECISION_AFTER_CI",
+  "dt_g1_dispatch_eligible": "NO",
+  "dt_g1_dispatch_note": "Remains NO until this mirror PR is merged and merged dopeTask main is reharvested, per packet S03 requirement."
+}

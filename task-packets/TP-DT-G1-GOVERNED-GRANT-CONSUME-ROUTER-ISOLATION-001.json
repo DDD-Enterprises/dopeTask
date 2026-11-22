@@ -1,0 +1,211 @@
+{
+  "id": "TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001",
+  "project": "dopetask",
+  "target": "Implement C0-R2 governed single-Task-Packet admission in dopeTask: consume and validate MacroExecutionAuthorityRefV2 plus its bound DCPRouteAuthorization, isolate build_route_plan to LEGACY_LOCAL_MODE, and fail closed on grant/packet/CLI/repository/worktree/allowlist mismatch without entering DT-G2 mutation, credential, receipt, release, or pin scope.",
+  "invariants": [
+    "RISK_LANE=L2_MATERIAL.",
+    "OBSERVED_DOPETASK_MAIN=d9103f078418cbf2a8f387aee5d0e1f957a37b1a; execution must reharvest current main and classify overlap.",
+    "C0_R2_SUBJECT_SHA256=a9d51a5b19170589cff38fee951fd611436e65711af4a8bbfcff4084ab884c19.",
+    "UAG_T1_MERGED_MAIN=fe08a6efea87f1dfa9c95b89568059c5b6c2604b; UAG T1 is a parallel sibling, not a DT-G1 dependency.",
+    "HARD_PREREQUISITE=TP-DT-C0-R2-SCHEMA-MIRROR-001-A1 merged to dopeTask main with 10/10 exact mirror hashes; otherwise STOP before mutation.",
+    "LEGACY_LOCAL_MODE behavior remains backward-compatible: current build_route_plan fallback remains permitted only there.",
+    "GOVERNED_MODE requires an exact MacroExecutionAuthorityRefV2 and exact DCPRouteAuthorization artifact; the DCP artifact is policy-only and can never substitute for the grant.",
+    "Issuer must be outside DCP/UAG/Dopetask and constrained to the grant schema; dopeTask consumes but never issues or widens the grant.",
+    "For V1 governed single-TP: subject.kind=SINGLE_TASK_PACKET, consumer=dopetask, permitted_execution.mode=GOVERNED_SINGLE_TP, runner=codex, max_attempts=1, substitution_policy=forbid.",
+    "Exact Task Packet id and SHA-256, repository, project, worktree, DCPRouteAuthorization digest, and commit.allowlist must match the grant.",
+    "CLI --agent/--model and packet execution.agent may only constrain/check the grant; they cannot override or widen it.",
+    "In GOVERNED_MODE build_route_plan must not be imported/called on the execution path. No silent agent/model default is allowed.",
+    "DT-G1 may narrow ambiguous grant state by refusing; it may not invent authority.",
+    "No mutation-window enforcement, Codex sandbox/credential bootstrap, GovernedExecutionReceipt emission, durable external-effect exactly-once claim, release, version change, pin change, provider activation, UAG endpoint activation, or cross-repo runtime integration in this packet.",
+    "If implementation requires editing router/planner.py, tp_series logic, adapters, task runner executor/types, credential/network code, package schemas, or packaging metadata, STOP and return smallest required successor scope.",
+    "One final independent L2 audit is required on the frozen substantive head before merge readiness.",
+    "MERGE_AUTHORIZED=NO; RELEASE_AUTHORIZED=NO; PIN_UPDATE_AUTHORIZED=NO; ACTIVATION_AUTHORIZED=NO."
+  ],
+  "depends_on": [],
+  "repo_binding": {
+    "project_id": "dopetask",
+    "repo_marker": ".dopetaskroot",
+    "origin_hint": "DDD-Enterprises/dopeTask",
+    "require_identity_match": true
+  },
+  "series": {
+    "id": "DT-G1-GOVERNED-GRANT-001",
+    "base_branch": "main",
+    "parent_tp_id": null,
+    "final_packet": true
+  },
+  "execution": {
+    "agent": "codex",
+    "branch": "feat/dt-g1-governed-grant-router-isolation-001"
+  },
+  "commit": {
+    "message": "feat(governed): consume execution grant and isolate router",
+    "allowlist": [
+      "task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json",
+      "src/dopetask/guard/governed_execution.py",
+      "src/dopetask/ops/tp_exec/engine.py",
+      "src/dopetask/ops/tp_exec/cli.py",
+      "tests/unit/dopetask/test_governed_execution.py",
+      "tests/unit/dopetask/test_tp_exec_governed.py",
+      "tests/unit/dopetask/test_tp_exec_codex.py",
+      "out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json"
+    ],
+    "verify": [
+      "git diff --check",
+      "python -m pytest -q tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+      "python -m pytest -q tests/unit/dopetask tests/unit/tp_series",
+      "python -m pytest -q",
+      "ruff check src/dopetask/guard/governed_execution.py src/dopetask/ops/tp_exec/engine.py src/dopetask/ops/tp_exec/cli.py tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+      "python -m compileall -q src tests",
+      "pre-commit run --files task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json src/dopetask/guard/governed_execution.py src/dopetask/ops/tp_exec/engine.py src/dopetask/ops/tp_exec/cli.py tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json",
+      "changed-file allowlist closure",
+      "secret scan packet/proof outputs"
+    ]
+  },
+  "pr": {
+    "title": "feat(governed): consume execution grant and isolate router",
+    "body": "DT-G1 L2 implementation. Adds governed single-TP admission that consumes the exact MacroExecutionAuthorityRefV2 and its bound DCPRouteAuthorization while preserving legacy local routing. No DT-G2 mutation/credential/receipt behavior, release, pin, activation, or merge authority. Final independent audit required on frozen substantive head.",
+    "base": "main"
+  },
+  "steps": [
+    {
+      "id": "S00_PREFLIGHT",
+      "task": "Reharvest dopeTask main, prove the exact C0-R2 mirror prerequisite is merged/current, census existing tp-exec/router behavior, and classify overlap before mutation.",
+      "requirements": [
+        "Require TP-DT-C0-R2-SCHEMA-MIRROR-001-A1 to be present on current main with 10/10 pinned schema hashes.",
+        "Reharvest current dopeTask main against observed d9103f078418cbf2a8f387aee5d0e1f957a37b1a; ordinary movement is allowed only after path/semantic overlap classification.",
+        "Confirm current tp exec still routes through _resolve_effective_model/build_route_plan only on legacy behavior.",
+        "Confirm no existing governed grant implementation or overlapping PR/branch already owns this scope.",
+        "Confirm all implementation can remain within this packet allowlist.",
+        "Do not mutate during S00."
+      ],
+      "commands": [
+        "git fetch origin main --prune",
+        "git rev-parse HEAD",
+        "git rev-parse origin/main",
+        "git status --short"
+      ],
+      "validation": [
+        "Mirror prerequisite PASS or STOP.",
+        "Main drift classified.",
+        "No conflicting governed implementation.",
+        "Allowlist sufficient without DT-G2 files."
+      ],
+      "context_files": [
+        "src/dopetask/ops/tp_exec/engine.py",
+        "src/dopetask/ops/tp_exec/cli.py",
+        "src/dopetask/router/planner.py",
+        "src/dopetask/core/schema.py",
+        "src/dopetask/core/tp_parser.py",
+        "src/dopetask/utils/schema_registry.py",
+        "dopetask_schemas/macro_execution_authority_ref_v2.schema.json",
+        "dopetask_schemas/dcp_route_authorization.schema.json",
+        "dopetask_schemas/dopetask_governed_execution_profile.schema.json"
+      ]
+    },
+    {
+      "id": "S01_GOVERNED_GUARD",
+      "task": "Implement one fail-closed governed-execution admission module using the mirrored C0-R2 schemas without editing those schemas or generic router code.",
+      "requirements": [
+        "Load raw grant and DCPRouteAuthorization JSON from explicit caller-supplied paths.",
+        "Validate both against the mirrored Draft-07 contracts with correct cross-file $ref resolution.",
+        "Verify raw DCPRouteAuthorization SHA-256 equals grant.dcp_route_authorization_digest.",
+        "Verify issued_at/expires_at ordering/currentness and reject expired grants.",
+        "Verify subject.kind=SINGLE_TASK_PACKET and exact task_packet_id/task_packet_sha256 against the input packet raw bytes.",
+        "Verify consumer=dopetask, permitted_execution.mode=GOVERNED_SINGLE_TP, runner=codex, max_attempts=1, substitution_policy=forbid.",
+        "Verify project_id/repository/worktree binding against current repo/worktree identity.",
+        "Verify grant.allowlist is exactly equal to packet.commit.allowlist; no subset/superset widening.",
+        "Verify authority_effect does not grant workflow legality, merge, activation, production, credential change, route invention, UAG promotion, exactly-once external effect, allowlist widening, or self-issuance.",
+        "Treat revocation_ref presence conservatively: unless a current authoritative revocation resolver already exists, reject rather than invent one.",
+        "Do not add a new persistent authority store in DT-G1. Record AT_MOST_ONCE_GRANT_ACCEPT as contract semantics; durable acceptance/receipt state is deferred to DT-G2 unless current repo truth already provides an authority-correct store."
+      ],
+      "expected_files": [
+        "src/dopetask/guard/governed_execution.py",
+        "tests/unit/dopetask/test_governed_execution.py"
+      ],
+      "validation": [
+        "Valid exact grant/auth/packet binding ACCEPT.",
+        "DCPRouteAuthorization without MacroExecutionAuthorityRefV2 REJECT.",
+        "Wrong issuer/consumer/mode/runner/max_attempts/substitution REJECT.",
+        "Expired grant REJECT.",
+        "Task id/SHA, repo, worktree, route-auth digest, or allowlist mismatch REJECT.",
+        "Unknown revocation state REJECT."
+      ]
+    },
+    {
+      "id": "S02_ENGINE_ROUTER_ISOLATION",
+      "task": "Add explicit LEGACY_LOCAL_MODE versus GOVERNED_MODE to low-level tp exec while preserving legacy behavior byte-for-byte where practical.",
+      "requirements": [
+        "Add explicit low-level CLI inputs for execution mode and governed grant/DCPRouteAuthorization artifact paths; exact flag spelling may follow existing Typer conventions but must be documented in tests.",
+        "Default remains LEGACY_LOCAL_MODE.",
+        "In LEGACY_LOCAL_MODE preserve current _resolve_effective_model behavior including build_route_plan fallback when no explicit model is supplied.",
+        "In GOVERNED_MODE require grant and DCPRouteAuthorization paths before adapter construction.",
+        "In GOVERNED_MODE do not import/call build_route_plan and do not silently use agent/model defaults.",
+        "execution.agent/CLI --agent must match grant runner; V1 therefore requires codex.",
+        "CLI --model, if provided, must match the grant model ceiling/check; it may not widen or substitute. If the grant does not provide enough explicit model information to avoid a silent default, reject.",
+        "Propagate governed flags through --tmux command reconstruction.",
+        "Dry-run in GOVERNED_MODE must perform admission validation before claiming a compiled governed execution.",
+        "Do not edit router/planner.py."
+      ],
+      "expected_files": [
+        "src/dopetask/ops/tp_exec/engine.py",
+        "src/dopetask/ops/tp_exec/cli.py",
+        "tests/unit/dopetask/test_tp_exec_governed.py",
+        "tests/unit/dopetask/test_tp_exec_codex.py"
+      ],
+      "validation": [
+        "Monkeypatched build_route_plan that raises is never called in valid GOVERNED_MODE admission.",
+        "Legacy no-model execution still calls planner exactly as before.",
+        "Governed missing grant/auth REJECT before adapter.",
+        "Governed CLI/packet runner or model override mismatch REJECT.",
+        "Tmux command preserves governed parameters.",
+        "Dry-run governed admission fails closed on invalid grant."
+      ]
+    },
+    {
+      "id": "S03_REGRESSION",
+      "task": "Run focused and complete regression suites and prove no DT-G2 or authority-boundary drift.",
+      "requirements": [
+        "Run focused new governed-mode tests and existing tp-exec Codex tests.",
+        "Run relevant complete unit suites and full pytest.",
+        "Verify router/planner.py, tp_series logic, adapters, task-runner executor/types, schemas, packaging, version, release, and credential/network files are unchanged.",
+        "Verify no exactly-once external-effect claim is introduced."
+      ],
+      "commands": [
+        "python -m pytest -q tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+        "python -m pytest -q tests/unit/dopetask tests/unit/tp_series",
+        "python -m pytest -q",
+        "ruff check src/dopetask/guard/governed_execution.py src/dopetask/ops/tp_exec/engine.py src/dopetask/ops/tp_exec/cli.py tests/unit/dopetask/test_governed_execution.py tests/unit/dopetask/test_tp_exec_governed.py tests/unit/dopetask/test_tp_exec_codex.py",
+        "python -m compileall -q src tests",
+        "git diff --check"
+      ],
+      "validation": [
+        "Focused tests PASS.",
+        "Relevant complete suites PASS.",
+        "Full suite PASS or any pre-existing unrelated failure is proved against base without suppression.",
+        "Forbidden-path diff count=0."
+      ]
+    },
+    {
+      "id": "S04_PROOF_FREEZE",
+      "task": "Freeze the substantive DT-G1 head, write implementation proof, and prepare independent-audit handoff without performing the controlling audit.",
+      "requirements": [
+        "Write out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json with base/head/tree, exact changed files, grant/auth adversarial matrix, planner-not-called evidence, test results, diff/pre-commit/secret-scan results, and carried UNKNOWNs.",
+        "Commit controlling packet at task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json.",
+        "Set MODEL_AUDIT=NOT_RUN_BY_IMPLEMENTER and require one independent non-OpenAI family/runtime audit on the frozen substantive head.",
+        "Do not audit intermediate commits.",
+        "Do not merge, release, pin, or activate."
+      ],
+      "expected_files": [
+        "task-packets/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001.json",
+        "out/implementation/TP-DT-G1-GOVERNED-GRANT-CONSUME-ROUTER-ISOLATION-001/PROOF.json"
+      ],
+      "validation": [
+        "Proof schema/content complete enough for independent audit.",
+        "Changed-file allowlist closure PASS.",
+        "NEXT_GATE=INDEPENDENT_L2_AUDIT_ON_FROZEN_DT_G1_HEAD.",
+        "MERGE_AUTHORIZED=NO."
+      ]
+    }
+  ]
+}
